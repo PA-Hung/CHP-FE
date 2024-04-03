@@ -1,0 +1,34 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    gap: 15px;
+}
+
+/* .border-form-login {
+    border: 1px solid red;
+} */
+
+.login-form {
+    max-width: 300px;
+}
+
+.login-title {
+    color: black;
+    font-size: large;
+    font-weight: 500;
+}
+
+#components-form-demo-normal-login .login-form-forgot {
+    float: right;
+}
+
+#components-form-demo-normal-login .ant-col-rtl .login-form-forgot {
+    float: left;
+}
+
+.login-form-button {
+    width: 100%;
+}
