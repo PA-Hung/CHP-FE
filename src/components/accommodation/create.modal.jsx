@@ -9,7 +9,7 @@ import {
   Row,
   Col,
 } from "antd";
-import { getApartment, postCreateAccommodation } from "../../utils/api";
+import { postCreateAccommodation } from "../../utils/api";
 import { useEffect, useState } from "react";
 
 const CreateModal = (props) => {
@@ -17,8 +17,8 @@ const CreateModal = (props) => {
     getData,
     isCreateModalOpen,
     setIsCreateModalOpen,
-    apartment_code,
-    SetApartment_code,
+    apartmentCode,
+    setApartmentCode,
   } = props;
   const [form] = Form.useForm();
 
@@ -97,7 +97,7 @@ const CreateModal = (props) => {
                 <Select
                   placeholder="Chọn mã căn hộ"
                   allowClear
-                  options={apartment_code}
+                  options={apartmentCode}
                 />
               </Form.Item>
             </Col>

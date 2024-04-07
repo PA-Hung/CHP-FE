@@ -16,6 +16,7 @@ import {
   UserOutlined,
   ApiOutlined,
   CalendarOutlined,
+  ApartmentOutlined,
 } from "@ant-design/icons";
 import Logo from "@/components/admin/logo.jsx";
 import ToggleThemeButton from "@/components/admin/toggleTheme.jsx";
@@ -79,7 +80,7 @@ const LayoutAdmin = () => {
         })
       );
     }
-    if (e.key === "/admin/user") {
+    if (e.key === "user") {
       dispatch(
         setActiveKey({
           activeKey: e.key,
@@ -95,7 +96,15 @@ const LayoutAdmin = () => {
         })
       );
     }
-    if (e.key === "/admin/role") {
+    if (e.key === "apartment") {
+      dispatch(
+        setActiveKey({
+          activeKey: e.key,
+          title: "Quản lý căn hộ",
+        })
+      );
+    }
+    if (e.key === "role") {
       dispatch(
         setActiveKey({
           activeKey: e.key,
@@ -103,7 +112,7 @@ const LayoutAdmin = () => {
         })
       );
     }
-    if (e.key === "/admin/permission") {
+    if (e.key === "permission") {
       dispatch(
         setActiveKey({
           activeKey: e.key,
@@ -146,6 +155,12 @@ const LayoutAdmin = () => {
           icon: <HomeOutlined />,
           visible: "true",
         },
+        {
+          label: <Link to={"/admin/apartment"}>Quản lý căn hộ</Link>,
+          key: "apartment",
+          icon: <ApartmentOutlined />,
+          visible: "true",
+        },
         ...(viewAccommodation
           ? [
               {
@@ -159,7 +174,7 @@ const LayoutAdmin = () => {
           ? [
               {
                 label: <Link to="/admin/user">Quản lý thành viên</Link>,
-                key: "/admin/user",
+                key: "user",
                 icon: <UserOutlined />,
               },
             ]
@@ -168,7 +183,7 @@ const LayoutAdmin = () => {
           ? [
               {
                 label: <Link to="/admin/role">Quản lý chức danh</Link>,
-                key: "/admin/role",
+                key: "role",
                 icon: <ExceptionOutlined />,
               },
             ]
@@ -177,7 +192,7 @@ const LayoutAdmin = () => {
           ? [
               {
                 label: <Link to="/admin/permission">Quản lý quyền hạn</Link>,
-                key: "/admin/permission",
+                key: "permission",
                 icon: <ApiOutlined />,
               },
             ]

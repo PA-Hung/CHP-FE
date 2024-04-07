@@ -8,6 +8,7 @@ import AccommodationPage from "../components/accommodation/accommodation.page";
 import AdminPage from "../components/admin/admin.page";
 import RolePage from "../components/role/role.page";
 import PermissionPage from "../components/permission/permission.page";
+import ApartmentPage from "../components/apartment/apartment.page";
 
 export const router = createBrowserRouter([
   {
@@ -31,8 +32,16 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "apartment",
+        element: <ApartmentPage />,
+      },
+      {
         path: "accommodation",
-        element: <AccommodationPage />,
+        element: (
+          <ProtectedRoute>
+            <AccommodationPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "user",

@@ -130,7 +130,7 @@ const UpdateModal = (props) => {
     const res = await updateAccommodation(data);
     if (res.data) {
       await getData();
-      message.success("Cập nhật quay phim thành công !");
+      message.success("Cập nhật lưu trú thành công !");
       resetModal();
     } else {
       notification.error({
@@ -181,7 +181,7 @@ const UpdateModal = (props) => {
         width={"60%"}
       >
         <Form
-          name="update-new-accommodation"
+          name="update-accommodation"
           onFinish={onFinish}
           layout="vertical"
           form={form}

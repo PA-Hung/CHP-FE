@@ -49,8 +49,8 @@ export const importExcel = (fileExcel, apartmentId) => {
     })
 }
 
-export const exportExcel = () => {
-    return axios.get(`api/v1/excel/export`)
+export const exportExcel = (apartmentId) => {
+    return axios.get(`api/v1/excel/export`, { params: { apartmentId } })
 }
 
 // User ----------------------------------------------------------------------------------------------------

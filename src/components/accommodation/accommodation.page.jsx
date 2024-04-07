@@ -1,14 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  notification,
-  message,
-  Upload,
-  Row,
-  Col,
-  Flex,
-  Select,
-} from "antd";
+import { Button, notification, message, Upload, Row, Col, Select } from "antd";
 import queryString from "query-string";
 import {
   PlusOutlined,
@@ -17,12 +8,7 @@ import {
   DownloadOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import {
-  exportExcel,
-  getAccommodation,
-  getApartment,
-  importExcel,
-} from "../../utils/api";
+import { exportExcel, getApartment, importExcel } from "@/utils/api";
 import CreateModal from "./create.modal";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -47,20 +33,16 @@ const AccommodationPage = () => {
 
   const isAdmin = useSelector((state) => state.auth.user.role);
   const user = useSelector((state) => state.auth.user);
-  const [apartment_code, SetApartment_code] = useState();
-  const [apartmentId, SetApartmentId] = useState(undefined);
-  const [defaultSelectApartment, setDefaultSelectApartment] = useState({
-    label: "Tất cả căn hộ",
-    value: "tat-ca-can-ho",
-  });
 
+  const [apartmentCode, setApartmentCode] = useState();
+  const [apartmentId, setApartmentId] = useState(undefined);
   const [loadingUpload, setLoadingUpload] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       const res = await getApartment(`current=1&pageSize=100`);
       if (res.data?.result) {
-        SetApartment_code(groupBySelectApartment(res.data?.result));
+        setApartmentCode(groupBySelectApartment(res.data?.result));
       }
     };
     init();
@@ -102,6 +84,10 @@ const AccommodationPage = () => {
     let sortBy = "";
     if (sort && sort.userId) {
       sortBy = sort.userId === "ascend" ? "sort=userId" : "sort=-userId";
+    }
+    if (sort && sort.apartment) {
+      sortBy =
+        sort.apartment === "ascend" ? "sort=apartment" : "sort=-apartment";
     }
     if (sort && sort.phone) {
       sortBy = sort.phone === "ascend" ? "sort=phone" : "sort=-phone";
@@ -161,7 +147,7 @@ const AccommodationPage = () => {
       if (response.statusCode === 201) {
         message.success(response.data.message);
         setLoadingUpload(false);
-        handleClearApartment();
+        handleClearSelectApartment();
       } else {
         message.error(response.data.message);
       }
@@ -170,7 +156,7 @@ const AccommodationPage = () => {
 
   const handleExport = async () => {
     try {
-      const response = await exportExcel();
+      const response = await exportExcel(apartmentId);
       if (response.statusCode === 200) {
         // Chuyển đổi dữ liệu JSON thành worksheet của workbook
         const ws = XLSX.utils.json_to_sheet(response.data);
@@ -189,131 +175,93 @@ const AccommodationPage = () => {
   };
 
   const handleSelectApartment = async (value) => {
-    SetApartmentId(value);
+    setApartmentId(value);
     const data = { apartment: value };
     const query = buildQuery(data);
     dispatch(fetchAccommodation({ query }));
   };
 
-  const handleClearApartment = () => {
+  const handleClearSelectApartment = () => {
     getData();
-    SetApartmentId(undefined);
-    setDefaultSelectApartment({
-      label: "Tất cả căn hộ",
-      value: "tat-ca-can-ho",
-    });
+    setApartmentId(undefined);
   };
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
       <div style={{ padding: 20 }}>
-        <Flex justify="space-between" align="center">
-          <Row gutter={[8, 8]}>
-            <Col xs={0} sm={24} md={24} lg={12} xl={12}>
+        <Row gutter={[8, 8]} justify="center" wrap={true}>
+          <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+            <Button
+              icon={<SearchOutlined />}
+              onClick={() => setIsSearchModalOpen(true)}
+            >
+              Tìm kiếm
+            </Button>
+          </Col>
+          <CheckAccess
+            FeListPermission={ALL_PERMISSIONS.ACCOMMODATION.CREATE}
+            hideChildren
+          >
+            <Col xs={24} sm={24} md={12} lg={8} xl={4}>
               <Button
-                icon={<SearchOutlined />}
-                onClick={() => setIsSearchModalOpen(true)}
+                icon={<PlusOutlined />}
+                onClick={() => setIsCreateModalOpen(true)}
               >
-                Tìm kiếm
+                Thêm mới
               </Button>
             </Col>
-            <Col xs={24} sm={0} md={0} lg={0} xl={0}>
+          </CheckAccess>
+
+          <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+            <Select
+              allowClear
+              placeholder="Mã căn hộ"
+              defaultValue={{
+                label: "Tất cả căn hộ",
+                value: "tat-ca-can-ho",
+              }}
+              options={apartmentCode}
+              onSelect={(value) => handleSelectApartment(value)}
+              onClear={() => handleClearSelectApartment()}
+            />
+          </Col>
+
+          <CheckAccess
+            FeListPermission={ALL_PERMISSIONS.EXCEL.IMPORT}
+            hideChildren
+          >
+            <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+              <Upload
+                maxCount={1}
+                multiple={false}
+                showUploadList={false}
+                beforeUpload={beforeUpload}
+                customRequest={handleUploadFileExcel}
+              >
+                <Button
+                  icon={
+                    loadingUpload ? <LoadingOutlined /> : <ImportOutlined />
+                  }
+                >
+                  Import Excel
+                </Button>
+              </Upload>
+            </Col>
+          </CheckAccess>
+          <CheckAccess
+            FeListPermission={ALL_PERMISSIONS.EXCEL.EXPORT}
+            hideChildren
+          >
+            <Col xs={24} sm={24} md={12} lg={8} xl={4}>
               <Button
-                icon={<SearchOutlined />}
-                onClick={() => setIsSearchModalOpen(true)}
-              />
+                icon={<DownloadOutlined />}
+                onClick={() => handleExport()}
+              >
+                Export Excel
+              </Button>
             </Col>
-            <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.ACCOMMODATION.CREATE}
-              hideChildren
-            >
-              <Col xs={0} sm={24} md={24} lg={12} xl={12}>
-                <Button
-                  icon={<PlusOutlined />}
-                  onClick={() => setIsCreateModalOpen(true)}
-                >
-                  Thêm mới
-                </Button>
-              </Col>
-              <Col xs={24} sm={0} md={0} lg={0} xl={0}>
-                <Button
-                  icon={<PlusOutlined />}
-                  onClick={() => setIsCreateModalOpen(true)}
-                />
-              </Col>
-            </CheckAccess>
-          </Row>
-          <Row gutter={[8, 8]}>
-            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-              <Select
-                allowClear
-                placeholder="Mã căn hộ"
-                defaultValue={defaultSelectApartment}
-                options={apartment_code}
-                onSelect={(value) => handleSelectApartment(value)}
-                onClear={() => handleClearApartment()}
-              />
-            </Col>
-          </Row>
-          <Row gutter={[8, 8]}>
-            <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.EXCEL.IMPORT}
-              hideChildren
-            >
-              <Col xs={0} sm={24} md={24} lg={12} xl={12}>
-                <Upload
-                  maxCount={1}
-                  multiple={false}
-                  showUploadList={false}
-                  beforeUpload={beforeUpload}
-                  customRequest={handleUploadFileExcel}
-                >
-                  <Button
-                    icon={
-                      loadingUpload ? <LoadingOutlined /> : <ImportOutlined />
-                    }
-                  >
-                    Import Excel
-                  </Button>
-                </Upload>
-              </Col>
-              <Col xs={24} sm={0} md={0} lg={0} xl={0}>
-                <Upload
-                  maxCount={1}
-                  multiple={false}
-                  showUploadList={false}
-                  beforeUpload={beforeUpload}
-                  customRequest={handleUploadFileExcel}
-                >
-                  <Button
-                    icon={
-                      loadingUpload ? <LoadingOutlined /> : <ImportOutlined />
-                    }
-                  />
-                </Upload>
-              </Col>
-            </CheckAccess>
-            <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.EXCEL.EXPORT}
-              hideChildren
-            >
-              <Col xs={0} sm={24} md={24} lg={12} xl={12}>
-                <Button
-                  icon={<DownloadOutlined />}
-                  onClick={() => handleExport()}
-                >
-                  Export Excel
-                </Button>
-              </Col>
-              <Col xs={24} sm={0} md={0} lg={0} xl={0}>
-                <Button
-                  icon={<DownloadOutlined />}
-                  onClick={() => handleExport()}
-                />
-              </Col>
-            </CheckAccess>
-          </Row>
-        </Flex>
+          </CheckAccess>
+        </Row>
       </div>
       <Row>
         <Col xs={24} sm={24} md={24} lg={0} xl={0}>
@@ -337,8 +285,8 @@ const AccommodationPage = () => {
         getData={getData}
         isCreateModalOpen={isCreateModalOpen}
         setIsCreateModalOpen={setIsCreateModalOpen}
-        apartment_code={apartment_code}
-        SetApartment_code={SetApartment_code}
+        apartmentCode={apartmentCode}
+        setApartmentCode={setApartmentCode}
       />
       <SearchModal
         isSearchModalOpen={isSearchModalOpen}
