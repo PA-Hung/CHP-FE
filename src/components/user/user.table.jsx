@@ -253,7 +253,7 @@ const UserTable = () => {
             showSizeChanger: true,
             defaultPageSize: meta.pageSize,
           }}
-        />{" "}
+        />
         {/*  // dataSource phải là mảng Array [] */}
         <CreateUserModal
           getData={getData}

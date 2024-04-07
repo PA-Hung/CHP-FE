@@ -23,17 +23,13 @@ import "dayjs/locale/vi";
 dayjs.locale("vi");
 import CheckAccess from "@/utils/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
+import { useDispatch } from "react-redux";
 
 const AccommodationCard = (props) => {
-  const { listAccommodation, loading, getData } = props;
+  const { listAccommodation, loading, getData, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
-  const [meta, setMeta] = useState({
-    current: 1,
-    pageSize: 15,
-    pages: 0,
-    total: 0,
-  });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getData();
@@ -51,15 +47,6 @@ const AccommodationCard = (props) => {
         description: res.message,
       });
     }
-  };
-
-  const handleOnchangeTable = (page, pageSize) => {
-    setMeta({
-      current: page,
-      pageSize: pageSize,
-      pages: meta.pages,
-      total: meta.total,
-    });
   };
 
   const { Meta } = Card;
@@ -184,7 +171,7 @@ const AccommodationCard = (props) => {
                             {dayjs(item.departure).format("DD/MM/YYYY")}
                           </p>
                           <p>Lý do lưu trú : {item.reason}</p>
-                          <p>Mã căn hộ : {item.apartment}</p>
+                          <p>Mã căn hộ : {item.apartment.code}</p>
                         </>
                       ),
                     },
@@ -200,7 +187,16 @@ const AccommodationCard = (props) => {
           current={meta.current}
           total={meta.total}
           pageSize={meta.pageSize}
-          onChange={(page, pageSize) => handleOnchangeTable(page, pageSize)}
+          onChange={(page, pageSize) =>
+            dispatch(
+              accommodationOnchangeTable({
+                current: page,
+                pageSize: pageSize,
+                pages: meta.pages,
+                total: meta.total,
+              })
+            )
+          }
           showSizeChanger={true}
           defaultPageSize={meta.pageSize}
         />

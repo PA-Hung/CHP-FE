@@ -17,6 +17,7 @@ import menuReducer from './slice/menuSlice';
 import themeReducer from './slice/themeSlice';
 import roleReducer from './slice/roleSlice';
 import permissionReducer from './slice/permissionSlice';
+import accommodationReducer from './slice/accommodationSlice'
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -25,7 +26,7 @@ const rootReducer = combineReducers({
     theme: themeReducer,
     role: roleReducer,
     permission: permissionReducer,
-
+    accommodation: accommodationReducer,
 });
 
 const persistConfig = {

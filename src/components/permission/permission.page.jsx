@@ -20,7 +20,6 @@ const PermissionPage = () => {
 
   const isFetching = useSelector((state) => state.permission.isFetching);
   const meta = useSelector((state) => state.permission.meta);
-  console.log("xxxx", meta);
   const permissions = useSelector((state) => state.permission.result);
   const dispatch = useDispatch();
 

@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { theme } from 'antd';
 
 const initialState = {
     themeMode: 'light',

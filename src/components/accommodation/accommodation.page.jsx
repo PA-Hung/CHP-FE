@@ -28,28 +28,31 @@ import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import * as XLSX from "xlsx";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SearchModal from "./search.modal";
 import AccommodationTable from "./accommodation.table";
 import AccommodationCard from "./accommodation.card";
 import CheckAccess from "@/utils/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
+import { fetchAccommodation } from "@/redux/slice/accommodationSlice";
 
 const AccommodationPage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const [listAccommodation, setListAccommodation] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [meta, setMeta] = useState({
-    current: 1,
-    pageSize: 10,
-    pages: 0,
-    total: 0,
-  });
+
+  const loading = useSelector((state) => state.accommodation.isFetching);
+  const meta = useSelector((state) => state.accommodation.meta);
+  const listAccommodation = useSelector((state) => state.accommodation.result);
+  const dispatch = useDispatch();
+
   const isAdmin = useSelector((state) => state.auth.user.role);
   const user = useSelector((state) => state.auth.user);
   const [apartment_code, SetApartment_code] = useState();
   const [apartmentId, SetApartmentId] = useState(undefined);
+  const [defaultSelectApartment, setDefaultSelectApartment] = useState({
+    label: "Tất cả căn hộ",
+    value: "tat-ca-can-ho",
+  });
 
   const [loadingUpload, setLoadingUpload] = useState(false);
 
@@ -73,24 +76,7 @@ const AccommodationPage = () => {
 
   const getData = async () => {
     const query = buildQuery();
-    setLoading(true);
-    const res = await getAccommodation(query);
-    if (res.data) {
-      setListAccommodation(res.data.result);
-      setMeta({
-        current: res?.data?.meta?.current,
-        pageSize: res?.data?.meta?.pageSize,
-        pages: res.data.meta.pages,
-        total: res.data.meta.total,
-      });
-    } else {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        placement: "top",
-        description: res.message,
-      });
-    }
-    setLoading(false);
+    dispatch(fetchAccommodation({ query }));
   };
 
   const buildQuery = (
@@ -152,25 +138,8 @@ const AccommodationPage = () => {
   };
 
   const onSearch = async (value) => {
-    console.log("onSearch", value);
     const query = buildQuery(value);
-    setLoading(true);
-    const res = await getAccommodation(query);
-    if (res.data) {
-      setListAccommodation(res.data.result);
-      setMeta({
-        current: res.data.meta.current,
-        pageSize: res.data.meta.pageSize,
-        pages: res.data.meta.pages,
-        total: res.data.meta.total,
-      });
-    } else {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        description: res.message,
-      });
-    }
-    setLoading(false);
+    dispatch(fetchAccommodation({ query }));
   };
 
   const beforeUpload = (file) => {
@@ -223,28 +192,16 @@ const AccommodationPage = () => {
     SetApartmentId(value);
     const data = { apartment: value };
     const query = buildQuery(data);
-    setLoading(true);
-    const res = await getAccommodation(query);
-    if (res.data) {
-      setListAccommodation(res.data.result);
-      setMeta({
-        current: res.data.meta.current,
-        pageSize: res.data.meta.pageSize,
-        pages: res.data.meta.pages,
-        total: res.data.meta.total,
-      });
-    } else {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        description: res.message,
-      });
-    }
-    setLoading(false);
+    dispatch(fetchAccommodation({ query }));
   };
 
   const handleClearApartment = () => {
     getData();
     SetApartmentId(undefined);
+    setDefaultSelectApartment({
+      label: "Tất cả căn hộ",
+      value: "tat-ca-can-ho",
+    });
   };
 
   return (
@@ -289,9 +246,9 @@ const AccommodationPage = () => {
           <Row gutter={[8, 8]}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Select
-                placeholder="Mã căn hộ"
                 allowClear
-                defaultValue={"Tất cả căn hộ"}
+                placeholder="Mã căn hộ"
+                defaultValue={defaultSelectApartment}
                 options={apartment_code}
                 onSelect={(value) => handleSelectApartment(value)}
                 onClear={() => handleClearApartment()}
@@ -362,10 +319,9 @@ const AccommodationPage = () => {
         <Col xs={24} sm={24} md={24} lg={0} xl={0}>
           <AccommodationCard
             listAccommodation={listAccommodation}
-            setListAccommodation={setListAccommodation}
             loading={loading}
-            setLoading={setLoading}
             getData={getData}
+            meta={meta}
           />
         </Col>
         <Col xs={0} sm={0} md={0} lg={24} xl={24}>
@@ -373,6 +329,7 @@ const AccommodationPage = () => {
             listAccommodation={listAccommodation}
             loading={loading}
             getData={getData}
+            meta={meta}
           />
         </Col>
       </Row>

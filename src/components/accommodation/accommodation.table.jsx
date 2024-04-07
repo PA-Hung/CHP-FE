@@ -6,26 +6,22 @@ import {
   Popconfirm,
   message,
   Descriptions,
-  Badge,
 } from "antd";
-import { deleteAccommodation, getAccommodation } from "../../utils/api";
+import { deleteAccommodation } from "../../utils/api";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import UpdateModal from "./update.modal";
 import CheckAccess from "@/utils/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
+import { useDispatch } from "react-redux";
+import { accommodationOnchangeTable } from "../../redux/slice/accommodationSlice";
 
 const AccommodationTable = (props) => {
-  const { listAccommodation, loading, getData } = props;
+  const { listAccommodation, loading, getData, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
-  const [meta, setMeta] = useState({
-    current: 1,
-    pageSize: 10,
-    pages: 0,
-    total: 0,
-  });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getData();
@@ -183,15 +179,6 @@ const AccommodationTable = (props) => {
     </Descriptions>
   );
 
-  const handleOnchangeTable = (page, pageSize) => {
-    setMeta({
-      current: page,
-      pageSize: pageSize,
-      pages: meta.pages,
-      total: meta.total,
-    });
-  };
-
   return (
     <>
       <Table
@@ -213,7 +200,15 @@ const AccommodationTable = (props) => {
           total: meta.total,
           showTotal: (total, range) =>
             `${range[0]} - ${range[1]} of ${total} items`,
-          onChange: (page, pageSize) => handleOnchangeTable(page, pageSize),
+          onChange: (page, pageSize) =>
+            dispatch(
+              accommodationOnchangeTable({
+                current: page,
+                pageSize: pageSize,
+                pages: meta.pages,
+                total: meta.total,
+              })
+            ),
           showSizeChanger: true,
           defaultPageSize: meta.pageSize,
         }}
