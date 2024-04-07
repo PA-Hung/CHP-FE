@@ -14,7 +14,7 @@ const CreateUserModal = (props) => {
   };
 
   const groupBySelectRole = (data) => {
-    return data.map((item) => ({ value: item.name, key: item.name }));
+    return data.map((item) => ({ value: item._id, label: item.name }));
   };
 
   useEffect(() => {
@@ -28,9 +28,12 @@ const CreateUserModal = (props) => {
   }, []);
 
   const onFinish = async (values) => {
-    // const { name, phone, password, role } = values
-    // const data = { name, phone, password, role }
-    const data = values; // viết gọn của 2 dòng trên
+    const data = {
+      name: values.name,
+      phone: values.phone,
+      password: values.password,
+      role: values.role,
+    };
     const res = await postCreateUser(data);
     if (res.data) {
       await getData();

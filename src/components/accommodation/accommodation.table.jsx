@@ -22,7 +22,7 @@ const AccommodationTable = (props) => {
   const [updateData, setUpdateData] = useState(null);
   const [meta, setMeta] = useState({
     current: 1,
-    pageSize: 15,
+    pageSize: 10,
     pages: 0,
     total: 0,
   });
@@ -178,7 +178,7 @@ const AccommodationTable = (props) => {
         {record.reason}
       </Descriptions.Item>
       <Descriptions.Item label="Mã căn hộ">
-        {record.apartment}
+        {record.apartment.code}
       </Descriptions.Item>
     </Descriptions>
   );

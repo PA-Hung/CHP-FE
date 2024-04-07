@@ -17,10 +17,28 @@ export const updateAccommodation = (data) => {
     return axios.patch('api/v1/accommodation', data)
 }
 
+// Apartment ------------------------------------
+export const postApartment = (data) => {
+    return axios.post('api/v1/apartment', data)
+}
+
+export const getApartment = (query) => {
+    return axios.get(`api/v1/apartment?${query}`)
+}
+
+export const deleteApartment = (id) => {
+    return axios.delete(`api/v1/apartment/${id}`)
+}
+
+export const updateApartment = (data) => {
+    return axios.patch('api/v1/apartment', data)
+}
+
 // import/export Excel
-export const importExcel = (fileExcel) => {
+export const importExcel = (fileExcel, apartmentId) => {
     const formData = new FormData();
     formData.append("fileExcel", fileExcel);
+    formData.append("apartmentId", apartmentId);
     return axios({
         method: 'post',
         url: '/api/v1/excel/import',

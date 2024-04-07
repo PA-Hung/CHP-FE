@@ -10,7 +10,7 @@ import {
   Row,
   Col,
 } from "antd";
-import { updateAccommodation } from "../../utils/api";
+import { getApartment, updateAccommodation } from "../../utils/api";
 import dayjs from "dayjs";
 
 const UpdateModal = (props) => {
@@ -25,6 +25,21 @@ const UpdateModal = (props) => {
   const [IdentificationNumber, setIdentificationNumber] = useState(false);
   const [Passport, setPassport] = useState(false);
   const [Documents, setDocuments] = useState(false);
+  const [apartment_code, SetApartment_code] = useState([]);
+
+  useEffect(() => {
+    const init = async () => {
+      const res = await getApartment(`current=1&pageSize=100`);
+      if (res.data?.result) {
+        SetApartment_code(groupBySelectApartment(res.data?.result));
+      }
+    };
+    init();
+  }, []);
+
+  const groupBySelectApartment = (data) => {
+    return data.map((item) => ({ value: item._id, label: item.code }));
+  };
 
   useEffect(() => {
     if (updateData) {
@@ -58,7 +73,7 @@ const UpdateModal = (props) => {
         arrival: formatArrival,
         departure: formatDeparture,
         reason: updateData.reason,
-        apartment: updateData.apartment,
+        apartment: updateData.apartment.code,
       });
     }
   }, [updateData]);
@@ -174,6 +189,19 @@ const UpdateModal = (props) => {
           <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
+                label="Mã căn hộ"
+                name="apartment"
+                rules={[{ required: true, message: "Chọn mã căn hộ !" }]}
+              >
+                <Select
+                  placeholder="Chọn mã căn hộ"
+                  allowClear
+                  options={apartment_code}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
+              <Form.Item
                 label="Họ tên"
                 name="name"
                 rules={[{ required: true, message: "Nhập họ tên !" }]}
@@ -212,6 +240,8 @@ const UpdateModal = (props) => {
                 />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="CMND/CCCD"
@@ -223,8 +253,6 @@ const UpdateModal = (props) => {
                 <Input type="text" />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="Hộ chiếu"
@@ -252,13 +280,13 @@ const UpdateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item label="Nghề nghiệp" name="job">
                 <Input />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item label="Nơi làm việc" name="workplace">
                 <Input maxLength={200} />
@@ -278,6 +306,8 @@ const UpdateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="Quốc gia"
@@ -287,8 +317,6 @@ const UpdateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item label="Tỉnh thành" name="province">
                 <Input />
@@ -304,13 +332,13 @@ const UpdateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item label="Số nhà" name="address">
                 <Input maxLength={400} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="Loại cư trú"
@@ -342,15 +370,10 @@ const UpdateModal = (props) => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
-              <Form.Item label="Lý do lưu trú" name="reason">
-                <Input maxLength={250} />
-              </Form.Item>
-            </Col>
           </Row>
           <Row gutter={[16, 8]} justify="left" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
-              <Form.Item label="Mã căn hộ" name="apartment">
+              <Form.Item label="Lý do lưu trú" name="reason">
                 <Input maxLength={250} />
               </Form.Item>
             </Col>

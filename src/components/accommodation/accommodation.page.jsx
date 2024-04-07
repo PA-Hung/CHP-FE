@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Button, notification, message, Upload, Row, Col, Flex } from "antd";
+import {
+  Button,
+  notification,
+  message,
+  Upload,
+  Row,
+  Col,
+  Flex,
+  Select,
+} from "antd";
 import queryString from "query-string";
 import {
   PlusOutlined,
@@ -8,7 +17,12 @@ import {
   DownloadOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { exportExcel, getAccommodation, importExcel } from "../../utils/api";
+import {
+  exportExcel,
+  getAccommodation,
+  getApartment,
+  importExcel,
+} from "../../utils/api";
 import CreateModal from "./create.modal";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -34,8 +48,24 @@ const AccommodationPage = () => {
   });
   const isAdmin = useSelector((state) => state.auth.user.role);
   const user = useSelector((state) => state.auth.user);
+  const [apartment_code, SetApartment_code] = useState();
+  const [apartmentId, SetApartmentId] = useState(undefined);
 
   const [loadingUpload, setLoadingUpload] = useState(false);
+
+  useEffect(() => {
+    const init = async () => {
+      const res = await getApartment(`current=1&pageSize=100`);
+      if (res.data?.result) {
+        SetApartment_code(groupBySelectApartment(res.data?.result));
+      }
+    };
+    init();
+  }, []);
+
+  const groupBySelectApartment = (data) => {
+    return data.map((item) => ({ value: item._id, label: item.code }));
+  };
 
   useEffect(() => {
     getData();
@@ -74,6 +104,7 @@ const AccommodationPage = () => {
     if (isAdmin.name !== "SUPER_ADMIN") {
       if (user?._id) clone.userId = `/${user._id}/i`;
     }
+    if (clone.apartment) clone.apartment = `/${clone.apartment}/i`;
     if (clone.phone) clone.phone = `/${clone.phone}/i`;
     if (clone.name) clone.name = `/${clone.name}/i`;
     if (clone.passport) clone.passport = `/${clone.passport}/i`;
@@ -121,6 +152,7 @@ const AccommodationPage = () => {
   };
 
   const onSearch = async (value) => {
+    console.log("onSearch", value);
     const query = buildQuery(value);
     setLoading(true);
     const res = await getAccommodation(query);
@@ -145,6 +177,7 @@ const AccommodationPage = () => {
     const isXLSX =
       file.type ===
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
     if (!isXLSX) {
       message.error(`${file.name} không phải là file excel`);
     }
@@ -152,13 +185,17 @@ const AccommodationPage = () => {
   };
 
   const handleUploadFileExcel = async ({ file }) => {
-    const response = await importExcel(file, "fileExcel");
-    if (response.statusCode === 201) {
-      message.success(response.data.message);
-      setLoadingUpload(false);
-      getData();
+    if (apartmentId === undefined) {
+      message.error(`Bạn phải chọn mã căn hộ !`);
     } else {
-      message.error(response.data.message);
+      const response = await importExcel(file, apartmentId);
+      if (response.statusCode === 201) {
+        message.success(response.data.message);
+        setLoadingUpload(false);
+        handleClearApartment();
+      } else {
+        message.error(response.data.message);
+      }
     }
   };
 
@@ -180,6 +217,34 @@ const AccommodationPage = () => {
       console.error("Export error:", error);
       // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
     }
+  };
+
+  const handleSelectApartment = async (value) => {
+    SetApartmentId(value);
+    const data = { apartment: value };
+    const query = buildQuery(data);
+    setLoading(true);
+    const res = await getAccommodation(query);
+    if (res.data) {
+      setListAccommodation(res.data.result);
+      setMeta({
+        current: res.data.meta.current,
+        pageSize: res.data.meta.pageSize,
+        pages: res.data.meta.pages,
+        total: res.data.meta.total,
+      });
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: res.message,
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleClearApartment = () => {
+    getData();
+    SetApartmentId(undefined);
   };
 
   return (
@@ -213,11 +278,23 @@ const AccommodationPage = () => {
                   Thêm mới
                 </Button>
               </Col>
+              <Col xs={24} sm={0} md={0} lg={0} xl={0}>
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={() => setIsCreateModalOpen(true)}
+                />
+              </Col>
             </CheckAccess>
-            <Col xs={24} sm={0} md={0} lg={0} xl={0}>
-              <Button
-                icon={<PlusOutlined />}
-                onClick={() => setIsCreateModalOpen(true)}
+          </Row>
+          <Row gutter={[8, 8]}>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+              <Select
+                placeholder="Mã căn hộ"
+                allowClear
+                defaultValue={"Tất cả căn hộ"}
+                options={apartment_code}
+                onSelect={(value) => handleSelectApartment(value)}
+                onClear={() => handleClearApartment()}
               />
             </Col>
           </Row>
@@ -303,6 +380,8 @@ const AccommodationPage = () => {
         getData={getData}
         isCreateModalOpen={isCreateModalOpen}
         setIsCreateModalOpen={setIsCreateModalOpen}
+        apartment_code={apartment_code}
+        SetApartment_code={SetApartment_code}
       />
       <SearchModal
         isSearchModalOpen={isSearchModalOpen}

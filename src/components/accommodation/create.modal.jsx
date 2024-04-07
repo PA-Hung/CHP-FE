@@ -9,11 +9,17 @@ import {
   Row,
   Col,
 } from "antd";
-import { postCreateAccommodation } from "../../utils/api";
+import { getApartment, postCreateAccommodation } from "../../utils/api";
 import { useEffect, useState } from "react";
 
 const CreateModal = (props) => {
-  const { getData, isCreateModalOpen, setIsCreateModalOpen } = props;
+  const {
+    getData,
+    isCreateModalOpen,
+    setIsCreateModalOpen,
+    apartment_code,
+    SetApartment_code,
+  } = props;
   const [form] = Form.useForm();
 
   const resetModal = () => {
@@ -49,8 +55,7 @@ const CreateModal = (props) => {
   }, [form]);
 
   const onFinish = async (values) => {
-    // const { name, phone } = values;
-    // const data = { name, phone };
+    //console.log("values", values);
     const data = values; // viết gọn của 2 dòng trên
     const res = await postCreateAccommodation(data);
     if (res.data) {
@@ -83,6 +88,19 @@ const CreateModal = (props) => {
           form={form}
         >
           <Row gutter={[16, 8]} justify="center" wrap={true}>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
+              <Form.Item
+                label="Mã căn hộ"
+                name="apartment"
+                rules={[{ required: true, message: "Chọn mã căn hộ !" }]}
+              >
+                <Select
+                  placeholder="Chọn mã căn hộ"
+                  allowClear
+                  options={apartment_code}
+                />
+              </Form.Item>
+            </Col>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="Họ tên"
@@ -123,6 +141,8 @@ const CreateModal = (props) => {
                 />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="CMND/CCCD"
@@ -134,8 +154,6 @@ const CreateModal = (props) => {
                 <Input type="text" />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="Hộ chiếu"
@@ -163,13 +181,13 @@ const CreateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item label="Nghề nghiệp" name="job">
                 <Input />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item label="Nơi làm việc" name="workplace">
                 <Input maxLength={200} />
@@ -189,6 +207,8 @@ const CreateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="Quốc gia"
@@ -198,8 +218,6 @@ const CreateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item label="Tỉnh thành" name="province">
                 <Input />
@@ -215,13 +233,13 @@ const CreateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item label="Số nhà" name="address">
                 <Input maxLength={400} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[16, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <Form.Item
                 label="Loại cư trú"
@@ -253,15 +271,10 @@ const CreateModal = (props) => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
-              <Form.Item label="Lý do lưu trú" name="reason">
-                <Input maxLength={250} />
-              </Form.Item>
-            </Col>
           </Row>
           <Row gutter={[16, 8]} justify="left" wrap={true}>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
-              <Form.Item label="Mã căn hộ" name="apartment">
+              <Form.Item label="Lý do lưu trú" name="reason">
                 <Input maxLength={250} />
               </Form.Item>
             </Col>

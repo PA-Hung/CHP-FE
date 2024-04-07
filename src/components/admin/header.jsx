@@ -72,7 +72,7 @@ const HeaderAdmin = (props) => {
           paddingRight: 20,
           justifyContent: "space-between",
           alignItems: "center",
-          backgroundColor: themeMode === "light" ? "white" : "#141414",
+          backgroundColor: themeMode === "light" ? "#f5f5f5" : "#141414",
           position: "sticky",
           top: 0,
           zIndex: 1,
