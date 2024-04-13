@@ -73,6 +73,7 @@ const Login = () => {
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
               placeholder="Phone"
+              autoComplete="username"
             />
           </Form.Item>
           <Form.Item

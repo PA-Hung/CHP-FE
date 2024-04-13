@@ -7,7 +7,7 @@ const UpdateUserModal = (props) => {
     updateData,
     isUpdateModalOpen,
     setIsUpdateModalOpen,
-    getData,
+    reloadTable,
     setUpdateData,
   } = props;
   const [form] = Form.useForm();
@@ -48,7 +48,7 @@ const UpdateUserModal = (props) => {
 
     const res = await updateUser(data);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Cập nhật người dùng thành công !");
       resetModal();
     } else {

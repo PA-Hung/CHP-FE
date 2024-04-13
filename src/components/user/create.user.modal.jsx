@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import _ from "lodash";
 
 const CreateUserModal = (props) => {
-  const { getData, isCreateModalOpen, setIsCreateModalOpen } = props;
+  const { reloadTable, isCreateModalOpen, setIsCreateModalOpen } = props;
   const [form] = Form.useForm();
   const [role, setRole] = useState([]);
 
@@ -36,7 +36,7 @@ const CreateUserModal = (props) => {
     };
     const res = await postCreateUser(data);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Tạo mới người dùng thành công !");
       resetModal();
     } else {

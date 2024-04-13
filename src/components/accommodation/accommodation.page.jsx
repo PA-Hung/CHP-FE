@@ -179,18 +179,47 @@ const AccommodationPage = () => {
 
   const handleExport = async () => {
     try {
-      const response = await exportExcel(apartmentId);
-      if (response.statusCode === 200) {
-        // Chuyển đổi dữ liệu JSON thành worksheet của workbook
-        const ws = XLSX.utils.json_to_sheet(response.data);
+      // chuyển định dạng ngày tháng năm chuẩn ISO8601 thành DD/MM/YYY
+      const formatDate = (date) => {
+        return dayjs(date).format("DD/MM/YYYY");
+      };
 
-        // Tạo workbook và append worksheet vào đó
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
+      let stt = 1; // Biến đếm số thứ tự
+      // Prepare worksheet data, handling dates appropriately
+      const worksheetData = listAccommodation.map((accommodation) => ({
+        STT: stt++,
+        "Họ và tên (*)": accommodation.name,
+        "Ngày, tháng, năm sinh (*)": formatDate(accommodation.birthday),
+        "Giới tính (*)": accommodation.gender,
+        "CMND/ CCCD/ Số định danh (*)": accommodation.identification_number,
+        "Số hộ chiếu (*)": accommodation.passport,
+        "Giấy tờ khác (*)": accommodation.documents,
+        "Số điện thoại": accommodation.phone,
+        "Nghề nghiệp": accommodation.job,
+        "Nơi làm việc": accommodation.workplace,
+        "Dân tộc": accommodation.ethnicity,
+        "Quốc tịch (*)": accommodation.nationality,
+        "Địa chỉ – Quốc gia (*)": accommodation.country,
+        "Địa chỉ – Tỉnh thành": accommodation.province,
+        "Địa chỉ – Quận huyện": accommodation.district,
+        "Địa chỉ – Phường xã": accommodation.ward,
+        "Địa chỉ – Số nhà": accommodation.address,
+        "Loại cư trú (*)": accommodation.residential_status,
+        "Thời gian lưu trú (đến ngày) (*)": formatDate(accommodation.arrival),
+        "Thời gian lưu trú (đi ngày)": accommodation.departure
+          ? formatDate(accommodation.departure)
+          : "",
+        "Lý do lưu trú": accommodation.reason,
+        "Số phòng/Mã căn hộ": accommodation.apartment.code,
+        // Add other fields as needed
+      }));
 
-        // Tạo tệp Excel và tải về
-        XLSX.writeFile(wb, "exported_data.xlsx");
-      }
+      const ws = XLSX.utils.json_to_sheet(worksheetData);
+      // Tạo workbook và append worksheet vào đó
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
+      // Tạo tệp Excel và tải về
+      XLSX.writeFile(wb, "exported_data.xlsx");
     } catch (error) {
       console.error("Export error:", error);
       // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
@@ -236,6 +265,9 @@ const AccommodationPage = () => {
               <Col xs={24} sm={24} md={12} lg={8} xl={4}>
                 <Popconfirm
                   title="Chọn mã căn hộ trước khi import"
+                  okText={'Đóng'}
+                  showCancel={false}
+                  onConfirm={() => reloadTable()}
                   description={
                     <Row gutter={[48, 8]} justify="center" wrap={true}>
                       <Col xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -268,13 +300,13 @@ const AccommodationPage = () => {
                       </Col>
                     </Row>
                   }
-                  showCancel={false}
+
                 >   <Button
                   icon={
                     loadingUpload ? <LoadingOutlined /> : <ImportOutlined />
                   }
                 >
-                    Import Excel
+                    Nhập Excel
                   </Button></Popconfirm>
               </Col>
             </CheckAccess>
@@ -287,7 +319,7 @@ const AccommodationPage = () => {
                   icon={<DownloadOutlined />}
                   onClick={() => handleExport()}
                 >
-                  Export Excel
+                  Xuất Excel
                 </Button>
               </Col>
             </CheckAccess>

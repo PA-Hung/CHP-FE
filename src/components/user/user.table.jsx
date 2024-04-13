@@ -27,14 +27,27 @@ const UserTable = () => {
   const meta = useSelector((state) => state.user.meta);
   const listUsers = useSelector((state) => state.user.result);
   const dispatch = useDispatch();
+  const [searchValue, setSearchValue] = useState({});
 
   const [updateData, setUpdateData] = useState(null);
 
-  useEffect(() => {
-    getData();
-  }, [meta.current, meta.pageSize]);
 
-  const getData = async () => {
+  useEffect(() => {
+    const initData = async () => {
+      let query;
+      if (searchValue) {
+        query = buildQuery(searchValue);
+      }
+      else {
+        query = buildQuery();
+      }
+      dispatch(fetchUser({ query }));
+    };
+    initData();
+  }, [searchValue, meta.current, meta.pageSize]);
+
+
+  const reloadTable = () => {
     const query = buildQuery();
     dispatch(fetchUser({ query }));
   };
@@ -42,7 +55,7 @@ const UserTable = () => {
   const confirmDelete = async (user) => {
     const res = await deleteUser(user._id);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Xoá người dùng thành công !");
     } else {
       notification.error({
@@ -172,6 +185,7 @@ const UserTable = () => {
   };
 
   const onSearch = async (value) => {
+    setSearchValue(value)
     const query = buildQuery(value);
     dispatch(fetchUser({ query }));
   };
@@ -256,13 +270,13 @@ const UserTable = () => {
         />
         {/*  // dataSource phải là mảng Array [] */}
         <CreateUserModal
-          getData={getData}
+          reloadTable={reloadTable}
           isCreateModalOpen={isCreateModalOpen}
           setIsCreateModalOpen={setIsCreateModalOpen}
         />
         <UpdateUserModal
           updateData={updateData}
-          getData={getData}
+          reloadTable={reloadTable}
           isUpdateModalOpen={isUpdateModalOpen}
           setIsUpdateModalOpen={setIsUpdateModalOpen}
           setUpdateData={setUpdateData}
