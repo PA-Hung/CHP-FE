@@ -1,19 +1,18 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { Table, Button, notification, Popconfirm, message } from "antd";
 import { colorMethod } from "@/utils/uils";
-import { deleteAccommodation } from "@/utils/api";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import UpdateModal from "./update.modal";
-import { permissionOnchangeTable } from "../../redux/slice/permissionSlice";
+import { permissionOnchangeTable } from "@/redux/slice/permissionSlice";
 import { useDispatch } from "react-redux";
-import { deletePermission } from "../../utils/api";
-import { ALL_PERMISSIONS } from "../../utils/permission.module";
-import CheckAccess from "../../utils/check.access";
+import { deletePermission } from "@/utils/api";
+import { ALL_PERMISSIONS } from "@/utils/permission.module";
+import CheckAccess from "@/utils/check.access";
 
 const PermissionTable = (props) => {
-  const { permissions, isFetching, getData, meta } = props;
+  const { permissions, isFetching, meta, reloadTable } = props;
   const dispatch = useDispatch();
 
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -22,8 +21,8 @@ const PermissionTable = (props) => {
   const confirmDelete = async (permission) => {
     const res = await deletePermission(permission._id);
     if (res.data) {
-      getData();
-      message.success("Xoá lưu quyền hạn công !");
+      message.success("Xoá quyền hạn thành công !");
+      reloadTable();
     } else {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -157,7 +156,7 @@ const PermissionTable = (props) => {
               permissionOnchangeTable({
                 current: page,
                 pageSize: pageSize,
-                pages: meta.pages,
+                pages: meta.page,
                 total: meta.total,
               })
             ),
@@ -167,10 +166,9 @@ const PermissionTable = (props) => {
       />
       <UpdateModal
         updateData={updateData}
-        getData={getData}
+        reloadTable={reloadTable}
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
-        setUpdateData={setUpdateData}
       />
     </>
   );

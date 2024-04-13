@@ -8,18 +8,13 @@ import {
   Row,
   Col,
 } from "antd";
-import { createPermission, updatePermission } from "../../utils/api";
+import { updatePermission } from "@/utils/api";
 import { useEffect } from "react";
-import { ALL_MODULES } from "../../utils/permission.module";
+import { ALL_MODULES } from "@/utils/permission.module";
 
 const UpdateModal = (props) => {
-  const {
-    getData,
-    isUpdateModalOpen,
-    setIsUpdateModalOpen,
-    updateData,
-    setUpdateData,
-  } = props;
+  const { reloadTable, isUpdateModalOpen, setIsUpdateModalOpen, updateData } =
+    props;
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -42,7 +37,7 @@ const UpdateModal = (props) => {
     const data = values;
     const res = await updatePermission(data, updateData._id);
     if (res.data) {
-      getData();
+      reloadTable();
       message.success("Cập nhật quyền hạn thành công !");
       resetModal();
     } else {

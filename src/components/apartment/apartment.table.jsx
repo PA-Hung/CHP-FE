@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Table, Button, notification, Popconfirm, message } from "antd";
 import { deleteApartment } from "../../utils/api";
 import dayjs from "dayjs";
@@ -11,19 +11,15 @@ import { useDispatch } from "react-redux";
 import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
 
 const ApartmentTable = (props) => {
-  const { listApartment, loading, getData, meta } = props;
+  const { listApartment, loading, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    getData();
-  }, [meta.current, meta.pageSize]);
-
   const confirmDelete = async (user) => {
     const res = await deleteApartment(user._id);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Xoá căn hộ thành công !");
     } else {
       notification.error({
@@ -58,39 +54,39 @@ const ApartmentTable = (props) => {
       render: (record) => {
         return (
           <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
-            {/* <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.ACCOMMODATION.UPDATE}
-              hideChildren
-            > */}
-            <div>
-              <Button
-                danger
-                onClick={() => {
-                  setIsUpdateModalOpen(true);
-                  setUpdateData(record);
-                }}
-              >
-                Cập nhật
-              </Button>
-            </div>
-            {/* </CheckAccess>
             <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.ACCOMMODATION.DELETE}
+              FeListPermission={ALL_PERMISSIONS.APARTMENT.UPDATE}
               hideChildren
-            > */}
-            <div>
-              <Popconfirm
-                title={`Bạn muốn xoá căn hộ ${record.code} không ?`}
-                onConfirm={() => confirmDelete(record)}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Button type={"primary"} danger>
-                  Xoá
+            >
+              <div>
+                <Button
+                  danger
+                  onClick={() => {
+                    setIsUpdateModalOpen(true);
+                    setUpdateData(record);
+                  }}
+                >
+                  Cập nhật
                 </Button>
-              </Popconfirm>
-            </div>
-            {/* </CheckAccess> */}
+              </div>
+            </CheckAccess>
+            <CheckAccess
+              FeListPermission={ALL_PERMISSIONS.APARTMENT.DELETE}
+              hideChildren
+            >
+              <div>
+                <Popconfirm
+                  title={`Bạn muốn xoá căn hộ ${record.code} không ?`}
+                  onConfirm={() => confirmDelete(record)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button type={"primary"} danger>
+                    Xoá
+                  </Button>
+                </Popconfirm>
+              </div>
+            </CheckAccess>
           </div>
         );
       },
@@ -129,7 +125,7 @@ const ApartmentTable = (props) => {
       />
       <UpdateModal
         updateData={updateData}
-        getData={getData}
+        reloadTable={reloadTable}
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
         setUpdateData={setUpdateData}

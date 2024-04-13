@@ -12,7 +12,7 @@ import { createPermission } from "../../utils/api";
 import { ALL_MODULES } from "../../utils/permission.module";
 
 const CreateModal = (props) => {
-  const { getData, isCreateModalOpen, setIsCreateModalOpen } = props;
+  const { reloadTable, isCreateModalOpen, setIsCreateModalOpen } = props;
   const [form] = Form.useForm();
 
   const resetModal = () => {
@@ -24,7 +24,7 @@ const CreateModal = (props) => {
     const data = values;
     const res = await createPermission(data);
     if (res.data) {
-      getData();
+      reloadTable();
       message.success("Tạo mới quyền hạn thành công !");
       resetModal();
     } else {

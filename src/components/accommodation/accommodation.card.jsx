@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Collapse,
   notification,
@@ -26,19 +26,16 @@ import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
 
 const AccommodationCard = (props) => {
-  const { listAccommodation, loading, getData, meta } = props;
+  const { listAccommodation, loading, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    getData();
-  }, [meta.current, meta.pageSize]);
 
   const confirmDelete = async (user) => {
     const res = await deleteAccommodation(user._id);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Xoá lưu trú thành công !");
     } else {
       notification.error({
@@ -87,11 +84,12 @@ const AccommodationCard = (props) => {
                 <Meta title={item.name} />
 
                 <hr />
+                <p>Ngày sinh : {dayjs(item.birthday).format("DD/MM/YYYY")}</p>
                 <p>CMND/CCCD : {item.identification_number}</p>
-                <p>Hộ chiếu : {item.passport}</p>
-                <p>Quốc tịch : {item.nationality}</p>
                 <p>Loại cư trú : {item.residential_status}</p>
                 <p>Ngày đến : {dayjs(item.arrival).format("DD/MM/YYYY")}</p>
+                <p>Ngày đi : {dayjs(item.departure).format("DD/MM/YYYY")}</p>
+                <p>Mã căn hộ : {item.apartment.code}</p>
                 <Collapse
                   expandIcon={customExpandIcon}
                   accordion
@@ -151,10 +149,8 @@ const AccommodationCard = (props) => {
                       ),
                       children: (
                         <>
-                          <p>
-                            Ngày sinh :{" "}
-                            {dayjs(item.birthday).format("DD/MM/YYYY")}
-                          </p>
+                          <p>Hộ chiếu : {item.passport}</p>
+                          <p>Quốc tịch : {item.nationality}</p>
                           <p>Giới tính : {item.gender}</p>
                           <p>Giấy tờ khác : {item.documents}</p>
                           <p>Quốc gia : {item.country}</p>
@@ -166,12 +162,8 @@ const AccommodationCard = (props) => {
                           <p>Quận huyện : {item.district}</p>
                           <p>Phường xã : {item.ward}</p>
                           <p>Địa chỉ : {item.address}</p>
-                          <p>
-                            Ngày đi :{" "}
-                            {dayjs(item.departure).format("DD/MM/YYYY")}
-                          </p>
                           <p>Lý do lưu trú : {item.reason}</p>
-                          <p>Mã căn hộ : {item.apartment.code}</p>
+
                         </>
                       ),
                     },
@@ -202,7 +194,7 @@ const AccommodationCard = (props) => {
         />
         <UpdateModal
           updateData={updateData}
-          getData={getData}
+          reloadTable={reloadTable}
           isUpdateModalOpen={isUpdateModalOpen}
           setIsUpdateModalOpen={setIsUpdateModalOpen}
           setUpdateData={setUpdateData}

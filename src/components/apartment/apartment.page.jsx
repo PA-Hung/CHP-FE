@@ -28,12 +28,22 @@ const ApartmentPage = () => {
   const meta = useSelector((state) => state.apartment.meta);
   const listApartment = useSelector((state) => state.apartment.result);
   const dispatch = useDispatch();
+  const [searchValue, setSearchValue] = useState({});
 
   useEffect(() => {
-    getData();
+    const initData = async () => {
+      if (searchValue) {
+        const query = buildQuery(searchValue);
+        dispatch(fetchApartment({ query }));
+      } else {
+        const query = buildQuery();
+        dispatch(fetchApartment({ query }));
+      }
+    };
+    initData();
   }, [meta.current, meta.pageSize]);
 
-  const getData = async () => {
+  const reloadTable = () => {
     const query = buildQuery();
     dispatch(fetchApartment({ query }));
   };
@@ -74,15 +84,20 @@ const ApartmentPage = () => {
   };
 
   const onSearch = async (value) => {
+    setSearchValue(value);
     const query = buildQuery(value);
     dispatch(fetchAccommodation({ query }));
   };
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
-      <div style={{ padding: 20 }}>
-        <Row gutter={[8, 8]} justify="start" wrap={true}>
-          {/* <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+      <CheckAccess
+        FeListPermission={ALL_PERMISSIONS.APARTMENT.GET_PAGINATE}
+        hideChildren
+      >
+        <div style={{ padding: 20 }}>
+          <Row gutter={[8, 8]} justify="start" wrap={true}>
+            {/* <Col xs={24} sm={24} md={12} lg={8} xl={4}>
             <Button
               icon={<SearchOutlined />}
               onClick={() => setIsSearchModalOpen(true)}
@@ -90,49 +105,50 @@ const ApartmentPage = () => {
               Tìm kiếm
             </Button>
           </Col> */}
-          {/* <CheckAccess
-            FeListPermission={ALL_PERMISSIONS.ACCOMMODATION.CREATE}
-            hideChildren
-          > */}
-          <Col xs={24} sm={24} md={12} lg={8} xl={4}>
-            <Button
-              icon={<PlusOutlined />}
-              onClick={() => setIsCreateModalOpen(true)}
+            <CheckAccess
+              FeListPermission={ALL_PERMISSIONS.APARTMENT.CREATE}
+              hideChildren
             >
-              Thêm mới
-            </Button>
-          </Col>
-          {/* </CheckAccess> */}
-        </Row>
-      </div>
-      <Row>
-        {/* <Col xs={24} sm={24} md={24} lg={0} xl={0}>
+              <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={() => setIsCreateModalOpen(true)}
+                >
+                  Thêm mới
+                </Button>
+              </Col>
+            </CheckAccess>
+          </Row>
+        </div>
+        <Row>
+          {/* <Col xs={24} sm={24} md={24} lg={0} xl={0}>
           <AccommodationCard
             listAccommodation={listAccommodation}
             loading={loading}
-            getData={getData}
+            reloadTable ={reloadTable}
             meta={meta}
           />
         </Col> */}
-        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-          <AccommodationTable
-            listApartment={listApartment}
-            loading={loading}
-            getData={getData}
-            meta={meta}
-          />
-        </Col>
-      </Row>
-      <CreateModal
-        getData={getData}
-        isCreateModalOpen={isCreateModalOpen}
-        setIsCreateModalOpen={setIsCreateModalOpen}
-      />
-      <SearchModal
-        isSearchModalOpen={isSearchModalOpen}
-        setIsSearchModalOpen={setIsSearchModalOpen}
-        onSearch={onSearch}
-      />
+          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <AccommodationTable
+              listApartment={listApartment}
+              loading={loading}
+              reloadTable={reloadTable}
+              meta={meta}
+            />
+          </Col>
+        </Row>
+        <CreateModal
+          reloadTable={reloadTable}
+          isCreateModalOpen={isCreateModalOpen}
+          setIsCreateModalOpen={setIsCreateModalOpen}
+        />
+        <SearchModal
+          isSearchModalOpen={isSearchModalOpen}
+          setIsSearchModalOpen={setIsSearchModalOpen}
+          onSearch={onSearch}
+        />
+      </CheckAccess>
     </div>
   );
 };

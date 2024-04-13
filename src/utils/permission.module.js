@@ -23,6 +23,12 @@ export const ALL_PERMISSIONS = {
         UPDATE: { method: "PATCH", apiPath: '/api/v1/accommodation/:id', module: "ACCOMMODATION" },
         DELETE: { method: "DELETE", apiPath: '/api/v1/accommodation/:id', module: "ACCOMMODATION" },
     },
+    APARTMENT: {
+        GET_PAGINATE: { method: "GET", apiPath: '/api/v1/apartment', module: "APARTMENT" },
+        CREATE: { method: "POST", apiPath: '/api/v1/apartment', module: "APARTMENT" },
+        UPDATE: { method: "PATCH", apiPath: '/api/v1/apartment/:id', module: "APARTMENT" },
+        DELETE: { method: "DELETE", apiPath: '/api/v1/apartment/:id', module: "APARTMENT" },
+    },
     EXCEL: {
         IMPORT: { method: "IMPORT", apiPath: '/api/v1/excel/import', module: "EXCEL" },
         EXPORT: { method: "EXPORT", apiPath: '/api/v1/excel/export', module: "EXCEL" },

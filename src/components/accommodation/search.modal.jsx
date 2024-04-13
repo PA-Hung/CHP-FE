@@ -1,4 +1,4 @@
-import { Modal, Form, Row, Col, Input, Select } from "antd";
+import { Modal, Form, Row, Col, Input, Select, DatePicker } from "antd";
 import React, { useEffect, useState } from "react";
 import { getUsers, getApartment } from "@/utils/api";
 import { useSelector } from "react-redux";
@@ -72,8 +72,7 @@ const SearchModal = (props) => {
                   style={{ width: "100%" }}
                 >
                   <Select
-                    placeholder="Tất cả host"
-                    defaultValue={{ value: "all-host", label: "Tất cả host" }}
+                    placeholder="Tất cả"
                     options={apartmentUser}
                   />
                 </Form.Item>
@@ -84,16 +83,12 @@ const SearchModal = (props) => {
 
             <Col xs={24} sm={24} md={24} lg={12} xl={6}>
               <Form.Item
-                label="Mã căn hộ"
+                label="Tất cả"
                 name="apartment"
                 style={{ width: "100%" }}
               >
                 <Select
                   placeholder="Mã căn hộ"
-                  defaultValue={{
-                    label: "Tất cả căn hộ",
-                    value: "tat-ca-can-ho",
-                  }}
                   options={apartmentCode}
                 />
               </Form.Item>
@@ -115,13 +110,24 @@ const SearchModal = (props) => {
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={24} lg={12} xl={6}>
-              <Form.Item label="Hộ chiếu" name="passport">
-                <Input placeholder="Nhập hộ chiếu" />
+              <Form.Item
+                label="Ngày đến"
+                name="arrival"
+              >
+                <DatePicker
+                  placeholder="Chọn ngày"
+                  style={{ width: "100%" }}
+                  format={"DD/MM/YYYY"}
+                />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={24} lg={12} xl={6}>
-              <Form.Item label="Số điện thoại" name="phone">
-                <Input placeholder="Nhập số điện thoại" />
+              <Form.Item label="Ngày đi" name="departure">
+                <DatePicker
+                  placeholder="Chọn ngày"
+                  style={{ width: "100%" }}
+                  format={"DD/MM/YYYY"}
+                />
               </Form.Item>
             </Col>
           </Row>

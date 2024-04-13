@@ -2,7 +2,7 @@ import { Modal, Input, notification, Form, message, Row, Col } from "antd";
 import { postApartment } from "@/utils/api";
 
 const CreateModal = (props) => {
-  const { getData, isCreateModalOpen, setIsCreateModalOpen } = props;
+  const { reloadTable, isCreateModalOpen, setIsCreateModalOpen } = props;
   const [form] = Form.useForm();
 
   const resetModal = () => {
@@ -15,7 +15,7 @@ const CreateModal = (props) => {
     const data = values; // viết gọn của 2 dòng trên
     const res = await postApartment(data);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Tạo mới căn hộ thành công !");
       resetModal();
     } else {

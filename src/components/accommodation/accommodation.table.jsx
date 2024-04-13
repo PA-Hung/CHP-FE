@@ -18,19 +18,15 @@ import { useDispatch } from "react-redux";
 import { accommodationOnchangeTable } from "../../redux/slice/accommodationSlice";
 
 const AccommodationTable = (props) => {
-  const { listAccommodation, loading, getData, meta } = props;
+  const { listAccommodation, loading, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    getData();
-  }, [meta.current, meta.pageSize]);
-
   const confirmDelete = async (user) => {
     const res = await deleteAccommodation(user._id);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Xoá lưu trú thành công !");
     } else {
       notification.error({
@@ -71,19 +67,17 @@ const AccommodationTable = (props) => {
       },
     },
     {
+      title: "Ngày sinh",
+      dataIndex: "birthday",
+      key: "birthday",
+      render: (_value, record) => {
+        return <div>{dayjs(record.birthday).format("DD/MM/YYYY")}</div>;
+      },
+    },
+    {
       title: "CMND/CCCD",
       dataIndex: "identification_number",
       key: "identification_number",
-    },
-    {
-      title: "Hộ chiếu",
-      dataIndex: "passport",
-      key: "passport",
-    },
-    {
-      title: "Quốc tịch",
-      dataIndex: "nationality",
-      key: "nationality",
     },
     {
       title: "Loại cư trú",
@@ -96,6 +90,22 @@ const AccommodationTable = (props) => {
       key: "arrival",
       render: (_value, record) => {
         return <div>{dayjs(record.arrival).format("DD/MM/YYYY")}</div>;
+      },
+    },
+    {
+      title: "Ngày đi",
+      dataIndex: "departure ",
+      key: "departure ",
+      render: (_value, record) => {
+        return <div>{record.departure ? dayjs(record.departure).format("DD/MM/YYYY") : ""}</div>;
+      },
+    },
+    {
+      title: "Mã căn hộ",
+      dataIndex: "apartment",
+      key: "apartment",
+      render: (_value, record) => {
+        return <div>{record.apartment.code}</div>;
       },
     },
     {
@@ -144,8 +154,11 @@ const AccommodationTable = (props) => {
 
   const expandableTable = (record) => (
     <Descriptions title="Thông tin chi tiết" bordered>
-      <Descriptions.Item label="Ngày sinh">
-        {dayjs(record.birthday).format("DD/MM/YYYY")}
+      <Descriptions.Item label="Hộ chiếu">
+        {record.passport}
+      </Descriptions.Item>
+      <Descriptions.Item label="Quốc tịch">
+        {record.nationality}
       </Descriptions.Item>
       <Descriptions.Item label="Giới tính">{record.gender}</Descriptions.Item>
       <Descriptions.Item label="Giấy tờ khác">
@@ -154,7 +167,6 @@ const AccommodationTable = (props) => {
       <Descriptions.Item label="Quốc gia">{record.country}</Descriptions.Item>
       <Descriptions.Item label="Điện thoại">{record.phone}</Descriptions.Item>
       <Descriptions.Item label="Nghề nghiệp">{record.job}</Descriptions.Item>
-
       <Descriptions.Item label="Nơi làm việc">
         {record.workplace}
       </Descriptions.Item>
@@ -167,15 +179,10 @@ const AccommodationTable = (props) => {
       </Descriptions.Item>
       <Descriptions.Item label="Phường xã">{record.ward}</Descriptions.Item>
       <Descriptions.Item label="Địa chỉ">{record.address}</Descriptions.Item>
-      <Descriptions.Item label="Ngày đi ">
-        {dayjs(record.departure).format("DD/MM/YYYY")}
-      </Descriptions.Item>
       <Descriptions.Item label="Lý do lưu trú">
         {record.reason}
       </Descriptions.Item>
-      <Descriptions.Item label="Mã căn hộ">
-        {record.apartment.code}
-      </Descriptions.Item>
+
     </Descriptions>
   );
 
@@ -215,7 +222,7 @@ const AccommodationTable = (props) => {
       />
       <UpdateModal
         updateData={updateData}
-        getData={getData}
+        reloadTable={reloadTable}
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
         setUpdateData={setUpdateData}

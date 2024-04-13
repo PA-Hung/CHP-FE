@@ -136,6 +136,12 @@ const LayoutAdmin = () => {
           item.method === ALL_PERMISSIONS.ACCOMMODATION.GET_PAGINATE.method
       );
 
+      const viewApartment = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.APARTMENT.GET_PAGINATE.apiPath &&
+          item.method === ALL_PERMISSIONS.APARTMENT.GET_PAGINATE.method
+      );
+
       const viewRole = userPermissions.find(
         (item) =>
           item.apiPath === ALL_PERMISSIONS.ROLES.GET_PAGINATE.apiPath &&
@@ -155,47 +161,51 @@ const LayoutAdmin = () => {
           icon: <HomeOutlined />,
           visible: "true",
         },
-        {
-          label: <Link to={"/admin/apartment"}>Quản lý căn hộ</Link>,
-          key: "apartment",
-          icon: <ApartmentOutlined />,
-          visible: "true",
-        },
+
+        ...(viewApartment
+          ? [
+            {
+              label: <Link to={"/admin/apartment"}>Quản lý căn hộ</Link>,
+              key: "apartment",
+              icon: <ApartmentOutlined />,
+            },
+          ]
+          : []),
         ...(viewAccommodation
           ? [
-              {
-                label: <Link to={"/admin/accommodation"}>Quản lý lưu trú</Link>,
-                key: "accommodation",
-                icon: <CalendarOutlined />,
-              },
-            ]
+            {
+              label: <Link to={"/admin/accommodation"}>Quản lý lưu trú</Link>,
+              key: "accommodation",
+              icon: <CalendarOutlined />,
+            },
+          ]
           : []),
         ...(viewUser
           ? [
-              {
-                label: <Link to="/admin/user">Quản lý thành viên</Link>,
-                key: "user",
-                icon: <UserOutlined />,
-              },
-            ]
+            {
+              label: <Link to="/admin/user">Quản lý thành viên</Link>,
+              key: "user",
+              icon: <UserOutlined />,
+            },
+          ]
           : []),
         ...(viewRole
           ? [
-              {
-                label: <Link to="/admin/role">Quản lý chức danh</Link>,
-                key: "role",
-                icon: <ExceptionOutlined />,
-              },
-            ]
+            {
+              label: <Link to="/admin/role">Quản lý chức danh</Link>,
+              key: "role",
+              icon: <ExceptionOutlined />,
+            },
+          ]
           : []),
         ...(viewPermission
           ? [
-              {
-                label: <Link to="/admin/permission">Quản lý quyền hạn</Link>,
-                key: "permission",
-                icon: <ApiOutlined />,
-              },
-            ]
+            {
+              label: <Link to="/admin/permission">Quản lý quyền hạn</Link>,
+              key: "permission",
+              icon: <ApiOutlined />,
+            },
+          ]
           : []),
         {
           label: <Link onClick={() => handleLogout()}>Đăng xuất</Link>,

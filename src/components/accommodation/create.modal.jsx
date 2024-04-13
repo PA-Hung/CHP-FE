@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 
 const CreateModal = (props) => {
   const {
-    getData,
+    reloadTable,
     isCreateModalOpen,
     setIsCreateModalOpen,
     apartmentCode,
@@ -59,7 +59,7 @@ const CreateModal = (props) => {
     const data = values; // viết gọn của 2 dòng trên
     const res = await postCreateAccommodation(data);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Tạo mới lưu trú thành công !");
       resetModal();
     } else {

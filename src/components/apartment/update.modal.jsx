@@ -7,7 +7,7 @@ const UpdateModal = (props) => {
     updateData,
     isUpdateModalOpen,
     setIsUpdateModalOpen,
-    getData,
+    reloadTable,
     setUpdateData,
   } = props;
   const [form] = Form.useForm();
@@ -28,7 +28,7 @@ const UpdateModal = (props) => {
     };
     const res = await updateApartment(data);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Cập nhật mã căn hộ thành công !");
       resetModal();
     } else {

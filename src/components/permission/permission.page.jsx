@@ -23,11 +23,22 @@ const PermissionPage = () => {
   const permissions = useSelector((state) => state.permission.result);
   const dispatch = useDispatch();
 
+  const [searchValue, setSearchValue] = useState({});
+
   useEffect(() => {
-    getData();
+    const initData = async () => {
+      if (searchValue) {
+        const query = buildQuery(searchValue);
+        dispatch(fetchPermission({ query }));
+      } else {
+        const query = buildQuery();
+        dispatch(fetchPermission({ query }));
+      }
+    };
+    initData();
   }, [meta.current, meta.pageSize]);
 
-  const getData = async () => {
+  const reloadTable = () => {
     const query = buildQuery();
     dispatch(fetchPermission({ query }));
   };
@@ -81,6 +92,7 @@ const PermissionPage = () => {
   };
 
   const onSearch = async (value) => {
+    setSearchValue(value);
     const query = buildQuery(value);
     dispatch(fetchPermission({ query }));
   };
@@ -135,24 +147,23 @@ const PermissionPage = () => {
         <Row>
           <Col xs={24} sm={24} md={24} lg={0} xl={0}>
             {/* <PermissionCard
-            listAccommodation={listAccommodation}
-            setListAccommodation={setListAccommodation}
-            loading={loading}
-            setLoading={setLoading}
-            getData={getData}
-          /> */}
+              permissions={permissions}
+              isFetching={isFetching}
+              meta={meta}
+              reloadTable={reloadTable}
+            /> */}
           </Col>
           <Col xs={0} sm={0} md={0} lg={24} xl={24}>
             <PermissionTable
               permissions={permissions}
               isFetching={isFetching}
-              getData={getData}
               meta={meta}
+              reloadTable={reloadTable}
             />
           </Col>
         </Row>
         <CreateModal
-          getData={getData}
+          reloadTable={reloadTable}
           isCreateModalOpen={isCreateModalOpen}
           setIsCreateModalOpen={setIsCreateModalOpen}
         />

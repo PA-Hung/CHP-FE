@@ -18,7 +18,7 @@ const UpdateModal = (props) => {
     updateData,
     isUpdateModalOpen,
     setIsUpdateModalOpen,
-    getData,
+    reloadTable,
     setUpdateData,
   } = props;
   const [form] = Form.useForm();
@@ -42,6 +42,7 @@ const UpdateModal = (props) => {
   };
 
   useEffect(() => {
+    console.log('updateData', updateData);
     if (updateData) {
       const formatBirthday = dayjs(updateData.birthday).isValid()
         ? dayjs(updateData.birthday)
@@ -73,63 +74,41 @@ const UpdateModal = (props) => {
         arrival: formatArrival,
         departure: formatDeparture,
         reason: updateData.reason,
-        apartment: updateData.apartment.code,
+        apartment: updateData.apartment._id,
       });
     }
   }, [updateData]);
 
   const onFinish = async (values) => {
-    const {
-      name,
-      birthday,
-      gender,
-      identification_number,
-      passport,
-      documents,
-      phone,
-      job,
-      workplace,
-      ethnicity,
-      nationality,
-      country,
-      province,
-      district,
-      ward,
-      address,
-      residential_status,
-      arrival,
-      departure,
-      reason,
-      apartment,
-    } = values;
+
     const data = {
       _id: updateData?._id,
-      name,
-      birthday,
-      gender,
-      identification_number,
-      passport,
-      documents,
-      phone,
-      job,
-      workplace,
-      ethnicity,
-      nationality,
-      country,
-      province,
-      district,
-      ward,
-      address,
-      residential_status,
-      arrival,
-      departure,
-      reason,
-      apartment,
+      name: values.name,
+      birthday: values.birthday,
+      gender: values.gender,
+      identification_number: values.identification_number,
+      passport: values.passport,
+      documents: values.documents,
+      phone: values.phone,
+      job: values.job,
+      workplace: values.workplace,
+      ethnicity: values.ethnicity,
+      nationality: values.nationality,
+      country: values.country,
+      province: values.province,
+      district: values.district,
+      ward: values.ward,
+      address: values.address,
+      residential_status: values.residential_status,
+      arrival: values.arrival,
+      departure: values.departure,
+      reason: values.reason,
+      apartment: values.apartment,
     };
 
     const res = await updateAccommodation(data);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Cập nhật lưu trú thành công !");
       resetModal();
     } else {
