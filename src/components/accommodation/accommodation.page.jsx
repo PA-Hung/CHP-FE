@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SearchModal from "./search.modal";
 import AccommodationTable from "./accommodation.table";
 import AccommodationCard from "./accommodation.card";
-import CheckAccess from "@/utils/check.access";
+import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { fetchAccommodation } from "@/redux/slice/accommodationSlice";
 
@@ -232,7 +232,6 @@ const AccommodationPage = () => {
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.ACCOMMODATION.GET_PAGINATE}
-        hideChildren
       >
         <div style={{ padding: 20 }}>
           <Row gutter={[8, 8]} justify="center" wrap={true}>

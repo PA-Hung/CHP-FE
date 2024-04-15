@@ -11,7 +11,7 @@ import SearchModal from "./search.modal";
 import RoleCard from "./role.card";
 import RoleTable from "./role.table";
 import { fetchRole } from "../../redux/slice/roleSlice";
-import CheckAccess from "../../utils/check.access";
+import CheckAccess from "@/router/check.access"
 import { ALL_PERMISSIONS } from "../../utils/permission.module";
 
 const RolePage = () => {
@@ -78,7 +78,6 @@ const RolePage = () => {
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.ROLES.GET_PAGINATE}
-        hideChildren
       >
         <div style={{ padding: 20 }}>
           <Flex justify="space-between" align="center">

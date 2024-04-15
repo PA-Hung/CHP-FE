@@ -62,9 +62,10 @@ const HeaderAdmin = (props) => {
   ];
 
   return (
-    <>
+    <div style={{ paddingLeft: 10, paddingTop: 10, paddingRight: 10 }}>
       <Header
         style={{
+          borderRadius: 5,
           display: "flex",
           flexDirection: "row",
           height: 50,
@@ -72,11 +73,12 @@ const HeaderAdmin = (props) => {
           paddingRight: 20,
           justifyContent: "space-between",
           alignItems: "center",
-          backgroundColor: themeMode === "light" ? "#f5f5f5" : "#141414",
+          backgroundColor: themeMode === "light" ? "#cfd9f8" : "#141414",
           position: "sticky",
           top: 0,
           zIndex: 1,
           borderBottom: themeMode === "dark" ? "1px solid #313131" : "",
+          boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.3)",
         }}
       >
         <div
@@ -122,7 +124,7 @@ const HeaderAdmin = (props) => {
           </Col>
         </Row>
       </Header>
-    </>
+    </div>
   );
 };
 

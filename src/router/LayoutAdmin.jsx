@@ -28,7 +28,7 @@ import { setHomeKey, setActiveKey } from "@/redux/slice/menuSlice.js";
 import { setThemeMode } from "@/redux/slice/themeSlice";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 
-const { Footer, Sider, Content } = Layout;
+const { Sider, Content } = Layout;
 
 const LayoutAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -254,8 +254,8 @@ const LayoutAdmin = () => {
             bottom: 0,
           }}
         >
+          <Logo />
           <div>
-            <Logo />
             <Menu
               onClick={handleMenu}
               style={{ height: "100vh" }}
@@ -276,6 +276,9 @@ const LayoutAdmin = () => {
             style={{
               marginLeft: 10,
               marginTop: 10,
+              marginRight: 10,
+              boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.3)",
+              borderRadius: 5,
             }}
           >
             <div
@@ -291,9 +294,20 @@ const LayoutAdmin = () => {
           </Content>
           <Row>
             <Col xs={0} sm={0} md={0} lg={24} xl={24}>
-              <Footer style={{ textAlign: "center" }}>
-                CHP App ©2023 Created by Phan Anh Hùng
-              </Footer>
+              <div style={{
+                marginLeft: 10,
+                marginTop: 10,
+                marginRight: 10,
+                marginBottom: 10,
+                boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.3)",
+                borderRadius: 5,
+                height: 20,
+                textAlign: 'center',
+                color: themeMode === "light" ? "black" : "white",
+                backgroundColor: themeMode === "light" ? "#cfd9f8" : "#141414",
+              }}>
+                <span>CHP App ©2023 Created by Phan Anh Hùng</span>
+              </div>
             </Col>
           </Row>
         </Layout>

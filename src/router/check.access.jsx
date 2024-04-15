@@ -20,9 +20,12 @@ const CheckAccess = (props) => {
       );
       if (check) {
         setAllow(true);
-      } else setAllow(false);
+      } else
+        setAllow(false);
     }
   }, [userPermissions]);
+
+  console.log('hideChildren', hideChildren);
 
   return (
     <>
@@ -37,7 +40,9 @@ const CheckAccess = (props) => {
               subTitle="Xin lỗi, bạn không có quyền hạn (permission) truy cập thông tin này"
             />
           ) : (
-            <>{/* render nothing */}</>
+            <>
+              {/* render nothing */}
+            </>
           )}
         </>
       )}

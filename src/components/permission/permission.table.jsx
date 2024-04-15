@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { Table, Button, notification, Popconfirm, message } from "antd";
 import { colorMethod } from "@/utils/uils";
 import dayjs from "dayjs";
@@ -9,7 +9,7 @@ import { permissionOnchangeTable } from "@/redux/slice/permissionSlice";
 import { useDispatch } from "react-redux";
 import { deletePermission } from "@/utils/api";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import CheckAccess from "@/utils/check.access";
+import CheckAccess from "@/router/check.access";
 
 const PermissionTable = (props) => {
   const { permissions, isFetching, meta, reloadTable } = props;

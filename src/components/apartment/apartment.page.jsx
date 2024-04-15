@@ -15,7 +15,7 @@ dayjs.locale("vi");
 import { useDispatch, useSelector } from "react-redux";
 import SearchModal from "./search.modal";
 import AccommodationTable from "./apartment.table";
-import CheckAccess from "@/utils/check.access";
+import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { fetchAccommodation } from "@/redux/slice/accommodationSlice";
 import { fetchApartment } from "@/redux/slice/apartmentSlice";
@@ -93,7 +93,6 @@ const ApartmentPage = () => {
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.APARTMENT.GET_PAGINATE}
-        hideChildren
       >
         <div style={{ padding: 20 }}>
           <Row gutter={[8, 8]} justify="start" wrap={true}>

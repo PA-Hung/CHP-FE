@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import UpdateModal from "./update.modal";
-import CheckAccess from "@/utils/check.access";
+import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
 import { accommodationOnchangeTable } from "../../redux/slice/accommodationSlice";

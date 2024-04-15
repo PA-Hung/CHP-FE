@@ -42,7 +42,7 @@ const UpdateModal = (props) => {
   };
 
   useEffect(() => {
-    console.log('updateData', updateData);
+
     if (updateData) {
       const formatBirthday = dayjs(updateData.birthday).isValid()
         ? dayjs(updateData.birthday)

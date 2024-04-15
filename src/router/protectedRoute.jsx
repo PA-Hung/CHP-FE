@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import NotPermitted from "./not-permitted";
+import Loading from "./loading";
 
 const RoleBaseRoute = (props) => {
   const user = useSelector((state) => state.auth.user);
@@ -15,16 +16,25 @@ const RoleBaseRoute = (props) => {
 
 const ProtectedRoute = (props) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isLoading = useSelector(state => state.auth.isLoading)
 
   return (
     <>
-      {isAuthenticated === true ? (
+      {isLoading === true ?
+        <Loading />
+        :
         <>
-          <RoleBaseRoute>{props.children}</RoleBaseRoute>
+          {isAuthenticated === true ?
+            <>
+              <RoleBaseRoute>
+                {props.children}
+              </RoleBaseRoute>
+            </>
+            :
+            <Navigate to='/login' replace />
+          }
         </>
-      ) : (
-        <Navigate to="/login" replace />
-      )}
+      }
     </>
   );
 };

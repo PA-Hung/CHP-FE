@@ -9,11 +9,14 @@ import AdminPage from "../components/admin/admin.page";
 import RolePage from "../components/role/role.page";
 import PermissionPage from "../components/permission/permission.page";
 import ApartmentPage from "../components/apartment/apartment.page";
+import NotFound from "./not.found";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    // element: <App />,
+    element: <Login />,
+    errorElement: <NotFound />,
   },
   {
     path: "/login",
@@ -22,6 +25,7 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: <LayoutAdmin />,
+    errorElement: <NotFound />,
     children: [
       {
         index: true,

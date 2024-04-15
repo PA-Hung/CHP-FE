@@ -14,7 +14,7 @@ import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import CreateUserModal from "./create.user.modal";
 import UpdateUserModal from "./update.user.modal";
 import { deleteUser } from "@/utils/api";
-import CheckAccess from "@/utils/check.access";
+import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, userOnchangeTable } from "../../redux/slice/userSlice";
@@ -194,7 +194,6 @@ const UserTable = () => {
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.USERS.GET_PAGINATE}
-        hideChildren
       >
         <div
           style={{

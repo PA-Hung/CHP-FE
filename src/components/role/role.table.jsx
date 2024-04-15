@@ -8,7 +8,7 @@ import UpdateModal from "./update.role/update.modal";
 import { useDispatch } from "react-redux";
 import { fetchRoleById, roleOnchangeTable } from "../../redux/slice/roleSlice";
 import { ALL_PERMISSIONS } from "../../utils/permission.module";
-import CheckAccess from "../../utils/check.access";
+import CheckAccess from "@/router/check.access"
 
 const RoleTable = (props) => {
   const { listRole, isFetching, getData, meta } = props;

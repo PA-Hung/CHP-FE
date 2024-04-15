@@ -11,7 +11,7 @@ import SearchModal from "./search.modal";
 import PermissionTable from "./permission.table";
 import PermissionCard from "./permission.card";
 import { fetchPermission } from "../../redux/slice/permissionSlice";
-import CheckAccess from "../../utils/check.access";
+import CheckAccess from "@/router/check.access"
 import { ALL_PERMISSIONS } from "../../utils/permission.module";
 
 const PermissionPage = () => {
@@ -101,7 +101,6 @@ const PermissionPage = () => {
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE}
-        hideChildren
       >
         <div style={{ padding: 20 }}>
           <Flex justify="space-between" align="center">
