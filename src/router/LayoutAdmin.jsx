@@ -254,7 +254,9 @@ const LayoutAdmin = () => {
             bottom: 0,
           }}
         >
-          <Logo />
+          <div>
+            <Logo />
+          </div>
           <div>
             <Menu
               onClick={handleMenu}

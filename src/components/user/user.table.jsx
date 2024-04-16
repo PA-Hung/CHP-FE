@@ -31,7 +31,6 @@ const UserTable = () => {
 
   const [updateData, setUpdateData] = useState(null);
 
-
   useEffect(() => {
     const initData = async () => {
       let query;
@@ -96,6 +95,12 @@ const UserTable = () => {
       render: (_value, record) => {
         return <div>{record?.role?.name}</div>;
       },
+    },
+    {
+      title: "Mã căn hộ",
+      dataIndex: "apartments",
+      key: "apartments",
+      render: apartments => apartments.map(apartment => apartment.code).join(', ')
     },
     {
       title: "Hành động",

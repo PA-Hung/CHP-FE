@@ -25,7 +25,6 @@ const CheckAccess = (props) => {
     }
   }, [userPermissions]);
 
-  console.log('hideChildren', hideChildren);
 
   return (
     <>

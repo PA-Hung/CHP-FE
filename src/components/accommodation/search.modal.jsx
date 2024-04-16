@@ -8,6 +8,7 @@ const SearchModal = (props) => {
   const [apartmentUser, setApartmentUser] = useState();
   const [apartmentCode, setApartmentCode] = useState();
   const isAdmin = useSelector((state) => state.auth.user.role);
+  const user = useSelector((state) => state.auth.user);
 
   const resetModal = () => {
     setIsSearchModalOpen(false);
@@ -34,13 +35,18 @@ const SearchModal = (props) => {
   };
 
   useEffect(() => {
-    const init = async () => {
-      const res = await getApartment(`current=1&pageSize=100`);
-      if (res.data?.result) {
-        setApartmentCode(groupBySelectApartment(res.data?.result));
-      }
-    };
-    init();
+    if (isAdmin.name === "SUPER_ADMIN") {
+      const init = async () => {
+        const res = await getApartment(`current=1&pageSize=100`);
+        if (res.data?.result) {
+          setApartmentCode(groupBySelectApartment(res.data?.result));
+        }
+      };
+      init();
+    } else {
+      setApartmentCode(groupBySelectApartment(user.apartments))
+    }
+
   }, []);
 
   const groupBySelectApartment = (data) => {

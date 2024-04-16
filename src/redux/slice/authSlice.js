@@ -24,6 +24,7 @@ const initialState = {
             name: "",
         },
         permissions: [],
+        apartments: []
     },
 }
 
@@ -39,6 +40,7 @@ const authSlice = createSlice({
             state.user.name = action.payload.name;
             state.user.role = action?.payload?.role;
             state.user.permissions = action?.payload?.permissions;
+            state.user.apartments = action?.payload?.apartments;
         },
         setLogoutAction: (state, action) => {
             localStorage.removeItem('access_token');
@@ -52,6 +54,7 @@ const authSlice = createSlice({
                     name: "",
                 },
                 permissions: [],
+                apartments: []
             }
         },
         setRefreshTokenAction: (state, action) => {
@@ -76,6 +79,7 @@ const authSlice = createSlice({
                 state.user.name = action.payload.user?.name;
                 state.user.role = action?.payload?.user?.role;
                 state.user.permissions = action?.payload?.user?.permissions;
+                state.user.apartments = action?.payload?.user?.apartments;
             }
         })
         builder.addCase(fetchAccount.rejected, (state, action) => {

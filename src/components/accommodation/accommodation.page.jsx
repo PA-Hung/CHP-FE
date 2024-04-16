@@ -41,13 +41,17 @@ const AccommodationPage = () => {
   const [searchValue, setSearchValue] = useState({});
 
   useEffect(() => {
-    const initApartment = async () => {
-      const res = await getApartment(`current=1&pageSize=100`);
-      if (res.data?.result) {
-        setApartmentCode(groupBySelectApartment(res.data?.result));
-      }
-    };
-    initApartment();
+    if (isAdmin.name === "SUPER_ADMIN") {
+      const initApartment = async () => {
+        const res = await getApartment(`current=1&pageSize=100`);
+        if (res.data?.result) {
+          setApartmentCode(groupBySelectApartment(res.data?.result));
+        }
+      };
+      initApartment();
+    } else {
+      setApartmentCode(groupBySelectApartment(user.apartments))
+    }
   }, []);
 
   const groupBySelectApartment = (data) => {

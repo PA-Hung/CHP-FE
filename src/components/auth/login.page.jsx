@@ -80,7 +80,7 @@ const Login = () => {
             <span style={{ paddingTop: "10px", paddingBottom: "10px" }}>sử dụng số điện thoại để đăng ký</span>
             <Form.Item
               style={{ width: '100%', padding: 0, margin: 0 }}
-              name="username"
+              name="usernameReg"
             // rules={[
             //   {
             //     required: true,
@@ -96,7 +96,7 @@ const Login = () => {
                 width: '100%',
                 outline: "none",
                 height: '45px'
-              }} type="username" placeholder="Số điện thoại" />
+              }} type="text" placeholder="Số điện thoại" />
             </Form.Item>
             <Form.Item
               style={{ width: '100%', padding: 0, margin: 0 }}

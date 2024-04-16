@@ -35,18 +35,19 @@ const HeaderAdmin = (props) => {
     }
   };
 
-  const handleUserInfo = () => {
+  const handleUserInfo = (e) => {
     notification.success({
       message: "Chức năng đang được phát triển !",
       placement: "top",
     });
+    e.preventDefault()
   };
 
   const items = [
     {
       key: "1",
       label: (
-        <Link onClick={() => handleUserInfo()}>
+        <Link onClick={(e) => handleUserInfo(e)}>
           <SettingOutlined /> Tài khoản của tôi
         </Link>
       ),

@@ -14,7 +14,7 @@ const Logo = () => {
       }}
     >
       <div>
-        <img src={chpLogo} alt="logo" style={{ width: 100, height: 42, paddingTop: '7px' }} />
+        <img src={chpLogo} alt="logo" style={{ width: 185, height: 72 }} />
       </div>
     </div>
   );

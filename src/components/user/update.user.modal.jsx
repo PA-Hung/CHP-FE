@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Modal, Input, notification, Form, Select, message } from "antd";
-import { getRole, updateUser } from "@/utils/api";
+import { getRole, updateUser, getApartment } from "@/utils/api";
 
 const UpdateUserModal = (props) => {
   const {
@@ -12,6 +12,7 @@ const UpdateUserModal = (props) => {
   } = props;
   const [form] = Form.useForm();
   const [role, setRole] = useState([]);
+  const [apartmentCode, setApartmentCode] = useState([]);
 
   useEffect(() => {
     const init = async () => {
@@ -28,22 +29,38 @@ const UpdateUserModal = (props) => {
   };
 
   useEffect(() => {
+    const initApartment = async () => {
+      const res = await getApartment(`current=1&pageSize=100`);
+      if (res.data?.result) {
+        setApartmentCode(groupBySelectApartment(res.data?.result));
+      }
+    };
+    initApartment();
+  }, []);
+
+  const groupBySelectApartment = (data) => {
+    return data.map((item) => ({ value: item._id, label: item.code }));
+  };
+
+  useEffect(() => {
     if (updateData) {
       form.setFieldsValue({
         name: updateData.name,
         phone: updateData.phone,
         role: updateData.role._id,
+        apartments: groupBySelectApartment(updateData.apartments)
       });
     }
   }, [updateData]);
 
   const onFinish = async (values) => {
-    const { name, phone, role } = values;
+    const { name, phone, role, apartments } = values;
     const data = {
       _id: updateData?._id,
       name,
       phone,
       role,
+      apartments,
     };
 
     const res = await updateUser(data);
@@ -76,7 +93,7 @@ const UpdateUserModal = (props) => {
         maskClosable={false}
       >
         <Form
-          name="create-new-user"
+          name="update-user"
           onFinish={onFinish}
           layout="vertical"
           form={form}
@@ -90,9 +107,7 @@ const UpdateUserModal = (props) => {
               }}
               label="Phone"
               name="phone"
-              rules={[
-                { required: true, message: "Bạn phải nhập số điện thoại !" },
-              ]}
+              rules={[{ required: true, message: "Please input your phone!" }]}
             >
               <Input />
             </Form.Item>
@@ -105,33 +120,27 @@ const UpdateUserModal = (props) => {
               }}
               label="Name"
               name="name"
-              rules={[
-                { required: true, message: "Bạn phải nhập tên người dùng !" },
-              ]}
+              rules={[{ required: true, message: "Please input your name!" }]}
             >
               <Input />
             </Form.Item>
           </Form.Item>
 
           <Form.Item>
+
             <Form.Item
               style={{
                 display: "inline-block",
                 width: "calc(50% - 16px)",
                 marginBottom: 0,
               }}
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: updateData ? false : true,
-                  message: "Bạn phải nhập mật khẩu !",
-                },
-              ]}
-            >
-              <Input.Password disabled={updateData ? true : false} />
-            </Form.Item>
 
+              name="role"
+              label="Role"
+              rules={[{ required: true }]}
+            >
+              <Select placeholder="Chọn quyền !" options={role} />
+            </Form.Item>
             <Form.Item
               style={{
                 display: "inline-block",
@@ -139,11 +148,30 @@ const UpdateUserModal = (props) => {
                 marginLeft: 8,
                 marginBottom: 5,
               }}
-              name="role"
-              label="Role"
-              rules={[{ required: true }]}
+              label="Password"
+              name="password"
+
             >
-              <Select placeholder="Chọn quyền !" allowClear options={role} />
+              <Input.Password disabled={true} />
+            </Form.Item>
+
+          </Form.Item>
+
+          <Form.Item>
+            <Form.Item
+              style={{
+                display: "inline-block",
+                width: "100%",
+                marginBottom: 0,
+              }}
+              label="Mã căn hộ"
+              name="apartments"
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Chọn mã căn hộ !"
+                options={apartmentCode} />
             </Form.Item>
           </Form.Item>
         </Form>

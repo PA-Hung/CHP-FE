@@ -1,5 +1,5 @@
 import { Modal, Input, notification, Form, Select, message } from "antd";
-import { getRole, postCreateUser } from "../../utils/api";
+import { getApartment, getRole, postCreateUser } from "@/utils/api";
 import { useEffect, useState } from "react";
 import _ from "lodash";
 
@@ -7,6 +7,7 @@ const CreateUserModal = (props) => {
   const { reloadTable, isCreateModalOpen, setIsCreateModalOpen } = props;
   const [form] = Form.useForm();
   const [role, setRole] = useState([]);
+  const [apartmentCode, setApartmentCode] = useState();
 
   const resetModal = () => {
     setIsCreateModalOpen(false);
@@ -27,13 +28,29 @@ const CreateUserModal = (props) => {
     init();
   }, []);
 
+  useEffect(() => {
+    const initApartment = async () => {
+      const res = await getApartment(`current=1&pageSize=100`);
+      if (res.data?.result) {
+        setApartmentCode(groupBySelectApartment(res.data?.result));
+      }
+    };
+    initApartment();
+  }, []);
+
+  const groupBySelectApartment = (data) => {
+    return data.map((item) => ({ value: item._id, label: item.code }));
+  };
+
   const onFinish = async (values) => {
     const data = {
       name: values.name,
       phone: values.phone,
       password: values.password,
       role: values.role,
+      apartments: values.apartments,
     };
+
     const res = await postCreateUser(data);
     if (res.data) {
       reloadTable();
@@ -91,11 +108,26 @@ const CreateUserModal = (props) => {
           </Form.Item>
 
           <Form.Item>
+
             <Form.Item
               style={{
                 display: "inline-block",
                 width: "calc(50% - 16px)",
                 marginBottom: 0,
+              }}
+
+              name="role"
+              label="Role"
+              rules={[{ required: true }]}
+            >
+              <Select placeholder="Chọn quyền !" options={role} />
+            </Form.Item>
+            <Form.Item
+              style={{
+                display: "inline-block",
+                width: "calc(50%)",
+                marginLeft: 8,
+                marginBottom: 5,
               }}
               label="Password"
               name="password"
@@ -106,18 +138,19 @@ const CreateUserModal = (props) => {
               <Input.Password />
             </Form.Item>
 
+          </Form.Item>
+
+          <Form.Item>
             <Form.Item
               style={{
                 display: "inline-block",
-                width: "calc(50%)",
-                marginLeft: 8,
-                marginBottom: 5,
+                width: "100%",
+                marginBottom: 0,
               }}
-              name="role"
-              label="Role"
-              rules={[{ required: true }]}
+              label="Mã căn hộ"
+              name="apartments"
             >
-              <Select placeholder="Chọn quyền !" options={role} />
+              <Select mode="multiple" allowClear placeholder="Chọn mã căn hộ !" options={apartmentCode} />
             </Form.Item>
           </Form.Item>
         </Form>
