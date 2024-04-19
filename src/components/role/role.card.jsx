@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Collapse,
   notification,
@@ -16,31 +16,22 @@ import {
   EditOutlined,
   CaretRightOutlined,
 } from "@ant-design/icons";
-import { deleteAccommodation } from "../../utils/api";
+import { deleteAccommodation } from "@/utils/api";
 import UpdateModal from "./update.role/update.modal";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
+import { roleOnchangeTable } from "@/redux/slice/roleSlice";
 dayjs.locale("vi");
 
 const RoleCard = (props) => {
-  const { listAccommodation, loading, getData } = props;
+  const { listRole, isFetching, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
-  const [meta, setMeta] = useState({
-    current: 1,
-    pageSize: 15,
-    pages: 0,
-    total: 0,
-  });
-
-  useEffect(() => {
-    getData();
-  }, [meta.current, meta.pageSize]);
 
   const confirmDelete = async (user) => {
     const res = await deleteAccommodation(user._id);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Xoá lưu trú thành công !");
     } else {
       notification.error({
@@ -52,12 +43,14 @@ const RoleCard = (props) => {
   };
 
   const handleOnchangeTable = (page, pageSize) => {
-    setMeta({
-      current: page,
-      pageSize: pageSize,
-      pages: meta.pages,
-      total: meta.total,
-    });
+    dispatch(
+      roleOnchangeTable({
+        current: page,
+        pageSize: pageSize,
+        pages: meta.pages,
+        total: meta.total,
+      })
+    )
   };
 
   const { Meta } = Card;
@@ -83,13 +76,13 @@ const RoleCard = (props) => {
       }}
     >
       <div>
-        {loading ? (
+        {isFetching ? (
           <div>
             <Spin size="default" />
           </div>
         ) : (
           <Flex wrap="wrap" gap="small">
-            {listAccommodation.map((item) => (
+            {listRole.map((item) => (
               <Card
                 hoverable
                 key={item._id}
@@ -189,11 +182,9 @@ const RoleCard = (props) => {
           defaultPageSize={meta.pageSize}
         />
         <UpdateModal
-          updateData={updateData}
-          getData={getData}
+          reloadTable={reloadTable}
           isUpdateModalOpen={isUpdateModalOpen}
           setIsUpdateModalOpen={setIsUpdateModalOpen}
-          setUpdateData={setUpdateData}
         />
       </div>
     </div>

@@ -8,7 +8,7 @@ import {
   DownloadOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { exportExcel, getApartment, importExcel } from "@/utils/api";
+import { getApartment, importExcel } from "@/utils/api";
 import CreateModal from "./create.modal";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";

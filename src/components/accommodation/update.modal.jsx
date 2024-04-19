@@ -45,7 +45,7 @@ const UpdateModal = (props) => {
 
     if (updateData) {
       const formatBirthday = dayjs(updateData.birthday).isValid()
-        ? dayjs(updateData.birthday)
+        ? dayjs(updateData.birthday).format("DD/MM/YYYY")
         : null;
       const formatArrival = dayjs(updateData.arrival).isValid()
         ? dayjs(updateData.arrival)
@@ -80,6 +80,26 @@ const UpdateModal = (props) => {
   }, [updateData]);
 
   const onFinish = async (values) => {
+
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/;
+    if (!dateRegex.test(values.birthday)) {
+      notification.error({
+        message: "Ngày sinh không hợp lệ",
+        placement: "top",
+        description: "Ngày sinh phải theo định dạng DD/MM/YYYY",
+      });
+      return;
+    }
+    const idNumberRegex = /^\d{9,12}$/;
+    console.log('values.identification_number', values.identification_number);
+    if (!idNumberRegex.test(values.identification_number)) {
+      notification.error({
+        message: "Số CCCD không hợp lệ",
+        placement: "top",
+        description: "Số CCCD phải từ 9 đến 12 số !",
+      });
+      return;
+    }
 
     const data = {
       _id: updateData?._id,
@@ -193,13 +213,9 @@ const UpdateModal = (props) => {
               <Form.Item
                 name="birthday"
                 label="Ngày sinh"
-                rules={[{ required: true, message: "Chọn ngày sinh !" }]}
+                rules={[{ required: true, message: "Nhập ngày sinh !" }]}
               >
-                <DatePicker
-                  placeholder="Chọn ngày"
-                  style={{ width: "100%" }}
-                  format={"DD/MM/YYYY"}
-                />
+                <Input type="text" placeholder="DD/MM/YYYY" />
               </Form.Item>
             </Col>
 

@@ -15,7 +15,7 @@ import _ from "lodash";
 import CreateRolePermissionApi from "./create.role.permission.api";
 
 const CreateModal = (props) => {
-  const { getData, isCreateModalOpen, setIsCreateModalOpen } = props;
+  const { reloadTable, isCreateModalOpen, setIsCreateModalOpen } = props;
   const [form] = Form.useForm();
   const [isActive, setIsActive] = useState(true);
 
@@ -49,7 +49,7 @@ const CreateModal = (props) => {
     if (res.data) {
       message.success("Thêm mới chức danh thành công");
       resetModal();
-      getData();
+      reloadTable();
     } else {
       notification.error({
         message: "Có lỗi xảy ra",

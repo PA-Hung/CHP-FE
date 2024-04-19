@@ -11,18 +11,14 @@ import { ALL_PERMISSIONS } from "../../utils/permission.module";
 import CheckAccess from "@/router/check.access"
 
 const RoleTable = (props) => {
-  const { listRole, isFetching, getData, meta } = props;
+  const { listRole, isFetching, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    getData();
-  }, [meta.current, meta.pageSize]);
 
   const confirmDelete = async (user) => {
     const res = await deleteRole(user._id);
     if (res.data) {
-      await getData();
+      reloadTable();
       message.success("Xoá quyền thành công !");
     } else {
       notification.error({
@@ -155,7 +151,7 @@ const RoleTable = (props) => {
         }}
       />
       <UpdateModal
-        getData={getData}
+        reloadTable={reloadTable}
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
       />

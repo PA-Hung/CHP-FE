@@ -8,16 +8,16 @@ import {
   Col,
   Switch,
 } from "antd";
-import { getPermission, updateRole } from "../../../utils/api";
+import { getPermission, updateRole } from "@/utils/api";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import { resetSingleRole } from "../../../redux/slice/roleSlice";
+import { resetSingleRole } from "@/redux/slice/roleSlice";
 import UpdateRolePermissionApi from "./update.role.permission.api";
 
 const UpdateModal = (props) => {
-  const { getData, isUpdateModalOpen, setIsUpdateModalOpen } = props;
+  const { reloadTable, isUpdateModalOpen, setIsUpdateModalOpen } = props;
   const [form] = Form.useForm();
   const [isActive, setIsActive] = useState(true);
   const singleRole = useSelector((state) => state.role.singleRole);
@@ -54,7 +54,7 @@ const UpdateModal = (props) => {
     if (res.data) {
       message.success("Cập nhật chức danh thành công");
       resetModal();
-      getData();
+      reloadTable();
     } else {
       notification.error({
         message: "Có lỗi xảy ra",

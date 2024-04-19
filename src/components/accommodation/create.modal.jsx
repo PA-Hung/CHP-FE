@@ -55,7 +55,26 @@ const CreateModal = (props) => {
   }, [form]);
 
   const onFinish = async (values) => {
-    //console.log("values", values);
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/;
+    if (!dateRegex.test(values.birthday)) {
+      notification.error({
+        message: "Ngày sinh không hợp lệ",
+        placement: "top",
+        description: "Ngày sinh phải theo định dạng DD/MM/YYYY",
+      });
+      return;
+    }
+    const idNumberRegex = /^\d{9,12}$/;
+    console.log('values.identification_number', values.identification_number);
+    if (!idNumberRegex.test(values.identification_number)) {
+      notification.error({
+        message: "Số CCCD không hợp lệ",
+        placement: "top",
+        description: "Số CCCD phải từ 9 đến 12 số !",
+      });
+      return;
+    }
+
     const data = values; // viết gọn của 2 dòng trên
     const res = await postCreateAccommodation(data);
     if (res.data) {
@@ -115,13 +134,9 @@ const CreateModal = (props) => {
               <Form.Item
                 name="birthday"
                 label="Ngày sinh"
-                rules={[{ required: true, message: "Chọn ngày sinh !" }]}
+                rules={[{ required: true, message: "Nhập ngày sinh !" }]}
               >
-                <DatePicker
-                  placeholder="Chọn ngày"
-                  style={{ width: "100%" }}
-                  format={"DD/MM/YYYY"}
-                />
+                <Input type="text" placeholder="DD/MM/YYYY" />
               </Form.Item>
             </Col>
 
@@ -263,7 +278,11 @@ const CreateModal = (props) => {
               </Form.Item>
             </Col>
             <Col xs={24} sm={12} md={12} lg={6} xl={6}>
-              <Form.Item label="Ngày đi" name="departure">
+              <Form.Item
+                label="Ngày đi"
+                name="departure"
+                rules={[{ required: true, message: "Chọn ngày đi !" }]}
+              >
                 <DatePicker
                   placeholder="Chọn ngày"
                   style={{ width: "100%" }}

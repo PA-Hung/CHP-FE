@@ -22,12 +22,24 @@ const RolePage = () => {
   const meta = useSelector((state) => state.role.meta);
   const listRole = useSelector((state) => state.role.result);
   const dispatch = useDispatch();
+  const [searchValue, setSearchValue] = useState({});
 
   useEffect(() => {
-    getData();
-  }, [meta.current, meta.pageSize]);
+    const initData = async () => {
+      let query;
+      if (searchValue) {
+        query = buildQuery(searchValue);
+      }
+      else {
+        query = buildQuery();
+      }
+      dispatch(fetchRole({ query }));
+    };
+    initData();
+  }, [searchValue, meta.current, meta.pageSize]);
 
-  const getData = async () => {
+
+  const reloadTable = () => {
     const query = buildQuery();
     dispatch(fetchRole({ query }));
   };
@@ -70,6 +82,7 @@ const RolePage = () => {
   };
 
   const onSearch = async (value) => {
+    setSearchValue(value);
     const query = buildQuery(value);
     dispatch(fetchRole({ query }));
   };
@@ -122,25 +135,24 @@ const RolePage = () => {
         </div>
         <Row>
           <Col xs={24} sm={24} md={24} lg={0} xl={0}>
-            {/* <RoleCard
-            listRole={listRole}
-            setListRole={setListRole}
-            loading={loading}
-            setLoading={setLoading}
-            getData={getData}
-          /> */}
+            <RoleCard
+            // listRole={listRole}
+            // isFetching={isFetching}
+            // reloadTable={reloadTable}
+            // meta={meta}
+            />
           </Col>
           <Col xs={0} sm={0} md={0} lg={24} xl={24}>
             <RoleTable
               listRole={listRole}
               isFetching={isFetching}
-              getData={getData}
+              reloadTable={reloadTable}
               meta={meta}
             />
           </Col>
         </Row>
         <CreateModal
-          getData={getData}
+          reloadTable={reloadTable}
           isCreateModalOpen={isCreateModalOpen}
           setIsCreateModalOpen={setIsCreateModalOpen}
         />
