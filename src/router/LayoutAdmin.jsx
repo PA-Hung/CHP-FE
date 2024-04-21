@@ -76,7 +76,7 @@ const LayoutAdmin = () => {
       dispatch(
         setActiveKey({
           activeKey: e.key,
-          title: "Home Admin",
+          title: "Trang chủ",
         })
       );
     }

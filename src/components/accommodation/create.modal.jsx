@@ -50,11 +50,18 @@ const CreateModal = (props) => {
     return Promise.resolve();
   };
 
-  useEffect(() => {
-    checkField;
-  }, [form]);
-
   const onFinish = async (values) => {
+    await checkField();
+    // Kiểm tra xem có lỗi nào không
+    if (IdentificationNumber || Passport || Documents) {
+      notification.error({
+        message: "Lỗi",
+        placement: "top",
+        description: "Phải cung cấp ít nhất một trong số: số CMND, hộ chiếu, hoặc tài liệu",
+      });
+      return;
+    }
+
     const dateRegex = /^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/;
     if (!dateRegex.test(values.birthday)) {
       notification.error({
@@ -64,15 +71,17 @@ const CreateModal = (props) => {
       });
       return;
     }
-    const idNumberRegex = /^\d{9,12}$/;
-    console.log('values.identification_number', values.identification_number);
-    if (!idNumberRegex.test(values.identification_number)) {
-      notification.error({
-        message: "Số CCCD không hợp lệ",
-        placement: "top",
-        description: "Số CCCD phải từ 9 đến 12 số !",
-      });
-      return;
+
+    if (values.identification_number) {
+      const idNumberRegex = /^\d{9,12}$/;
+      if (!idNumberRegex.test(values.identification_number)) {
+        notification.error({
+          message: "Số CCCD không hợp lệ",
+          placement: "top",
+          description: "Số CCCD phải từ 9 đến 12 số !",
+        });
+        return;
+      }
     }
 
     const data = values; // viết gọn của 2 dòng trên

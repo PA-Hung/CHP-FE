@@ -1,4 +1,9 @@
-import axios from '../utils/axiosCustomize'
+import axios from '@/utils/axiosCustomize'
+
+// dashboard    ------------------------------------
+export const getDashboard = (query) => {
+    return axios.get(`api/v1/accommodation/dashboard?${query}`)
+}
 
 // accommodation - By Admin 
 export const postCreateAccommodation = (data) => {

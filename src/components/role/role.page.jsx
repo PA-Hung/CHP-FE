@@ -134,14 +134,14 @@ const RolePage = () => {
           </Flex>
         </div>
         <Row>
-          <Col xs={24} sm={24} md={24} lg={0} xl={0}>
+          {/* <Col xs={24} sm={24} md={24} lg={0} xl={0}>
             <RoleCard
-            // listRole={listRole}
-            // isFetching={isFetching}
-            // reloadTable={reloadTable}
-            // meta={meta}
+            listRole={listRole}
+            isFetching={isFetching}
+            reloadTable={reloadTable}
+            meta={meta}
             />
-          </Col>
+          </Col> */}
           <Col xs={0} sm={0} md={0} lg={24} xl={24}>
             <RoleTable
               listRole={listRole}

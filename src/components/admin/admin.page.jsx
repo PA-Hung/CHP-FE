@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import DashboardPage from "./Dashboard/dashboard.page";
 
 const AdminPage = () => {
-  return <>Admin page</>;
+  return <><DashboardPage /></>;
 };
 
 export default AdminPage;

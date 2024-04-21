@@ -17,7 +17,6 @@ import SearchModal from "./search.modal";
 import AccommodationTable from "./apartment.table";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import { fetchAccommodation } from "@/redux/slice/accommodationSlice";
 import { fetchApartment } from "@/redux/slice/apartmentSlice";
 
 const ApartmentPage = () => {
@@ -86,7 +85,7 @@ const ApartmentPage = () => {
   const onSearch = async (value) => {
     setSearchValue(value);
     const query = buildQuery(value);
-    dispatch(fetchAccommodation({ query }));
+    dispatch(fetchApartment({ query }));
   };
 
   return (

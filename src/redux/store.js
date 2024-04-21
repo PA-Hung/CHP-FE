@@ -18,7 +18,9 @@ import themeReducer from './slice/themeSlice';
 import roleReducer from './slice/roleSlice';
 import permissionReducer from './slice/permissionSlice';
 import accommodationReducer from './slice/accommodationSlice';
-import apartmentReducer from './slice/apartmentSlice'
+import apartmentReducer from './slice/apartmentSlice';
+import dashboardReducer from './slice/dashboardSlice';
+
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -28,7 +30,8 @@ const rootReducer = combineReducers({
     role: roleReducer,
     permission: permissionReducer,
     accommodation: accommodationReducer,
-    apartment: apartmentReducer
+    apartment: apartmentReducer,
+    dashboard: dashboardReducer
 });
 
 const persistConfig = {
