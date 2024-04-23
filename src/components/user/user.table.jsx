@@ -27,7 +27,7 @@ const UserTable = () => {
   const meta = useSelector((state) => state.user.meta);
   const listUsers = useSelector((state) => state.user.result);
   const dispatch = useDispatch();
-  const [searchValue, setSearchValue] = useState({});
+  const [searchValue, setSearchValue] = useState(null);
 
   const [updateData, setUpdateData] = useState(null);
 

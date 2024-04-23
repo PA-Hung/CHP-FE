@@ -22,7 +22,7 @@ const RolePage = () => {
   const meta = useSelector((state) => state.role.meta);
   const listRole = useSelector((state) => state.role.result);
   const dispatch = useDispatch();
-  const [searchValue, setSearchValue] = useState({});
+  const [searchValue, setSearchValue] = useState(null);
 
   useEffect(() => {
     const initData = async () => {

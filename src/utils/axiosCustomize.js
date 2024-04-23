@@ -1,7 +1,8 @@
 import axios from "axios";
-import { setRefreshTokenAction } from "../redux/slice/authSlice";
-import { store } from '../redux/store'
+import { setRefreshTokenAction } from "@/redux/slice/authSlice";
+import { store } from '@/redux/store'
 import { Mutex } from "async-mutex";
+import { useNavigate } from "react-router-dom";
 
 const instance = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -13,9 +14,15 @@ const NO_RETRY_HEADER = 'x-no-retry';
 
 const handleRefreshToken = async () => {
     return await mutex.runExclusive(async () => {
-        //console.log('>>>>>>>>test chạy hàm handleRefreshToken ');
+        console.log('>>>>>>>>test chạy hàm handleRefreshToken ');
         const res = await instance.get('api/v1/auth/refresh');
+        console.log('res', res);
         if (res && res.data) return res.data.access_token;
+        if (res && res.statusCode === 400) {
+            localStorage.removeItem('access_token');
+            const navigate = useNavigate();
+            navigate('/login');
+        }
         else return null;
     });
 };

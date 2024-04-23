@@ -252,6 +252,7 @@ const LayoutAdmin = () => {
             left: 0,
             top: 0,
             bottom: 0,
+            boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.3)",
           }}
         >
           <div>

@@ -23,7 +23,7 @@ const PermissionPage = () => {
   const permissions = useSelector((state) => state.permission.result);
   const dispatch = useDispatch();
 
-  const [searchValue, setSearchValue] = useState({});
+  const [searchValue, setSearchValue] = useState(null);
 
   useEffect(() => {
     const initData = async () => {

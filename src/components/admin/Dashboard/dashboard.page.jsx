@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, notification, message, Upload, Row, Col, Select } from "antd";
+import { Button, notification, message, Upload, Row, Col, DatePicker } from "antd";
 import queryString from "query-string";
 import {
   PlusOutlined,
@@ -17,21 +17,43 @@ import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { fetchApartment } from "@/redux/slice/apartmentSlice";
 import { fetchDashboard } from "@/redux/slice/dashboardSlice";
 import DashboardTable from "./dashboard.table";
+import { getApartment } from "@/utils/api";
+const { RangePicker } = DatePicker;
 
 const DashboardPage = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-
   const isFetching = useSelector((state) => state.dashboard.isFetching);
   const meta = useSelector((state) => state.dashboard.meta);
   const dashboard = useSelector((state) => state.dashboard.result);
-  const listApartment = useSelector((state) => state.apartment.result);
   const dispatch = useDispatch();
-  const [searchValue, setSearchValue] = useState({});
+  const [searchValue, setSearchValue] = useState(null);
+  const [defaultDate, setDefaultDate] = useState({ arrival: dayjs(), departure: dayjs().add(1, "day") });
+  const [apartment, setApartment] = useState();
+
+  useEffect(() => {
+    const initData = async () => {
+      if (searchValue) {
+        const query = buildQuery(searchValue);
+        dispatch(fetchDashboard({ query }));
+      } else {
+        const query = buildQuery(defaultDate);
+        dispatch(fetchDashboard({ query }));
+      }
+    };
+    initData();
+  }, [searchValue, meta.current, meta.pageSize]);
+
+  useEffect(() => {
+    const initApartment = async () => {
+      const res = await getApartment(`current=1&pageSize=100`);
+      if (res.data?.result) {
+        setApartment(res.data?.result);
+      }
+    };
+    initApartment();
+  }, []);
 
   const result = [];
-
-  listApartment.forEach(dashboardItem => {
+  apartment?.forEach(dashboardItem => {
     const foundApartment = dashboard.find(apartment => apartment._id === dashboardItem._id);
     if (foundApartment) {
       result.push(foundApartment);
@@ -42,18 +64,14 @@ const DashboardPage = () => {
   });
   result.sort((a, b) => a.count - b.count);
 
-  useEffect(() => {
-    const initData = async () => {
-      const query = buildQuery();
-      dispatch(fetchDashboard({ query }));
-      dispatch(fetchApartment({ query }));
-    };
-    initData();
-  }, [meta.current, meta.pageSize]);
+  console.log('apartment', apartment);
+  console.log('dashboard', dashboard);
+  console.log('result', result);
 
   const reloadTable = () => {
     const query = buildQuery();
     dispatch(fetchDashboard({ query }));
+    setSearchValue(null);
   };
 
   const buildQuery = (
@@ -64,13 +82,19 @@ const DashboardPage = () => {
     pageSize = meta.pageSize
   ) => {
     const clone = { ...params };
-    if (clone.code) clone.code = `/${clone.code}/i`;
+
+
+    if (clone.arrival) clone.arrival = `/${clone.arrival}/i`;
+    if (clone.departure) clone.departure = `/${clone.departure}/i`;
 
     let temp = queryString.stringify(clone);
 
     let sortBy = "";
-    if (sort && sort.code) {
-      sortBy = sort.code === "ascend" ? "sort=code" : "sort=-code";
+    if (sort && sort.arrival) {
+      sortBy = sort.arrival === "ascend" ? "sort=arrival" : "sort=-arrival";
+    }
+    if (sort && sort.departure) {
+      sortBy = sort.departure === "ascend" ? "sort=departure" : "sort=-departure";
     }
 
     if (sort && sort.createdAt) {
@@ -91,20 +115,37 @@ const DashboardPage = () => {
     return temp;
   };
 
+  const handleTimeChange = (e) => {
+    const inputQuery = {
+      arrival: e ? e[0] : dayjs(),
+      departure: e ? e[1] : dayjs().add(1, "day"),
+    }
+    setSearchValue(inputQuery);
+    const query = buildQuery(inputQuery);
+    dispatch(fetchDashboard({ query }));
+  }
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30, color: 'black' }}>
       <div style={{ paddingTop: 30 }}>
+        <div style={{ paddingBottom: 20 }}>
+          Chọn ngày : <RangePicker
+            onChange={(e) => handleTimeChange(e)}
+            format={'DD/MM/YYYY'}
+            defaultValue={[dayjs(), dayjs().add(1, 'day')]}
+          />
+        </div>
         <Row gutter={[8, 8]}>
           <Col span={12} >
             <DashboardTable
+              dashboard={dashboard}
               result={result}
               isFetching={isFetching}
               reloadTable={reloadTable}
               meta={meta}
             />
           </Col>
-          <Col span={12} >Conten2</Col>
+          <Col span={12} ></Col>
         </Row>
       </div>
     </div>

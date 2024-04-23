@@ -38,7 +38,7 @@ const AccommodationPage = () => {
   const [apartmentId, setApartmentId] = useState(undefined);
 
   const [loadingUpload, setLoadingUpload] = useState(false);
-  const [searchValue, setSearchValue] = useState({});
+  const [searchValue, setSearchValue] = useState(null);
 
   useEffect(() => {
     if (isAdmin.name === "SUPER_ADMIN") {
@@ -76,6 +76,7 @@ const AccommodationPage = () => {
   const reloadTable = () => {
     const query = buildQuery();
     dispatch(fetchAccommodation({ query }));
+    setSearchValue(null)
   };
 
   const buildQuery = (

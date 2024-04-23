@@ -27,7 +27,7 @@ const ApartmentPage = () => {
   const meta = useSelector((state) => state.apartment.meta);
   const listApartment = useSelector((state) => state.apartment.result);
   const dispatch = useDispatch();
-  const [searchValue, setSearchValue] = useState({});
+  const [searchValue, setSearchValue] = useState(null);
 
   useEffect(() => {
     const initData = async () => {

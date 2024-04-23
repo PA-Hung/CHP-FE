@@ -9,7 +9,7 @@ import {
   Row,
   Col,
 } from "antd";
-import { postCreateAccommodation } from "../../utils/api";
+import { postCreateAccommodation } from "@/utils/api";
 import { useEffect, useState } from "react";
 
 const CreateModal = (props) => {

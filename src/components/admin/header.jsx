@@ -8,9 +8,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { DownOutlined, SettingOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { postLogOut } from "../../utils/api";
-import { setLogoutAction } from "../../redux/slice/authSlice";
-import { setHomeKey } from "../../redux/slice/menuSlice";
+import { postLogOut } from "@/utils/api";
+import { setLogoutAction } from "@/redux/slice/authSlice";
+import { setHomeKey } from "@/redux/slice/menuSlice";
 const { Header } = Layout;
 
 const HeaderAdmin = (props) => {
