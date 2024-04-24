@@ -1,30 +1,29 @@
 import { useState } from "react";
 import {
   notification, message, Card, Flex, Spin, Pagination, Popconfirm,
-  Tag,
 } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import UpdateUserModal from "./update.user.modal";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
-import { deleteRole } from "@/utils/api";
-import UpdateModal from "./update.role/update.modal";
-import { roleOnchangeTable } from "@/redux/slice/roleSlice";
-import { fetchRoleById } from "@/redux/slice/roleSlice";
+import { userOnchangeTable } from "@/redux/slice/userSlice";
+import { deleteUser } from "@/utils/api";
 
-const RoleCard = (props) => {
-  const { listRole, isFetching, reloadTable, meta } = props;
+export const UserCard = (props) => {
+  const { listUsers, loading, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
 
   const confirmDelete = async (user) => {
-    const res = await deleteRole(user._id);
+    const res = await deleteUser(user._id);
     if (res.data) {
       reloadTable();
-      message.success("Xoá chức danh thành công !");
+      message.success("Xoá người dùng thành công !");
     } else {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -45,18 +44,18 @@ const RoleCard = (props) => {
       }}
     >
       <div>
-        {isFetching ? (
+        {loading ? (
           <div>
             <Spin size="default" />
           </div>
         ) : (
           <Flex wrap="wrap" gap="small">
-            {listRole.map((item) => (
+            {listUsers.map((item) => (
               <Card
                 actions={[
                   <CheckAccess
                     FeListPermission={
-                      ALL_PERMISSIONS.ROLES.UPDATE
+                      ALL_PERMISSIONS.USERS.UPDATE
                     }
                     hideChildren
                   >
@@ -64,17 +63,17 @@ const RoleCard = (props) => {
                       key="edit"
                       onClick={() => {
                         setIsUpdateModalOpen(true);
-                        dispatch(fetchRoleById(item._id));
+                        setUpdateData(item);
                       }} />
                   </CheckAccess>,
                   <CheckAccess
                     FeListPermission={
-                      ALL_PERMISSIONS.ROLES.DELETE
+                      ALL_PERMISSIONS.USERS.DELETE
                     }
                     hideChildren
                   >
                     <Popconfirm
-                      title={`Bạn muốn xoá chức danh ${item.name} không ?`}
+                      title={`Bạn muốn xoá ${item.name} không ?`}
                       onConfirm={() => confirmDelete(item)}
                       okText="Yes"
                       cancelText="No"
@@ -89,13 +88,9 @@ const RoleCard = (props) => {
               >
                 <Meta title={item.name} />
                 <hr />
-                <p>Mô tả : {item.description}</p>
-                <p>Trạng thái : {'   '}
-                  <Tag
-                    color={item.isActive ? "lime" : "red"}>
-                    {item.isActive ? "BẬT" : "TẮT"}
-                  </Tag>
-                </p>
+                <p>Số điện thoại : {item.phone}</p>
+                <p>Quyền hạn : {item?.role?.name}</p>
+                <p>Mã căn hộ : {item?.apartments.map(apartment => apartment.code).join(', ')}</p>
               </Card>
             ))}
           </Flex>
@@ -108,7 +103,7 @@ const RoleCard = (props) => {
           pageSize={meta.pageSize}
           onChange={(page, pageSize) =>
             dispatch(
-              roleOnchangeTable({
+              userOnchangeTable({
                 current: page,
                 pageSize: pageSize,
                 pages: meta.pages,
@@ -119,14 +114,15 @@ const RoleCard = (props) => {
           showSizeChanger={true}
           defaultPageSize={meta.pageSize}
         />
-        <UpdateModal
+        <UpdateUserModal
+          updateData={updateData}
           reloadTable={reloadTable}
           isUpdateModalOpen={isUpdateModalOpen}
           setIsUpdateModalOpen={setIsUpdateModalOpen}
+          setUpdateData={setUpdateData}
         />
       </div>
     </div>
   );
 };
 
-export default RoleCard;

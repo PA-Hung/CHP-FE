@@ -15,9 +15,9 @@ function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    dispatch(fetchAccount());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchAccount());
+  // }, []);
 
   //console.log(">>>isAuthenticated", isAuthenticated);
 

@@ -1,6 +1,6 @@
 import { Row, Col, Switch, Card, Collapse, Tooltip, Form } from "antd";
 import React from "react";
-import { colorMethod } from "../../../utils/uils";
+import { colorMethod } from "@/utils/uils";
 import { grey } from "@ant-design/colors";
 import { CaretRightOutlined } from "@ant-design/icons";
 
@@ -76,9 +76,12 @@ const UpdateRolePermissionApi = (props) => {
                   </Form.Item>
                 }
               >
-                <Row gutter={[16, 16]}>
+                <Row gutter={[16, 16]} justify="left" wrap={true}>
                   {item.permissions?.map((value, i) => (
-                    <Col lg={12} md={12} sm={24} key={i}>
+                    <Col
+                      xs={24} sm={24} md={24} lg={24} xl={12}
+                      key={i}
+                    >
                       <Card
                         size="small"
                         bodyStyle={{
@@ -125,26 +128,32 @@ const UpdateRolePermissionApi = (props) => {
                             >
                               {value?.name || ""}
                             </p>
-                            <div style={{ display: "flex" }}>
-                              <p
-                                style={{
-                                  paddingLeft: 30,
-                                  fontWeight: "bold",
-                                  marginBottom: 0,
-                                  color: colorMethod(value?.method),
-                                }}
-                              >
-                                {value?.method || ""}
-                              </p>
-                              <p
-                                style={{
-                                  paddingLeft: 10,
-                                  marginBottom: 0,
-                                  color: grey[5],
-                                }}
-                              >
-                                {value?.apiPath || ""}
-                              </p>
+                            <div >
+                              <Row gutter={[8, 8]} justify="left" wrap={true}>
+                                <Col xs={24} sm={24} md={24} lg={24} xl={8}>
+                                  <p
+                                    style={{
+                                      paddingLeft: 30,
+                                      fontWeight: "bold",
+                                      marginBottom: 0,
+                                      color: colorMethod(value?.method),
+                                    }}
+                                  >
+                                    {value?.method || ""}
+                                  </p>
+                                </Col>
+                                <Col xs={24} sm={24} md={24} lg={24} xl={16}>
+                                  <p
+                                    style={{
+                                      paddingLeft: 10,
+                                      marginBottom: 0,
+                                      color: grey[5],
+                                    }}
+                                  >
+                                    {value?.apiPath || ""}
+                                  </p>
+                                </Col>
+                              </Row>
                             </div>
                           </Tooltip>
                         </div>

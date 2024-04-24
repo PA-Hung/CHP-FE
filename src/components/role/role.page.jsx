@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, notification, Row, Col, Flex } from "antd";
+import { Button, Row, Col, Flex } from "antd";
 import queryString from "query-string";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import CreateModal from "./create.role/create.modal";
@@ -10,9 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import SearchModal from "./search.modal";
 import RoleCard from "./role.card";
 import RoleTable from "./role.table";
-import { fetchRole } from "../../redux/slice/roleSlice";
+import { fetchRole } from "@/redux/slice/roleSlice";
 import CheckAccess from "@/router/check.access"
-import { ALL_PERMISSIONS } from "../../utils/permission.module";
+import { ALL_PERMISSIONS } from "@/utils/permission.module";
 
 const RolePage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -134,14 +134,14 @@ const RolePage = () => {
           </Flex>
         </div>
         <Row>
-          {/* <Col xs={24} sm={24} md={24} lg={0} xl={0}>
+          <Col xs={24} sm={24} md={24} lg={0} xl={0}>
             <RoleCard
-            listRole={listRole}
-            isFetching={isFetching}
-            reloadTable={reloadTable}
-            meta={meta}
+              listRole={listRole}
+              isFetching={isFetching}
+              reloadTable={reloadTable}
+              meta={meta}
             />
-          </Col> */}
+          </Col>
           <Col xs={0} sm={0} md={0} lg={24} xl={24}>
             <RoleTable
               listRole={listRole}

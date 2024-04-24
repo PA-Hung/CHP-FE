@@ -11,7 +11,7 @@ import Logo from "@/assets/chpLogo.png";
 const Login = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  //const account = useSelector((state) => state.auth.user);
+  const isAdmin = useSelector((state) => state.auth.user.role);
   let location = useLocation();
   let params = new URLSearchParams(location.search);
   const callback = params?.get("callback");

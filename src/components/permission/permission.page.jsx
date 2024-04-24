@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, notification, message, Row, Col, Flex } from "antd";
+import { Button, Row, Col, Flex } from "antd";
 import queryString from "query-string";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import CreateModal from "./create.modal";
@@ -10,9 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import SearchModal from "./search.modal";
 import PermissionTable from "./permission.table";
 import PermissionCard from "./permission.card";
-import { fetchPermission } from "../../redux/slice/permissionSlice";
+import { fetchPermission } from "@/redux/slice/permissionSlice";
 import CheckAccess from "@/router/check.access"
-import { ALL_PERMISSIONS } from "../../utils/permission.module";
+import { ALL_PERMISSIONS } from "@/utils/permission.module";
 
 const PermissionPage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -145,12 +145,12 @@ const PermissionPage = () => {
         </div>
         <Row>
           <Col xs={24} sm={24} md={24} lg={0} xl={0}>
-            {/* <PermissionCard
+            <PermissionCard
               permissions={permissions}
               isFetching={isFetching}
               meta={meta}
               reloadTable={reloadTable}
-            /> */}
+            />
           </Col>
           <Col xs={0} sm={0} md={0} lg={24} xl={24}>
             <PermissionTable

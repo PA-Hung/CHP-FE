@@ -124,6 +124,13 @@ const LayoutAdmin = () => {
 
   useEffect(() => {
     if (userPermissions?.length) {
+
+      const viewDashboard = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE.apiPath &&
+          item.method === ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE.method
+      );
+
       const viewUser = userPermissions.find(
         (item) =>
           item.apiPath === ALL_PERMISSIONS.USERS.GET_PAGINATE.apiPath &&
@@ -161,6 +168,16 @@ const LayoutAdmin = () => {
           icon: <HomeOutlined />,
           visible: "true",
         },
+
+        // ...(viewDashboard
+        //   ? [
+        //     {
+        //       label: <Link to={"/admin"}>Trang chủ</Link>,
+        //       key: "home",
+        //       icon: <HomeOutlined />,
+        //     },
+        //   ]
+        //   : []),
 
         ...(viewApartment
           ? [
@@ -286,6 +303,7 @@ const LayoutAdmin = () => {
           >
             <div
               style={{
+                paddingBottom: 10,
                 minHeight: "100%",
                 background:
                   themeMode === "light" ? colorBgContainer : "#141414",
@@ -296,7 +314,7 @@ const LayoutAdmin = () => {
             </div>
           </Content>
           <Row>
-            <Col xs={0} sm={0} md={0} lg={24} xl={24}>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <div style={{
                 marginLeft: 10,
                 marginTop: 10,

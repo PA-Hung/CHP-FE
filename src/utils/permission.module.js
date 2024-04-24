@@ -17,17 +17,20 @@ export const ALL_PERMISSIONS = {
         UPDATE: { method: "PATCH", apiPath: '/api/v1/users/:id', module: "USERS" },
         DELETE: { method: "DELETE", apiPath: '/api/v1/users/:id', module: "USERS" },
     },
-    ACCOMMODATION: {
-        GET_PAGINATE: { method: "GET", apiPath: '/api/v1/accommodation', module: "ACCOMMODATION" },
-        CREATE: { method: "POST", apiPath: '/api/v1/accommodation', module: "ACCOMMODATION" },
-        UPDATE: { method: "PATCH", apiPath: '/api/v1/accommodation/:id', module: "ACCOMMODATION" },
-        DELETE: { method: "DELETE", apiPath: '/api/v1/accommodation/:id', module: "ACCOMMODATION" },
+    DASHBOARD: {
+        GET_PAGINATE: { method: "GET", apiPath: '/api/v1/accommodation/dashboard', module: "DASHBOARD" },
     },
     APARTMENT: {
         GET_PAGINATE: { method: "GET", apiPath: '/api/v1/apartment', module: "APARTMENT" },
         CREATE: { method: "POST", apiPath: '/api/v1/apartment', module: "APARTMENT" },
         UPDATE: { method: "PATCH", apiPath: '/api/v1/apartment/:id', module: "APARTMENT" },
         DELETE: { method: "DELETE", apiPath: '/api/v1/apartment/:id', module: "APARTMENT" },
+    },
+    ACCOMMODATION: {
+        GET_PAGINATE: { method: "GET", apiPath: '/api/v1/accommodation', module: "ACCOMMODATION" },
+        CREATE: { method: "POST", apiPath: '/api/v1/accommodation', module: "ACCOMMODATION" },
+        UPDATE: { method: "PATCH", apiPath: '/api/v1/accommodation/:id', module: "ACCOMMODATION" },
+        DELETE: { method: "DELETE", apiPath: '/api/v1/accommodation/:id', module: "ACCOMMODATION" },
     },
     EXCEL: {
         IMPORT: { method: "IMPORT", apiPath: '/api/v1/excel/import', module: "EXCEL" },

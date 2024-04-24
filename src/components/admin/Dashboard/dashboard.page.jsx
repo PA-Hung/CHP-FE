@@ -18,6 +18,7 @@ import { fetchApartment } from "@/redux/slice/apartmentSlice";
 import { fetchDashboard } from "@/redux/slice/dashboardSlice";
 import DashboardTable from "./dashboard.table";
 import { getApartment } from "@/utils/api";
+import { SimpleBarChart } from "./simpleBarChart";
 const { RangePicker } = DatePicker;
 
 const DashboardPage = () => {
@@ -64,9 +65,9 @@ const DashboardPage = () => {
   });
   result.sort((a, b) => a.count - b.count);
 
-  console.log('apartment', apartment);
-  console.log('dashboard', dashboard);
-  console.log('result', result);
+  // console.log('apartment', apartment);
+  // console.log('dashboard', dashboard);
+  // console.log('result', result);
 
   const reloadTable = () => {
     const query = buildQuery();
@@ -128,26 +129,36 @@ const DashboardPage = () => {
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30, color: 'black' }}>
       <div style={{ paddingTop: 30 }}>
-        <div style={{ paddingBottom: 20 }}>
-          Chọn ngày : <RangePicker
-            onChange={(e) => handleTimeChange(e)}
-            format={'DD/MM/YYYY'}
-            defaultValue={[dayjs(), dayjs().add(1, 'day')]}
-          />
-        </div>
-        <Row gutter={[8, 8]}>
-          <Col span={12} >
-            <DashboardTable
-              dashboard={dashboard}
-              result={result}
-              isFetching={isFetching}
-              reloadTable={reloadTable}
-              meta={meta}
-            />
-          </Col>
-          <Col span={12} ></Col>
-        </Row>
+        1 vài lời giới thiệu về doanh nghiệp :D
       </div>
+      <CheckAccess
+        FeListPermission={ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE}
+        hideChildren
+      >
+        <div style={{ paddingTop: 30 }}>
+          <div style={{ paddingBottom: 20 }}>
+            Chọn ngày : <RangePicker
+              onChange={(e) => handleTimeChange(e)}
+              format={'DD/MM/YYYY'}
+              defaultValue={[dayjs(), dayjs().add(1, 'day')]}
+            />
+          </div>
+          <Row gutter={[8, 8]} justify="center" wrap={true}>
+            <Col xs={24} sm={24} md={12} lg={12} xl={12} >
+              <DashboardTable
+                result={result}
+                isFetching={isFetching}
+                reloadTable={reloadTable}
+                meta={meta}
+              />
+            </Col>
+            <Col xs={24} sm={24} md={12} lg={12} xl={12} >
+              <SimpleBarChart
+                result={result}
+              /></Col>
+          </Row>
+        </div>
+      </CheckAccess>
     </div>
   );
 };

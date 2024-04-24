@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
 
 const DashboardTable = (props) => {
-  const { result, isFetching, reloadTable, meta, dashboard } = props;
+  const { result, isFetching, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();

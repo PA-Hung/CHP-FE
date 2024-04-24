@@ -8,6 +8,8 @@ import {
   Form,
   Input,
   Space,
+  Row,
+  Col,
 } from "antd";
 import queryString from "query-string";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
@@ -18,6 +20,7 @@ import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, userOnchangeTable } from "../../redux/slice/userSlice";
+import { UserCard } from "./user.card";
 
 const UserTable = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -200,79 +203,86 @@ const UserTable = () => {
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.USERS.GET_PAGINATE}
       >
-        <div
-          style={{
-            color: "black",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: 20,
-          }}
-        >
-          <div>
-            <Form
-              name="search-form"
-              onFinish={onSearch}
-              layout="inline"
-              form={form}
-            >
-              <Form.Item label="Số điện thoại" name="phone">
-                <Input placeholder="Nhập số điện thoại" />
-              </Form.Item>
-              <Form.Item label="Tên" name="name">
-                <Input placeholder="Nhập tên" />
-              </Form.Item>
-              <Button
-                icon={<SearchOutlined />}
-                type={"primary"}
-                htmlType="submit"
-              >
-                Tìm kiếm
-              </Button>
-            </Form>
-          </div>
-          <CheckAccess
-            FeListPermission={ALL_PERMISSIONS.USERS.CREATE}
-            hideChildren
+        <div style={{ padding: 20 }}>
+          <Form
+            name="search-form"
+            onFinish={onSearch}
+            layout="inline"
+            form={form}
           >
-            <div>
-              <Button
-                icon={<PlusOutlined />}
-                type={"primary"}
-                onClick={() => setIsCreateModalOpen(true)}
+            <Row gutter={[8, 8]} justify="center" wrap={true}>
+              <Col xs={24} sm={24} md={12} lg={12} xl={8}>
+                <Form.Item label="SĐT" name="phone" >
+                  <Input placeholder="Nhập số điện thoại" />
+                </Form.Item>
+              </Col >
+              <Col xs={24} sm={24} md={12} lg={12} xl={8}>
+                <Form.Item label="Tên" name="name" >
+                  <Input placeholder="Nhập tên" />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={24} md={12} lg={12} xl={4}>
+                <Button
+                  icon={<SearchOutlined />}
+                  htmlType="submit"
+                >
+                  Tìm kiếm
+                </Button>
+              </Col>
+              <CheckAccess
+                FeListPermission={ALL_PERMISSIONS.USERS.CREATE}
+                hideChildren
               >
-                Thêm mới
-              </Button>
-            </div>
-          </CheckAccess>
+                <Col xs={24} sm={24} md={12} lg={12} xl={4}>
+                  <Button
+                    icon={<PlusOutlined />}
+                    onClick={() => setIsCreateModalOpen(true)}
+                  >
+                    Thêm mới
+                  </Button>
+                </Col>
+              </CheckAccess>
+            </Row>
+          </Form>
         </div>
-        <Table
-          size="small"
-          columns={columns}
-          dataSource={listUsers}
-          rowKey={"_id"}
-          loading={loading}
-          bordered={true}
-          pagination={{
-            current: meta.current,
-            pageSize: meta.pageSize,
-            total: meta.total,
-            showTotal: (total, range) =>
-              `${range[0]} - ${range[1]} of ${total} items`,
-            onChange: (page, pageSize) =>
-              dispatch(
-                userOnchangeTable({
-                  current: page,
-                  pageSize: pageSize,
-                  pages: meta.pages,
-                  total: meta.total,
-                })
-              ),
-            showSizeChanger: true,
-            defaultPageSize: meta.pageSize,
-          }}
-        />
-        {/*  // dataSource phải là mảng Array [] */}
+        <Row>
+          <Col xs={24} sm={24} md={24} lg={0} xl={0}>
+            <UserCard
+              listUsers={listUsers}
+              loading={loading}
+              reloadTable={reloadTable}
+              meta={meta}
+            />
+          </Col>
+          <Col xs={0} sm={0} md={0} lg={24} xl={24}>
+            <Table
+              size="small"
+              columns={columns}
+              dataSource={listUsers}
+              rowKey={"_id"}
+              loading={loading}
+              bordered={true}
+              pagination={{
+                current: meta.current,
+                pageSize: meta.pageSize,
+                total: meta.total,
+                showTotal: (total, range) =>
+                  `${range[0]} - ${range[1]} of ${total} items`,
+                onChange: (page, pageSize) =>
+                  dispatch(
+                    userOnchangeTable({
+                      current: page,
+                      pageSize: pageSize,
+                      pages: meta.pages,
+                      total: meta.total,
+                    })
+                  ),
+                showSizeChanger: true,
+                defaultPageSize: meta.pageSize,
+              }}
+            />
+          </Col>
+        </Row>
         <CreateUserModal
           reloadTable={reloadTable}
           isCreateModalOpen={isCreateModalOpen}
