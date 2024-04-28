@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { Table, Button, notification, Popconfirm, message } from "antd";
+import { Table } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
-import CheckAccess from "@/router/check.access";
-import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import { useDispatch } from "react-redux";
-import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
 
 const DashboardTable = (props) => {
-  const { result, isFetching, reloadTable, meta } = props;
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [updateData, setUpdateData] = useState(null);
-  const dispatch = useDispatch();
+  const { result, isFetching, reloadTable } = props;
+  const [meta, setMeta] = useState({
+    current: 1,
+    pageSize: 15,
+    pages: 0,
+    total: 0,
+  });
 
   const columns = [
     {
@@ -43,6 +42,15 @@ const DashboardTable = (props) => {
     }
   ];
 
+  const dashboardOnchangeTable = (page, pageSize) => {
+    setMeta({
+      current: page,
+      pageSize: pageSize,
+      pages: meta.pages,
+      total: meta.total,
+    });
+  }
+
   return (
     <>
       <Table
@@ -60,15 +68,7 @@ const DashboardTable = (props) => {
           total: meta.total,
           showTotal: (total, range) =>
             `${range[0]} - ${range[1]} of ${total} items`,
-          onChange: (page, pageSize) =>
-            dispatch(
-              apartmentOnchangeTable({
-                current: page,
-                pageSize: pageSize,
-                pages: meta.pages,
-                total: meta.total,
-              })
-            ),
+          onChange: (page, pageSize) => dashboardOnchangeTable(page, pageSize),
           showSizeChanger: true,
           defaultPageSize: meta.pageSize,
         }}

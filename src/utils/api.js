@@ -76,6 +76,10 @@ export const updateUser = (user) => {
     return axios.patch(`/api/v1/users`, { ...user })
 }
 
+export const changePassword = (user) => {
+    return axios.patch(`/api/v1/users/change-password`, { ...user })
+}
+
 
 // Auth ----------------------------------------------------------------------------------------------------
 

@@ -13,7 +13,7 @@ const initialState = {
     isFetching: true,
     meta: {
         current: 1,
-        pageSize: 10,
+        pageSize: 3,
         pages: 0,
         total: 0
     },

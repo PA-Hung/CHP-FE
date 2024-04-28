@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Layout, Dropdown, Space, notification, Row, Col } from "antd";
 import {
   MenuFoldOutlined,
@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { postLogOut } from "@/utils/api";
 import { setLogoutAction } from "@/redux/slice/authSlice";
 import { setHomeKey } from "@/redux/slice/menuSlice";
+import PasswordModal from "./password.modal";
 const { Header } = Layout;
 
 const HeaderAdmin = (props) => {
@@ -18,6 +19,8 @@ const HeaderAdmin = (props) => {
   const activeTitle = useSelector((state) => state.menu.title);
   const loginName = useSelector((state) => state.auth.user.name);
   const themeMode = useSelector((state) => state.theme.themeMode);
+
+  const [isPassModalOpen, setIsPassModalOpen] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,20 +38,12 @@ const HeaderAdmin = (props) => {
     }
   };
 
-  const handleUserInfo = (e) => {
-    notification.success({
-      message: "Chức năng đang được phát triển !",
-      placement: "top",
-    });
-    e.preventDefault()
-  };
-
   const items = [
     {
       key: "1",
       label: (
-        <Link onClick={(e) => handleUserInfo(e)}>
-          <SettingOutlined /> Tài khoản của tôi
+        <Link onClick={() => setIsPassModalOpen(true)}>
+          <SettingOutlined /> Đổi mật khẩu
         </Link>
       ),
     },
@@ -125,6 +120,10 @@ const HeaderAdmin = (props) => {
           </Col>
         </Row>
       </Header>
+      <PasswordModal
+        isPassModalOpen={isPassModalOpen}
+        setIsPassModalOpen={setIsPassModalOpen}
+      />
     </div>
   );
 };

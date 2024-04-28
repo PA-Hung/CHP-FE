@@ -14,7 +14,6 @@ dayjs.locale("vi");
 import { useDispatch, useSelector } from "react-redux";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import { fetchApartment } from "@/redux/slice/apartmentSlice";
 import { fetchDashboard } from "@/redux/slice/dashboardSlice";
 import DashboardTable from "./dashboard.table";
 import { getApartment } from "@/utils/api";
@@ -128,8 +127,8 @@ const DashboardPage = () => {
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30, color: 'black' }}>
-      <div style={{ paddingTop: 30 }}>
-        1 vài lời giới thiệu về doanh nghiệp :D
+      <div style={{ paddingTop: 30, textAlign: 'center' }}>
+        Với đội ngũ nhân sự trẻ trung, năng động đầy nhiệt huyết và chân thành, Châu Homestay cam kết sẽ mang lại cho quý khách trải nghiệm tuyệt vời nhất khi lưu trú tại hệ thống của chúng tôi.
       </div>
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE}
@@ -149,7 +148,6 @@ const DashboardPage = () => {
                 result={result}
                 isFetching={isFetching}
                 reloadTable={reloadTable}
-                meta={meta}
               />
             </Col>
             <Col xs={24} sm={24} md={12} lg={12} xl={12} >

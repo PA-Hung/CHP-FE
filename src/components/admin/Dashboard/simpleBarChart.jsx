@@ -3,7 +3,6 @@ import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 
 export const SimpleBarChart = (props) => {
     const { result } = props;
-    console.log('result', result);
     return (
         <ResponsiveContainer width="100%" height="100%">
             <BarChart
