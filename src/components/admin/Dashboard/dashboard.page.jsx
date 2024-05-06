@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, notification, message, Upload, Row, Col, DatePicker } from "antd";
+import { Row, Col, DatePicker } from "antd";
 import queryString from "query-string";
-import {
-  PlusOutlined,
-  SearchOutlined,
-  ImportOutlined,
-  DownloadOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
@@ -59,7 +52,7 @@ const DashboardPage = () => {
       result.push(foundApartment);
     } else {
       const { _id, code } = dashboardItem;
-      result.push({ _id, code, count: 0 });
+      result.push({ _id, count: 0, code });
     }
   });
   result.sort((a, b) => a.count - b.count);
@@ -68,11 +61,11 @@ const DashboardPage = () => {
   // console.log('dashboard', dashboard);
   // console.log('result', result);
 
-  const reloadTable = () => {
-    const query = buildQuery();
-    dispatch(fetchDashboard({ query }));
-    setSearchValue(null);
-  };
+  // const reloadTable = () => {
+  //   const query = buildQuery();
+  //   dispatch(fetchDashboard({ query }));
+  //   setSearchValue(null);
+  // };
 
   const buildQuery = (
     params,
@@ -82,7 +75,6 @@ const DashboardPage = () => {
     pageSize = meta.pageSize
   ) => {
     const clone = { ...params };
-
 
     if (clone.arrival) clone.arrival = `/${clone.arrival}/i`;
     if (clone.departure) clone.departure = `/${clone.departure}/i`;
@@ -142,18 +134,19 @@ const DashboardPage = () => {
               defaultValue={[dayjs(), dayjs().add(1, 'day')]}
             />
           </div>
-          <Row gutter={[8, 8]} justify="center" wrap={true}>
+          <Row gutter={[8, 8]} justify="left" wrap={true}>
             <Col xs={24} sm={24} md={12} lg={12} xl={12} >
               <DashboardTable
                 result={result}
                 isFetching={isFetching}
-                reloadTable={reloadTable}
               />
             </Col>
             <Col xs={24} sm={24} md={12} lg={12} xl={12} >
               <SimpleBarChart
                 result={result}
-              /></Col>
+                isFetching={isFetching}
+              />
+            </Col>
           </Row>
         </div>
       </CheckAccess>

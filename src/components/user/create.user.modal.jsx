@@ -7,7 +7,7 @@ const CreateUserModal = (props) => {
   const { reloadTable, isCreateModalOpen, setIsCreateModalOpen } = props;
   const [form] = Form.useForm();
   const [role, setRole] = useState([]);
-  const [apartmentCode, setApartmentCode] = useState();
+  const [apartmentCode, setApartmentCode] = useState([{}]);
 
   const resetModal = () => {
     setIsCreateModalOpen(false);

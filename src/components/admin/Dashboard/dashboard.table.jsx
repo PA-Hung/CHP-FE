@@ -5,7 +5,7 @@ import "dayjs/locale/vi";
 dayjs.locale("vi");
 
 const DashboardTable = (props) => {
-  const { result, isFetching, reloadTable } = props;
+  const { result, isFetching } = props;
   const [meta, setMeta] = useState({
     current: 1,
     pageSize: 15,
