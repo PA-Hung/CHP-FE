@@ -1,6 +1,7 @@
 import { Col, Form, Input, Modal, Row, message, notification } from 'antd'
 import React from 'react'
 import { changePassword } from '@/utils/api';
+import { useDispatch } from 'react-redux';
 
 const PasswordModal = (props) => {
     const { isPassModalOpen, setIsPassModalOpen } = props;
@@ -9,6 +10,8 @@ const PasswordModal = (props) => {
         setIsPassModalOpen(false);
         form.resetFields();
     };
+
+
     const onFinish = async (values) => {
         const data = {
             oldPassword: values?.oldPassword,

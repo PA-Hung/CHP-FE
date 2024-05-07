@@ -15,7 +15,10 @@ import UpdateModal from "./update.modal";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
-import { accommodationOnchangeTable } from "../../redux/slice/accommodationSlice";
+import { accommodationOnchangeTable } from "@/redux/slice/accommodationSlice";
+import utc from 'dayjs/plugin/utc';
+// Kích hoạt plugin UTC
+dayjs.extend(utc);
 
 const AccommodationTable = (props) => {
   const { listAccommodation, loading, reloadTable, meta } = props;
@@ -89,7 +92,9 @@ const AccommodationTable = (props) => {
       dataIndex: "arrival",
       key: "arrival",
       render: (_value, record) => {
-        return <div>{dayjs(record.arrival).format("DD/MM/YYYY")}</div>;
+        return <div>
+          {dayjs.utc(record.arrival).format("DD/MM/YYYY (HH:mm)")}
+        </div>;
       },
     },
     {
@@ -97,7 +102,7 @@ const AccommodationTable = (props) => {
       dataIndex: "departure ",
       key: "departure ",
       render: (_value, record) => {
-        return <div>{record.departure ? dayjs(record.departure).format("DD/MM/YYYY") : ""}</div>;
+        return <div>{dayjs.utc(record.departure).format("DD/MM/YYYY (HH:mm)")}</div>;
       },
     },
     {

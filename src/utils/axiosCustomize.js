@@ -18,8 +18,6 @@ const handleRefreshToken = async () => {
         if (res && res.data) return res.data.access_token;
         if (res && res.statusCode === 400) {
             store.dispatch(setLogoutAction({}));
-            localStorage.removeItem('access_token');
-            window.location.href = '/login';
         }
         else return null;
     });

@@ -8,7 +8,7 @@ const DashboardTable = (props) => {
   const { result, isFetching } = props;
   const [meta, setMeta] = useState({
     current: 1,
-    pageSize: 15,
+    pageSize: 10,
     pages: 0,
     total: 0,
   });

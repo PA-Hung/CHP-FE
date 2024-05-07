@@ -24,6 +24,9 @@ dayjs.locale("vi");
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
+import utc from 'dayjs/plugin/utc';
+// Kích hoạt plugin UTC
+dayjs.extend(utc);
 
 const AccommodationCard = (props) => {
   const { listAccommodation, loading, reloadTable, meta } = props;
@@ -87,8 +90,8 @@ const AccommodationCard = (props) => {
                 <p>Ngày sinh : {dayjs(item.birthday).format("DD/MM/YYYY")}</p>
                 <p>CMND/CCCD : {item.identification_number}</p>
                 <p>Loại cư trú : {item.residential_status}</p>
-                <p>Ngày đến : {dayjs(item.arrival).format("DD/MM/YYYY")}</p>
-                <p>Ngày đi : {dayjs(item.departure).format("DD/MM/YYYY")}</p>
+                <p>Ngày đến : {dayjs.utc(item.arrival).format("DD/MM/YYYY (HH:mm)")}</p>
+                <p>Ngày đi : {dayjs.utc(item.departure).format("DD/MM/YYYY (HH:mm)")}</p>
                 <p>Mã căn hộ : {item.apartment.code}</p>
                 <Collapse
                   expandIcon={customExpandIcon}

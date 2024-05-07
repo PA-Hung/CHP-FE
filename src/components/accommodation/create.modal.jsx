@@ -10,7 +10,8 @@ import {
   Col,
 } from "antd";
 import { postCreateAccommodation } from "@/utils/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import dayjs from "dayjs";
 
 const CreateModal = (props) => {
   const {
@@ -18,7 +19,6 @@ const CreateModal = (props) => {
     isCreateModalOpen,
     setIsCreateModalOpen,
     apartmentCode,
-    setApartmentCode,
   } = props;
   const [form] = Form.useForm();
 
@@ -84,7 +84,30 @@ const CreateModal = (props) => {
       }
     }
 
-    const data = values; // viết gọn của 2 dòng trên
+    const data = {
+      name: values.name,
+      birthday: values.birthday,
+      gender: values.gender,
+      identification_number: values.identification_number,
+      passport: values.passport,
+      documents: values.documents,
+      phone: values.phone,
+      job: values.job,
+      workplace: values.workplace,
+      ethnicity: values.ethnicity,
+      nationality: values.nationality,
+      country: values.country,
+      province: values.province,
+      district: values.district,
+      ward: values.ward,
+      address: values.address,
+      residential_status: values.residential_status,
+      arrival: dayjs(values.arrival),
+      departure: dayjs(values.departure),
+      reason: values.reason,
+      apartment: values.apartment,
+    };
+
     const res = await postCreateAccommodation(data);
     if (res.data) {
       reloadTable();

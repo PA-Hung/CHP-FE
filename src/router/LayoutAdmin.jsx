@@ -125,11 +125,11 @@ const LayoutAdmin = () => {
   useEffect(() => {
     if (userPermissions?.length) {
 
-      const viewDashboard = userPermissions.find(
-        (item) =>
-          item.apiPath === ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE.apiPath &&
-          item.method === ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE.method
-      );
+      // const viewDashboard = userPermissions.find(
+      //   (item) =>
+      //     item.apiPath === ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE.apiPath &&
+      //     item.method === ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE.method
+      // );
 
       const viewUser = userPermissions.find(
         (item) =>

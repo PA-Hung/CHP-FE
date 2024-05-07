@@ -138,11 +138,11 @@ const AccommodationPage = () => {
     } else {
       temp = `current=${page}&pageSize=${pageSize}&${temp}&${sortBy}`;
     }
+    // console.log("temp", temp);
     return temp;
   };
 
   const onSearch = async (value) => {
-    console.log('value', value);
     setSearchValue(value);
     const query = buildQuery(value);
     dispatch(fetchAccommodation({ query }));

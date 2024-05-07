@@ -133,8 +133,8 @@ const UpdateModal = (props) => {
       ward: values.ward,
       address: values.address,
       residential_status: values.residential_status,
-      arrival: values.arrival,
-      departure: values.departure,
+      arrival: dayjs(values.arrival),
+      departure: dayjs(values.departure),
       reason: values.reason,
       apartment: values.apartment,
     };
