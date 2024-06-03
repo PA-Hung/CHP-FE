@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, notification, message, Upload, Row, Col, Select, Popconfirm } from "antd";
+import { Button, message, Upload, Row, Col, Select, Popconfirm } from "antd";
 import queryString from "query-string";
 import {
   PlusOutlined,
@@ -134,11 +134,10 @@ const AccommodationPage = () => {
 
     //mặc định sort theo updatedAt
     if (Object.keys(sortBy).length === 0) {
-      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-arrival`;
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-createdAt`;
     } else {
       temp = `current=${page}&pageSize=${pageSize}&${temp}&${sortBy}`;
     }
-    // console.log("temp", temp);
     return temp;
   };
 

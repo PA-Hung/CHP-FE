@@ -327,7 +327,7 @@ const LayoutAdmin = () => {
                 color: themeMode === "light" ? "black" : "white",
                 backgroundColor: themeMode === "light" ? "#cfd9f8" : "#141414",
               }}>
-                <span>CHP App ©2023 - Phiên bản 1.0 Created by Phan Anh Hùng</span>
+                <span>CHP App ©2023 - Phiên bản 1.1 Created by Phan Anh Hùng</span>
               </div>
             </Col>
           </Row>

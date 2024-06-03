@@ -120,7 +120,14 @@ const DashboardPage = () => {
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30, color: 'black' }}>
       <div style={{ paddingTop: 30, textAlign: 'center' }}>
-        Với đội ngũ nhân sự trẻ trung, năng động đầy nhiệt huyết và chân thành, Châu Homestay cam kết sẽ mang lại cho quý khách trải nghiệm tuyệt vời nhất khi lưu trú tại hệ thống của chúng tôi.
+        <h4>Bạn cần hỗ trợ hãy liên hệ : Châu Homestay Admin - 0963686963</h4>
+        <br />
+        <div style={{ textAlign: 'left' }}>
+          Thay đổi cập nhật phiên bản 1.1:<br />
+          - Sắp xếp lại hiển thị đăng ký lưu trú, mã căn hộ, người dùng theo thứ tự mới tạo thì hiển thị đầu tiên.<br />
+          - Fix lỗi hiển thị mã căn hộ gán cho người dùng.<br />
+          - Kiểm tra trùng lặp cho mục quản lý mã căn hộ
+        </div>
       </div>
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE}

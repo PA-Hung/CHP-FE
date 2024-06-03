@@ -185,7 +185,7 @@ const UserTable = () => {
 
     //mặc định sort theo updatedAt
     if (Object.keys(sortBy).length === 0) {
-      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-updatedAt`;
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-createdAt`;
     } else {
       temp = `current=${page}&pageSize=${pageSize}&${temp}&${sortBy}`;
     }

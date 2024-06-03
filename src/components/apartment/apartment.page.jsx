@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
-import { Button, notification, message, Upload, Row, Col, Select } from "antd";
+import { Button, Row, Col } from "antd";
 import queryString from "query-string";
 import {
   PlusOutlined,
-  SearchOutlined,
-  ImportOutlined,
-  DownloadOutlined,
-  LoadingOutlined,
 } from "@ant-design/icons";
 import CreateModal from "./create.modal";
 import dayjs from "dayjs";
@@ -75,7 +71,7 @@ const ApartmentPage = () => {
 
     //mặc định sort theo updatedAt
     if (Object.keys(sortBy).length === 0) {
-      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-arrival`;
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-createdAt`;
     } else {
       temp = `current=${page}&pageSize=${pageSize}&${temp}&${sortBy}`;
     }
