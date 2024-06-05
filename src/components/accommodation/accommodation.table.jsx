@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Table,
   Button,
@@ -7,7 +7,7 @@ import {
   message,
   Descriptions,
 } from "antd";
-import { deleteAccommodation } from "../../utils/api";
+import { deleteAccommodation } from "@/utils/api";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
@@ -40,6 +40,16 @@ const AccommodationTable = (props) => {
     }
   };
 
+  // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
+  const uniqueNames = [...new Set(listAccommodation.map(item => item.name))];
+  // Tạo các bộ lọc từ các giá trị duy nhất
+  const filtersName = uniqueNames.map(name => ({ text: name, value: name }));
+
+  // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
+  const uniqueAparments = [...new Set(listAccommodation.map(item => item.apartment?.code).filter(code => code !== undefined))];
+  // Tạo các bộ lọc từ các giá trị duy nhất
+  const filtersAparment = uniqueAparments.map(code => ({ text: code, value: code }));
+
   const columns = [
     {
       title: "STT",
@@ -55,6 +65,11 @@ const AccommodationTable = (props) => {
       title: "Họ tên",
       dataIndex: "name",
       key: "name",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      filters: filtersName,
+      onFilter: (value, record) => record.name.startsWith(value),
+      filterMode: 'tree',
+      filterSearch: true,
       render: (_value, record) => {
         return (
           <div
@@ -109,6 +124,11 @@ const AccommodationTable = (props) => {
       title: "Mã căn hộ",
       dataIndex: "apartment",
       key: "apartment",
+      sorter: (a, b) => a.apartment.code.localeCompare(b.apartment.code),
+      filters: filtersAparment,
+      onFilter: (value, record) => record.apartment.code.startsWith(value),
+      filterMode: 'tree',
+      filterSearch: true,
       render: (_value, record) => {
         return <div>{record.apartment.code}</div>;
       },

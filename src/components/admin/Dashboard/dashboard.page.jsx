@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Row, Col, DatePicker } from "antd";
+import { Row, Col, DatePicker, Collapse } from "antd";
 import queryString from "query-string";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -21,6 +21,8 @@ const DashboardPage = () => {
   const [searchValue, setSearchValue] = useState(null);
   const [defaultDate, setDefaultDate] = useState({ arrival: dayjs(), departure: dayjs().add(1, "day") });
   const [apartment, setApartment] = useState();
+  const themeMode = useSelector((state) => state.theme.themeMode);
+  const isHost = useSelector((state) => state.auth.user.role);
 
   useEffect(() => {
     const initData = async () => {
@@ -37,7 +39,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const initApartment = async () => {
-      const res = await getApartment(`current=1&pageSize=100`);
+      const res = await getApartment(`current=1&pageSize=200`);
       if (res.data?.result) {
         setApartment(res.data?.result);
       }
@@ -60,12 +62,6 @@ const DashboardPage = () => {
   // console.log('apartment', apartment);
   // console.log('dashboard', dashboard);
   // console.log('result', result);
-
-  // const reloadTable = () => {
-  //   const query = buildQuery();
-  //   dispatch(fetchDashboard({ query }));
-  //   setSearchValue(null);
-  // };
 
   const buildQuery = (
     params,
@@ -117,17 +113,38 @@ const DashboardPage = () => {
     dispatch(fetchDashboard({ query }));
   }
 
+  const text =
+    <div style={{ textAlign: 'center', color: themeMode === "light" ? "#141414" : "white" }}>
+      <div style={{ textAlign: 'left' }}>
+        <b>Thay đổi cập nhật phiên bản 1.2:</b><br />
+        - Thêm cột host quản lý vào bảng trong mục quản lý căn hộ <br />
+        - Thêm tuỳ chọn sắp xếp và bộ lọc vào bảng trong mục quản lý căn hộ <br />
+        - Thêm tuỳ chọn sắp xếp và bộ lọc vào bảng trong mục quản lý lưu trú, cột tên và cột mã căn hộ <br />
+        - Thay đổi dao diện thông cáo cập nhật phiên bản ở trang chủ
+      </div>
+      <br />
+      <div style={{ textAlign: 'left' }}>
+        <b>Thay đổi cập nhật phiên bản 1.1:</b><br />
+        - Sắp xếp lại hiển thị đăng ký lưu trú, mã căn hộ, người dùng theo thứ tự mới tạo thì hiển thị đầu tiên.<br />
+        - Fix lỗi hiển thị mã căn hộ gán cho người dùng.<br />
+        - Kiểm tra trùng lặp cho mục quản lý mã căn hộ
+      </div>
+    </div>;
+
+  console.log('isHost', isHost);
+
   return (
-    <div style={{ paddingLeft: 30, paddingRight: 30, color: 'black' }}>
-      <div style={{ paddingTop: 30, textAlign: 'center' }}>
-        <h4>Bạn cần hỗ trợ hãy liên hệ : Châu Homestay Admin - 0963686963</h4>
-        <br />
-        <div style={{ textAlign: 'left' }}>
-          Thay đổi cập nhật phiên bản 1.1:<br />
-          - Sắp xếp lại hiển thị đăng ký lưu trú, mã căn hộ, người dùng theo thứ tự mới tạo thì hiển thị đầu tiên.<br />
-          - Fix lỗi hiển thị mã căn hộ gán cho người dùng.<br />
-          - Kiểm tra trùng lặp cho mục quản lý mã căn hộ
-        </div>
+    <div style={{ paddingLeft: 30, paddingRight: 30, }}>
+      <div style={{ paddingTop: 30 }}>
+        <Collapse
+          items={[
+            {
+              key: '1',
+              label: <h4>Bạn cần hỗ trợ hãy liên hệ : Châu Homestay Admin - 0963686963</h4>,
+              children: <>{text}</>,
+            }]}
+          defaultActiveKey={isHost.name === 'Host' ? [1] : []}
+        />
       </div>
       <CheckAccess
         FeListPermission={ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE}
