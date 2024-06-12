@@ -17,6 +17,11 @@ import {
   ApiOutlined,
   CalendarOutlined,
   ApartmentOutlined,
+  CarOutlined,
+  ContactsOutlined,
+  RedditOutlined,
+  FileTextOutlined,
+  TeamOutlined
 } from "@ant-design/icons";
 import Logo from "@/components/admin/logo.jsx";
 import ToggleThemeButton from "@/components/admin/toggleTheme.jsx";
@@ -30,6 +35,7 @@ import { ALL_PERMISSIONS } from "@/utils/permission.module";
 
 const { Sider, Content } = Layout;
 
+
 const LayoutAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const dispatch = useDispatch();
@@ -42,6 +48,8 @@ const LayoutAdmin = () => {
 
   const activeMenu = useSelector((state) => state.menu.activeKey);
   const [menuItems, setMenuItems] = useState(["items"]);
+
+  const isAdmin = useSelector((state) => state.auth.user.role);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -120,16 +128,18 @@ const LayoutAdmin = () => {
         })
       );
     }
+    if (e.key === "bookings") {
+      dispatch(
+        setActiveKey({
+          activeKey: e.key,
+          title: "Hợp đồng thuê",
+        })
+      );
+    }
   };
 
   useEffect(() => {
     if (userPermissions?.length) {
-
-      // const viewDashboard = userPermissions.find(
-      //   (item) =>
-      //     item.apiPath === ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE.apiPath &&
-      //     item.method === ALL_PERMISSIONS.DASHBOARD.GET_PAGINATE.method
-      // );
 
       const viewUser = userPermissions.find(
         (item) =>
@@ -169,61 +179,97 @@ const LayoutAdmin = () => {
           visible: "true",
         },
 
-        // ...(viewDashboard
-        //   ? [
-        //     {
-        //       label: <Link to={"/admin"}>Trang chủ</Link>,
-        //       key: "home",
-        //       icon: <HomeOutlined />,
-        //     },
-        //   ]
-        //   : []),
+        ...(viewAccommodation ? [{
+          key: 'sub1',
+          label: 'Quản lý lưu trú',
+          icon: <CalendarOutlined />,
+          children: [
+            ...(viewApartment
+              ? [
+                {
+                  label: <Link to={"/admin/apartment"}>Quản lý căn hộ</Link>,
+                  key: "apartment",
+                  icon: <ApartmentOutlined />,
+                },
+              ]
+              : []),
+            ...(viewAccommodation
+              ? [
+                {
+                  label: <Link to={"/admin/accommodation"}>Khách lưu trú</Link>,
+                  key: "accommodation",
+                  icon: <ContactsOutlined />,
+                },
+              ]
+              : []),
+            ...(viewUser
+              ? [
+                {
+                  label: <Link to="/admin/user">Quản lý host</Link>,
+                  key: "user",
+                  icon: <UserOutlined />,
+                },
+              ]
+              : []),
+          ],
+        },] : []),
 
-        ...(viewApartment
-          ? [
+        ...(isAdmin.name === "SUPER_ADMIN" ? [{
+          key: 'sub2',
+          label: 'Quản lý thuê xe',
+          icon: <CarOutlined />,
+          children: [
             {
-              label: <Link to={"/admin/apartment"}>Quản lý căn hộ</Link>,
-              key: "apartment",
-              icon: <ApartmentOutlined />,
+              key: 'bookings',
+              label: <Link to="/admin/bookings">Hợp đồng thuê</Link>,
+              icon: <FileTextOutlined />
             },
-          ]
-          : []),
-        ...(viewAccommodation
-          ? [
             {
-              label: <Link to={"/admin/accommodation"}>Quản lý lưu trú</Link>,
-              key: "accommodation",
-              icon: <CalendarOutlined />,
+              key: '10',
+              label: 'Lịch cho thuê',
+              icon: <CalendarOutlined />
             },
-          ]
-          : []),
-        ...(viewUser
-          ? [
             {
-              label: <Link to="/admin/user">Quản lý thành viên</Link>,
-              key: "user",
-              icon: <UserOutlined />,
+              key: '11',
+              label: 'Danh sách xe',
+              icon: <CarOutlined />
             },
-          ]
-          : []),
-        ...(viewRole
-          ? [
             {
-              label: <Link to="/admin/role">Quản lý chức danh</Link>,
-              key: "role",
-              icon: <ExceptionOutlined />,
+              key: '12',
+              label: 'Khách hàng',
+              icon: <TeamOutlined />
             },
-          ]
-          : []),
-        ...(viewPermission
-          ? [
-            {
-              label: <Link to="/admin/permission">Quản lý quyền hạn</Link>,
-              key: "permission",
-              icon: <ApiOutlined />,
-            },
-          ]
-          : []),
+          ],
+        },
+        ] : []),
+
+        ...(isAdmin.name === "SUPER_ADMIN" ? [{
+          key: 'sub3',
+          label: 'Dành cho admin',
+          icon: <RedditOutlined />,
+          children: [
+            ...(viewRole
+              ? [
+                {
+                  label: <Link to="/admin/role">Quản lý chức danh</Link>,
+                  key: "role",
+                  icon: <ExceptionOutlined />,
+                },
+              ]
+              : []),
+            ...(viewPermission
+              ? [
+                {
+                  label: <Link to="/admin/permission">Quản lý quyền hạn</Link>,
+                  key: "permission",
+                  icon: <ApiOutlined />,
+                },
+              ]
+              : []),
+
+          ],
+        },] : []),
+
         {
           label: <Link onClick={() => handleLogout()}>Đăng xuất</Link>,
           key: "logout",
@@ -278,7 +324,7 @@ const LayoutAdmin = () => {
           <div>
             <Menu
               onClick={handleMenu}
-              style={{ height: "100vh" }}
+              style={{ height: "100vh", width: 210, fontWeight: 500 }}
               mode="vertical"
               items={menuItems}
               defaultSelectedKeys={["home"]}

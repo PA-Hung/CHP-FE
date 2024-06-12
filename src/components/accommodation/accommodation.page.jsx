@@ -87,7 +87,7 @@ const AccommodationPage = () => {
     pageSize = meta.pageSize
   ) => {
     const clone = { ...params };
-    if (isAdmin.name !== "SUPER_ADMIN") {
+    if (isAdmin.name !== "SUPER_ADMIN" & isAdmin.name !== "Supervisor") {
       if (user?._id) clone.userId = `/${user._id}/i`;
     }
     if (clone.apartment) clone.apartment = `/${clone.apartment}/i`;

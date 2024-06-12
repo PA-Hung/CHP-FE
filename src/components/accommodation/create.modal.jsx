@@ -146,6 +146,7 @@ const CreateModal = (props) => {
                 rules={[{ required: true, message: "Chọn mã căn hộ !" }]}
               >
                 <Select
+                  listHeight={320}
                   placeholder="Chọn mã căn hộ"
                   allowClear
                   options={apartmentCode}

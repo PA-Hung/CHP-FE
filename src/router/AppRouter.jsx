@@ -10,6 +10,7 @@ import RolePage from "../components/role/role.page";
 import PermissionPage from "../components/permission/permission.page";
 import ApartmentPage from "../components/apartment/apartment.page";
 import NotFound from "./not.found";
+import BookingPage from "../components/bookings/booking.page";
 
 export const router = createBrowserRouter([
   {
@@ -73,6 +74,14 @@ export const router = createBrowserRouter([
           <ProtectedRoute>
             <PermissionPage />
           </ProtectedRoute>
+        ),
+      },
+      {
+        path: "bookings",
+        element: (
+          // <ProtectedRoute>
+          <BookingPage />
+          // </ProtectedRoute>
         ),
       },
     ],

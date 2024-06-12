@@ -55,27 +55,41 @@ const UpdateUserModal = (props) => {
 
   const onFinish = async (values) => {
     const { name, phone, role, apartments } = values;
+
+    const hasObject = (arr) => {
+      return arr.some(element => typeof element === 'object' && element !== null && !Array.isArray(element));
+    }
+
     const data = {
       _id: updateData?._id,
       name,
       phone,
       role,
-      apartments,
+      apartments: hasObject(apartments) ? apartments.map(element => element.value) : apartments,
     };
 
-    const res = await updateUser(data);
-    if (res.data) {
-      reloadTable();
-      message.success("Cập nhật người dùng thành công !");
-      resetModal();
-    } else {
+    try {
+      const res = await updateUser(data);
+      if (res.data) {
+        reloadTable();
+        message.success("Cập nhật người dùng thành công !");
+        resetModal();
+      } else {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          placement: "top",
+          description: res.message,
+        });
+      }
+    } catch (error) {
       notification.error({
         message: "Có lỗi xảy ra",
         placement: "top",
-        description: res.message,
+        description: error.message,
       });
     }
   };
+
 
   const resetModal = () => {
     setIsUpdateModalOpen(false);

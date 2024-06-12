@@ -1,5 +1,10 @@
 import axios from '@/utils/axiosCustomize'
 
+// booking    ------------------------------------
+export const getBooking = (query) => {
+    return axios.get(`api/v1/bookings?${query}`)
+}
+
 // dashboard    ------------------------------------
 export const getDashboard = (query) => {
     return axios.get(`api/v1/accommodation/dashboard?${query}`)

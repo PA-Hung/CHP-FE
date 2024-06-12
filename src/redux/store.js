@@ -20,6 +20,7 @@ import permissionReducer from './slice/permissionSlice';
 import accommodationReducer from './slice/accommodationSlice';
 import apartmentReducer from './slice/apartmentSlice';
 import dashboardReducer from './slice/dashboardSlice';
+import bookingReducer from './slice/bookingSlice'
 
 
 const rootReducer = combineReducers({
@@ -31,7 +32,8 @@ const rootReducer = combineReducers({
     permission: permissionReducer,
     accommodation: accommodationReducer,
     apartment: apartmentReducer,
-    dashboard: dashboardReducer
+    dashboard: dashboardReducer,
+    booking: bookingReducer
 });
 
 const persistConfig = {
