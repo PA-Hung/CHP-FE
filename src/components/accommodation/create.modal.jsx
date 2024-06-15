@@ -85,7 +85,7 @@ const CreateModal = (props) => {
     }
 
     const data = {
-      name: values.name,
+      name: values.name.toUpperCase(),
       birthday: values.birthday,
       gender: values.gender,
       identification_number: values.identification_number,

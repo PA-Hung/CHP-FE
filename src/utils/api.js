@@ -5,6 +5,20 @@ export const getBooking = (query) => {
     return axios.get(`api/v1/bookings?${query}`)
 }
 
+// guest --------------------------------------
+export const getGuest = (query) => {
+    return axios.get(`api/v1/guests?${query}`)
+}
+
+export const postCreateGuest = (data) => {
+    return axios.post('api/v1/guests', data)
+}
+// motor -------------------------------------
+export const getMotor = (query) => {
+    return axios.get(`api/v1/motors?${query}`)
+}
+
+
 // dashboard    ------------------------------------
 export const getDashboard = (query) => {
     return axios.get(`api/v1/accommodation/dashboard?${query}`)

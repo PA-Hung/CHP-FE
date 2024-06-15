@@ -26,7 +26,7 @@ const BookingPage = () => {
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState(null);
 
-  console.log('listBookings', listBookings);
+
 
   useEffect(() => {
     const initData = async () => {

@@ -10,7 +10,7 @@ import {
   Row,
   Col,
 } from "antd";
-import { getApartment, updateAccommodation } from "../../utils/api";
+import { getApartment, updateAccommodation } from "@/utils/api";
 import dayjs from "dayjs";
 
 const UpdateModal = (props) => {
@@ -116,7 +116,7 @@ const UpdateModal = (props) => {
 
     const data = {
       _id: updateData?._id,
-      name: values.name,
+      name: values.name.toUpperCase(),
       birthday: values.birthday,
       gender: values.gender,
       identification_number: values.identification_number,

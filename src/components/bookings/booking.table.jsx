@@ -76,7 +76,7 @@ const BookingTable = (props) => {
       },
     },
     {
-      title: "Ngày đi",
+      title: "Ngày thuê",
       render: (_value, record) => {
         return <div>{record.start_date}</div>;
       },

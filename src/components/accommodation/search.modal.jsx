@@ -15,6 +15,7 @@ const SearchModal = (props) => {
     form.resetFields();
   };
   const [form] = Form.useForm();
+
   const handleSearch = () => {
     form.submit();
     setIsSearchModalOpen(false);
