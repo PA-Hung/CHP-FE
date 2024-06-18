@@ -20,7 +20,7 @@ const MotorTable = (props) => {
     const calculateRentalDays = (startDate, endDate) => {
         const start = startDate ? dayjs(startDate) : dayjs();
         const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
-        return end.diff(start, 'hour');
+        return end.diff(start, 'day');
     }
 
     const formatCurrency = (amount) => {
@@ -29,7 +29,7 @@ const MotorTable = (props) => {
 
     useEffect(() => {
         if (listMotorsSelected) {
-            setTotal(listMotorsSelected.reduce((sum, item) => sum + parseInt(item.price * calculateRentalDays(item.start_date, item.end_date), 10), 0))
+            setTotal(listMotorsSelected.reduce((sum, item) => sum + parseInt(item.priceD * calculateRentalDays(item.start_date, item.end_date), 10), 0))
         }
     }, [listMotorsSelected])
 
@@ -120,8 +120,6 @@ const MotorTable = (props) => {
         }
     };
 
-
-
     const columns = [
         {
             // title: "Actions",
@@ -172,7 +170,7 @@ const MotorTable = (props) => {
                         </div>
                         <div>
                             {<Tag bordered={true} color="volcano">
-                                {calculateRentalDays(record?.start_date, record?.end_date)} giờ
+                                {calculateRentalDays(record?.start_date, record?.end_date)} ngày
                             </Tag>}
                         </div>
                     </div>
@@ -186,7 +184,7 @@ const MotorTable = (props) => {
             render: (_value, record) => {
                 return (
                     <div style={{ fontWeight: 600 }}>
-                        {formatCurrency(record?.price * calculateRentalDays(record?.start_date, record?.end_date))}
+                        {formatCurrency(record?.priceD * calculateRentalDays(record?.start_date, record?.end_date))}
                     </div>
                 )
             },

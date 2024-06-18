@@ -1,11 +1,8 @@
 import { Card, Checkbox, Form, InputNumber, Select, notification } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const BillingCard = (props) => {
-    const { total, deposit, setDeposit, discount, setDiscount, amount, setAmount, method, setMethod } = props
-    const [checkedBox, setCheckedBox] = useState('nodiscount');
-    const [form] = Form.useForm();
-
+    const { total, deposit, setDeposit, discount, setDiscount, amount, setAmount, method, setMethod, form, checkedBox, setCheckedBox } = props
 
     const onChange = (e) => {
         setCheckedBox(e.target.name);
@@ -91,12 +88,12 @@ const BillingCard = (props) => {
                         >
                             <Form.Item name="discount">
                                 <InputNumber
-                                    placeholder="Giảm giá"
                                     addonAfter={<b>đ</b>}
                                     formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
                                     step={1} // Bước nhảy
-                                    style={{ width: "100%" }}
                                     controls={false}
+                                    placeholder="Giảm giá"
+                                    style={{ width: "100%" }}
                                     onChange={handleChangeDiscount}
                                     value={discount}
                                     size="large"

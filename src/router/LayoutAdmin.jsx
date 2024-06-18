@@ -136,6 +136,14 @@ const LayoutAdmin = () => {
         })
       );
     }
+    if (e.key === "motors") {
+      dispatch(
+        setActiveKey({
+          activeKey: e.key,
+          title: "Danh sách xe",
+        })
+      );
+    }
   };
 
   useEffect(() => {
@@ -230,8 +238,8 @@ const LayoutAdmin = () => {
               icon: <CalendarOutlined />
             },
             {
-              key: '11',
-              label: 'Danh sách xe',
+              key: 'motors',
+              label: <Link to="/admin/motors">Danh sách xe</Link>,
               icon: <CarOutlined />
             },
             {

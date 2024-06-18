@@ -129,7 +129,7 @@ const MotorSearchModal = (props) => {
                                         <div style={{ fontWeight: 500 }}>Biển số : <Tag color="blue">{item.license}</Tag></div>
                                     </div>
                                 </div>
-                                <div style={{ fontWeight: 600 }}>Giá thuê : {formatCurrency(item.price)}/h</div>
+                                <div style={{ fontWeight: 600 }}>Giá thuê : {formatCurrency(item.priceD)}/h</div>
                             </div>
                         </Card>
                     ))}

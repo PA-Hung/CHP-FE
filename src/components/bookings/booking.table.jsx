@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Table, Button, notification, Popconfirm, message, Tag, Select, Dropdown } from "antd";
-import { deleteApartment } from "@/utils/api";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
-import UpdateModal from "./update.modal";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
-import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
+import { bookingOnchangeTable } from "@/redux/slice/bookingSlice";
 import { MenuOutlined, DeleteOutlined, PrinterOutlined, EditOutlined, ApiOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { deleteBooking } from "@/utils/api";
 
 const BookingTable = (props) => {
   const { listBookings, loading, reloadTable, meta } = props;
@@ -149,7 +148,8 @@ const BookingTable = (props) => {
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Dropdown
               placement="bottom"
-              menu={{ items }}
+              menu={{ items: items(record) }}
+              trigger={['click']}
             >
               <MenuOutlined />
             </Dropdown>
@@ -159,7 +159,8 @@ const BookingTable = (props) => {
     },
   ];
 
-  const items = [
+
+  const items = (record) => [
     {
       key: '1',
       label: (
@@ -190,13 +191,34 @@ const BookingTable = (props) => {
     {
       key: '4',
       label: (
-        <div style={{ display: "flex", flexDirection: "row", gap: 10, color: "red" }}>
-          <div><DeleteOutlined /></div>
-          <div>Huỷ hợp đồng</div>
-        </div>
+        <Popconfirm
+          title={`Bạn muốn xoá hợp đồng của ${record.guest_id.name} không ?`}
+          onConfirm={() => confirmDeleteBooking(record)}
+          okText="Yes"
+          cancelText="No"
+        >
+          <div style={{ display: "flex", flexDirection: "row", gap: 10, color: "red" }}>
+            <div><DeleteOutlined /></div>
+            <div>Huỷ hợp đồng</div>
+          </div>
+        </Popconfirm>
       ),
     },
   ];
+
+  const confirmDeleteBooking = async (book) => {
+    const res = await deleteBooking(book._id);
+    if (res.data) {
+      reloadTable();
+      message.success("Xoá hợp đồng thành công !");
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: res.message,
+      });
+    }
+  };
 
   return (
     <>
@@ -217,7 +239,7 @@ const BookingTable = (props) => {
             `${range[0]} - ${range[1]} of ${total} items`,
           onChange: (page, pageSize) =>
             dispatch(
-              apartmentOnchangeTable({
+              bookingOnchangeTable({
                 current: page,
                 pageSize: pageSize,
                 pages: meta.pages,
@@ -228,13 +250,13 @@ const BookingTable = (props) => {
           defaultPageSize: meta.pageSize,
         }}
       />
-      <UpdateModal
+      {/* <UpdateModal
         updateData={updateData}
         reloadTable={reloadTable}
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
         setUpdateData={setUpdateData}
-      />
+      /> */}
     </>
   );
 };

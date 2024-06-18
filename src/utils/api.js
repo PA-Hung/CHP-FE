@@ -9,6 +9,14 @@ export const postCreateBooking = (data) => {
     return axios.post('api/v1/bookings', data)
 }
 
+export const deleteBooking = (id) => {
+    return axios.delete(`api/v1/bookings/${id}`)
+}
+
+export const updateBooking = (data) => {
+    return axios.patch('api/v1/bookings', data)
+}
+
 // guest --------------------------------------
 export const getGuest = (query) => {
     return axios.get(`api/v1/guests?${query}`)
@@ -17,9 +25,18 @@ export const getGuest = (query) => {
 export const postCreateGuest = (data) => {
     return axios.post('api/v1/guests', data)
 }
+
 // motor -------------------------------------
 export const getMotor = (query) => {
     return axios.get(`api/v1/motors?${query}`)
+}
+
+export const postCreateMotor = (data) => {
+    return axios.post('api/v1/motors', data)
+}
+
+export const deleteMotor = (id) => {
+    return axios.delete(`api/v1/motors/${id}`)
 }
 
 

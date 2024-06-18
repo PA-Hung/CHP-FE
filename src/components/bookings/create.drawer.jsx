@@ -1,9 +1,9 @@
-import { notification, message, Row, Col, Drawer, Space, Button } from "antd";
-import { GuestCard } from "./guest/guest.card";
-import { StatusCard } from "./guest/status.card";
-import MotorTable from "./motor/motor.table";
-import { SalesManCard } from "./guest/salesman.card";
-import BillingCard from "./billing.infomation/billing.card";
+import { notification, message, Row, Col, Drawer, Space, Button, Form } from "antd";
+import { GuestCard } from "./create.module/guest/guest.card";
+import { StatusCard } from "./create.module/guest/status.card";
+import MotorTable from "./create.module/motor/motor.table";
+import { SalesManCard } from "./create.module/guest/salesman.card";
+import BillingCard from "./create.module/billing.infomation/billing.card";
 import { useState } from "react";
 import dayjs from "dayjs";
 import { postCreateBooking } from "@/utils/api";
@@ -20,24 +20,66 @@ const CreateDrawer = (props) => {
   const [amount, setAmount] = useState("")
   const [total, setTotal] = useState()
   const [method, setMethod] = useState()
+  const [checkedBox, setCheckedBox] = useState("nodiscount");
 
-  console.log('deposit', deposit);
-  console.log('discount', discount);
-  console.log('amount', amount);
+  const [form] = Form.useForm();
 
   const resetDrawer = () => {
     setIsCreateDrawerOpen(false);
     setStatus(null)
     setSalesMan(null)
     setGuestData(null)
-    setDiscount("")
-    setDeposit("")
+    setDiscount(null)
+    setDeposit(null)
     setTotal("")
     setAmount("")
+    setMethod(null)
     setListMotorsSelected([])
+    setCheckedBox("nodiscount")
+    form.resetFields();
   };
 
   const onFinish = async () => {
+    if (!guestData) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: "Bạn phải chọn khách hàng",
+      });
+      return
+    }
+    if (listMotorsSelected.length === 0) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: "Bạn phải chọn xe",
+      });
+      return
+    }
+    if (!salesman) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: "Bạn phải chọn nhân viên bán hàng",
+      });
+      return
+    }
+    if (!method) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: "Bạn phải chọn phương thức thanh toán",
+      });
+      return
+    }
+    if (!status) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: "Bạn phải chọn trạng thái hợp đồng",
+      });
+      return
+    }
     const data = {
       start_date: dayjs(),
       motors: listMotorsSelected,
@@ -121,6 +163,9 @@ const CreateDrawer = (props) => {
                   setAmount={setAmount}
                   method={method}
                   setMethod={setMethod}
+                  form={form}
+                  checkedBox={checkedBox}
+                  setCheckedBox={setCheckedBox}
                 />
               </div>
             </div>

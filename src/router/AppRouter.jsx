@@ -11,6 +11,7 @@ import PermissionPage from "../components/permission/permission.page";
 import ApartmentPage from "../components/apartment/apartment.page";
 import NotFound from "./not.found";
 import BookingPage from "../components/bookings/booking.page";
+import MotorsPage from "../components/motors/motors.page";
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +82,14 @@ export const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <BookingPage />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "motors",
+        element: (
+          // <ProtectedRoute>
+          <MotorsPage />
           // </ProtectedRoute>
         ),
       },
