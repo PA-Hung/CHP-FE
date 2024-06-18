@@ -1,5 +1,6 @@
-import { Modal, Input, notification, Form, message, Row, Col, Select, InputNumber } from "antd";
+import { Modal, Input, notification, Form, message, Row, Col, InputNumber, Switch } from "antd";
 import { postCreateMotor } from "@/utils/api";
+import TextArea from "antd/es/input/TextArea";
 
 const CreateModal = (props) => {
   const { reloadTable, isCreateModalOpen, setIsCreateModalOpen } = props;
@@ -11,7 +12,7 @@ const CreateModal = (props) => {
   };
 
   const onFinish = async (values) => {
-    //console.log("values", values);
+    console.log('values', values);
     const data = values; // viết gọn của 2 dòng trên
     const res = await postCreateMotor(data);
     if (res.data) {
@@ -41,6 +42,9 @@ const CreateModal = (props) => {
           onFinish={onFinish}
           layout="vertical"
           form={form}
+          initialValues={{
+            availability_status: true, // Set the default value here
+          }}
         >
           <Row gutter={[8, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
@@ -64,23 +68,15 @@ const CreateModal = (props) => {
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-              <Form.Item
-                label="Tình trạng"
-                name="status"
-                rules={[{ required: true, message: "Chọn tình trạng xe !" }]}
-              >
-                <Select
-                  placeholder="Chọn tình trạng xe"
-                  allowClear
-                  options={[
-                    { value: "Hoạt động", label: "Hoạt động" },
-                    { value: "Xe bảo dưỡng", label: "Xe bảo dưỡng" },
-                    { value: "Xe tai nạn", label: "Xe tai nạn" },
-                    { value: "Khoá", label: "Khoá" },
-                  ]}
-                />
-              </Form.Item>
-
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Form.Item
+                  label="Tình trạng"
+                  name="availability_status"
+                  valuePropName="checked"
+                >
+                  <Switch checkedChildren="Hoạt đông" unCheckedChildren="Bảo trì" />
+                </Form.Item>
+              </div>
             </Col>
           </Row>
           <Row gutter={[8, 8]} justify="center" wrap={true}>
@@ -98,7 +94,6 @@ const CreateModal = (props) => {
                   controls={false}
                 />
               </Form.Item>
-
             </Col>
             <Col xs={24} sm={24} md={24} lg={12} xl={12}>
               <Form.Item
@@ -113,6 +108,16 @@ const CreateModal = (props) => {
                   step={1} // Bước nhảy
                   controls={false}
                 />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+              <Form.Item
+                label="Ghi chú"
+                name="note"
+              >
+                <TextArea showCount maxLength={100} rows={3} style={{ resize: "none" }} />
               </Form.Item>
             </Col>
           </Row>

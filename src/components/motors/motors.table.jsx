@@ -74,7 +74,7 @@ const MotorsTable = (props) => {
       // filterMode: 'tree',
       // filterSearch: true,
       render: (_value, record) => {
-        return <div>{record?.status}</div>;
+        return <div>{record?.availability_status ? "Hoạt động" : "Bảo trì"}</div>;
       },
     },
     {

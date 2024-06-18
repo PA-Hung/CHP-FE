@@ -43,6 +43,10 @@ const MotorTable = (props) => {
         const clone = { ...params };
         if (clone.license) clone.license = `/${clone.license}/i`;
         if (clone.brand) clone.brand = `/${clone.brand}/i`;
+        if (!clone.hasOwnProperty('availability_status')) clone.availability_status = true;
+        else clone.availability_status = `/${clone.availability_status}/i`;
+        if (!clone.hasOwnProperty('rental_status')) clone.rental_status = false;
+        else clone.rental_status = `/${clone.rental_status}/i`;
 
         let temp = queryString.stringify(clone);
 
@@ -52,6 +56,12 @@ const MotorTable = (props) => {
         }
         if (sort && sort.brand) {
             sortBy = sort.brand === "ascend" ? "sort=brand" : "sort=-brand";
+        }
+        if (sort && sort.availability_status) {
+            sortBy = sort.brand === "ascend" ? "sort=availability_status" : "sort=-availability_status";
+        }
+        if (sort && sort.rental_status) {
+            sortBy = sort.brand === "ascend" ? "sort=rental_status" : "sort=-rental_status";
         }
 
         if (sort && sort.createdAt) {
