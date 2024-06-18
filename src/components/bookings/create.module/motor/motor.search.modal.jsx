@@ -37,7 +37,8 @@ const MotorSearchModal = (props) => {
         return motors.map(item => ({
             ...item,
             start_date: dateHire?.start_date ? dateHire.start_date : dayjs(),
-            end_date: dateHire?.end_date ? dateHire.end_date : dayjs().add(1, "day")
+            end_date: dateHire?.end_date ? dateHire.end_date : dayjs().add(1, "day"),
+            rental_status: true
         }));
     };
 
@@ -62,7 +63,13 @@ const MotorSearchModal = (props) => {
         }
         setDefautDate([dayjs(), dayjs().add(1, 'day')]);
         setIsSearchModalOpen(false);
+        reloadTable()
     };
+
+    const handleCancel = () => {
+        setIsSearchModalOpen(false)
+        reloadTable()
+    }
 
 
     const handleTimeChange = (e) => {
@@ -83,16 +90,16 @@ const MotorSearchModal = (props) => {
                 title="Chọn xe để đưa vào hợp đồng :"
                 open={isSearchModalOpen}
                 onOk={handleClickOk}
-                onCancel={() => setIsSearchModalOpen(false)}
+                onCancel={() => handleCancel()}
                 maskClosable={false}
                 width={"40%"}
             >
                 <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
-                    <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+                    <div style={{ display: "flex", gap: 5, justifyContent: "center" }}>
                         <div>
                             <RangePicker
                                 showTime={{ format: 'HH' }} // Chỉ hiển thị giờ
-                                format="HH giờ DD-MM-YYYY"      // Định dạng hiển thị ngày tháng năm và giờ
+                                format="DD-MM-YYYY/HH"      // Định dạng hiển thị ngày tháng năm và giờ
                                 placeholder={['Ngày bắt đầu', 'Ngày kết thúc']} // Placeholder bằng tiếng Việt 
                                 defaultValue={[dayjs(), dayjs().add(1, 'day')]}
                                 onChange={(e) => handleTimeChange(e)}
@@ -107,7 +114,6 @@ const MotorSearchModal = (props) => {
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
                             />
-                            <Button danger onClick={() => reloadTable()}>Tải lại</Button>
                         </div>
                     </div>
                 </div>

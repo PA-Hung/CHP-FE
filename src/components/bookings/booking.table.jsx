@@ -7,7 +7,7 @@ import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
 import { bookingOnchangeTable } from "@/redux/slice/bookingSlice";
-import { MenuOutlined, DeleteOutlined, PrinterOutlined, EditOutlined, ApiOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { MenuOutlined, DeleteOutlined, PrinterOutlined, EditOutlined, ApiOutlined, CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { deleteBooking } from "@/utils/api";
 
 const BookingTable = (props) => {
@@ -26,6 +26,8 @@ const BookingTable = (props) => {
   // // Tạo các bộ lọc từ các giá trị duy nhất
   // const filtersHost = uniqueHosts.map(user => ({ text: `Host "${user}"`, value: user }));
 
+
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
@@ -34,11 +36,6 @@ const BookingTable = (props) => {
     const start = startDate ? dayjs(startDate) : dayjs();
     const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
     return end.diff(start, 'day');
-  }
-
-  const handleStatusChange = ({ _id, status }) => {
-    console.log('status', status);
-    console.log('_id', _id);
   }
 
   const columns = [
@@ -62,12 +59,12 @@ const BookingTable = (props) => {
       // filterMode: 'tree',
       // filterSearch: true,
       render: (_value, record) => {
-        return <div>{record.guest_id.name}</div>;
+        return <div style={{ fontWeight: 500 }}>{record.guest_id.name}</div>;
       },
     },
     {
-      title: "Xe",
-      width: 110,
+      title: "Xe / Trạng thái",
+      width: 250,
       render: (_value, record) => {
         return (
           <div style={{ whiteSpace: "pre-wrap", textAlign: 'center', display: "flex", flexDirection: "column", gap: 2 }}>
@@ -75,6 +72,12 @@ const BookingTable = (props) => {
               <div key={item._id} style={{ display: "flex", gap: 5 }}>
                 {item.brand}
                 <Tag color="blue">{item.license}</Tag>
+                {
+                  item.rental_status === true ?
+                    <Tag icon={<CheckCircleOutlined />} color="#f50" style={{ fontWeight: 550 }}>Đã nhận xe</Tag>
+                    : <Tag icon={<MinusCircleOutlined />} color="default" style={{ fontWeight: 550 }}>Chưa nhận xe</Tag>
+                }
+
               </div>
             ))}
           </div>
@@ -83,6 +86,7 @@ const BookingTable = (props) => {
     },
     {
       title: "Ngày thuê",
+      width: 190,
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>
@@ -105,6 +109,12 @@ const BookingTable = (props) => {
       },
     },
     {
+      title: "Giảm giá",
+      render: (_value, record) => {
+        return <div>{...(record.discount ? formatCurrency(record.discount) : "")}</div>;
+      },
+    },
+    {
       title: "Đã trả",
       render: (_value, record) => {
         return <div>{...(record.deposit ? formatCurrency(record.deposit) : "")}</div>;
@@ -113,31 +123,14 @@ const BookingTable = (props) => {
     {
       title: "Phải thu",
       render: (_value, record) => {
-        return <div>{...(record.deposit ? formatCurrency(record.amount - record.deposit) : "")}</div>;
-      },
-    },
-    {
-      title: "Trạng thái",
-      render: (_value, record) => {
+        let amount = record.amount || 0;
+        let discount = record.discount || 0;
+        let deposit = record.deposit || 0;
+        // Tính toán giá trị cần hiển thị trong cột "Phải thu"
+        let dueAmount = amount - discount - deposit;
         return (
-          <div>
-            <Select
-              style={{ width: "100%", height: 40, borderRadius: 10 }}
-              placeholder="Chọn trạng thái"
-              allowClear
-              bordered={true}
-              status="warning"
-              value={record.status}
-              options={[
-                { value: "Đã nhận xe", label: "Đã nhận xe" },
-                { value: "Đã trả xe", label: "Đã trả xe" },
-                { value: "Xe tai nạn", label: "Xe tai nạn" },
-                { value: "Xe mất trộm", label: "Xe mất trộm" },
-              ]}
-              onChange={(value) => handleStatusChange({ _id: record._id, status: value })}
-            />
-          </div>
-        )
+          <div>{formatCurrency(dueAmount)}</div>
+        );
       },
     },
     {

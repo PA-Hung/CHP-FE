@@ -1,32 +1,32 @@
 import { notification, message, Row, Col, Drawer, Space, Button, Form } from "antd";
 import { GuestCard } from "./create.module/guest/guest.card";
-import { StatusCard } from "./create.module/guest/status.card";
 import MotorTable from "./create.module/motor/motor.table";
 import { SalesManCard } from "./create.module/guest/salesman.card";
 import BillingCard from "./create.module/billing.infomation/billing.card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { postCreateBooking } from "@/utils/api";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMotor } from '@/redux/slice/motorSlice';
+import queryString from "query-string";
 
 const CreateDrawer = (props) => {
   const { reloadTable, isCreateDrawerOpen, setIsCreateDrawerOpen } = props;
   const [salesman, setSalesMan] = useState(null)
-  const [status, setStatus] = useState(null)
   const [guestData, setGuestData] = useState(null);
   const [listMotorsSelected, setListMotorsSelected] = useState([])
-
+  const meta = useSelector((state) => state.motor.meta);
+  const dispatch = useDispatch();
   const [deposit, setDeposit] = useState("")
   const [discount, setDiscount] = useState("")
   const [amount, setAmount] = useState("")
   const [total, setTotal] = useState()
   const [method, setMethod] = useState()
   const [checkedBox, setCheckedBox] = useState("nodiscount");
-
+  const [searchValue, setSearchValue] = useState(null);
   const [form] = Form.useForm();
 
   const resetDrawer = () => {
-    setIsCreateDrawerOpen(false);
-    setStatus(null)
     setSalesMan(null)
     setGuestData(null)
     setDiscount(null)
@@ -37,6 +37,71 @@ const CreateDrawer = (props) => {
     setListMotorsSelected([])
     setCheckedBox("nodiscount")
     form.resetFields();
+    const query = buildQuery();
+    dispatch(fetchMotor({ query }));
+    setIsCreateDrawerOpen(false);
+  };
+
+  useEffect(() => {
+    const initData = async () => {
+      if (searchValue) {
+        const query = buildQuery(searchValue);
+        dispatch(fetchMotor({ query }));
+      } else {
+        const query = buildQuery();
+        dispatch(fetchMotor({ query }));
+      }
+    };
+    initData();
+  }, [meta.current, meta.pageSize]);
+
+  const buildQuery = (
+    params,
+    sort,
+    filter,
+    page = meta.current,
+    pageSize = meta.pageSize
+  ) => {
+    const clone = { ...params };
+    if (clone.license) clone.license = `/${clone.license}/i`;
+    if (clone.brand) clone.brand = `/${clone.brand}/i`;
+    if (!clone.hasOwnProperty('availability_status')) clone.availability_status = true;
+    else clone.availability_status = `/${clone.availability_status}/i`;
+    if (!clone.hasOwnProperty('rental_status')) clone.rental_status = false;
+    else clone.rental_status = `/${clone.rental_status}/i`;
+
+    let temp = queryString.stringify(clone);
+
+    let sortBy = "";
+    if (sort && sort.license) {
+      sortBy = sort.license === "ascend" ? "sort=license" : "sort=-license";
+    }
+    if (sort && sort.brand) {
+      sortBy = sort.brand === "ascend" ? "sort=brand" : "sort=-brand";
+    }
+    if (sort && sort.availability_status) {
+      sortBy = sort.brand === "ascend" ? "sort=availability_status" : "sort=-availability_status";
+    }
+    if (sort && sort.rental_status) {
+      sortBy = sort.brand === "ascend" ? "sort=rental_status" : "sort=-rental_status";
+    }
+
+    if (sort && sort.createdAt) {
+      sortBy =
+        sort.createdAt === "ascend" ? "sort=createdAt" : "sort=-createdAt";
+    }
+    if (sort && sort.updatedAt) {
+      sortBy =
+        sort.updatedAt === "ascend" ? "sort=updatedAt" : "sort=-updatedAt";
+    }
+
+    //mặc định sort theo updatedAt
+    if (Object.keys(sortBy).length === 0) {
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-createdAt`;
+    } else {
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&${sortBy}`;
+    }
+    return temp;
   };
 
   const onFinish = async () => {
@@ -72,20 +137,13 @@ const CreateDrawer = (props) => {
       });
       return
     }
-    if (!status) {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        placement: "top",
-        description: "Bạn phải chọn trạng thái hợp đồng",
-      });
-      return
-    }
+
     const data = {
       start_date: dayjs(),
       motors: listMotorsSelected,
       guest_id: guestData?._id,
       user_id: salesman,
-      status: status,
+      status: "Hợp đồng mở",
       method: method,
       discount: discount,
       deposit: deposit,
@@ -132,10 +190,6 @@ const CreateDrawer = (props) => {
                 setGuestData={setGuestData}
                 guestData={guestData}
               />
-              <StatusCard
-                setStatus={setStatus}
-                status={status}
-              />
               <SalesManCard
                 setSalesMan={setSalesMan}
                 salesman={salesman}
@@ -150,6 +204,8 @@ const CreateDrawer = (props) => {
                   setListMotorsSelected={setListMotorsSelected}
                   total={total}
                   setTotal={setTotal}
+                  setSearchValue={setSearchValue}
+                  buildQuery={buildQuery}
                 />
               </div>
               <div>
@@ -166,6 +222,7 @@ const CreateDrawer = (props) => {
                   form={form}
                   checkedBox={checkedBox}
                   setCheckedBox={setCheckedBox}
+                  setSearchValue={setSearchValue}
                 />
               </div>
             </div>

@@ -1,21 +1,22 @@
-import { Button, Card, Popconfirm, Table, Tag, message } from 'antd'
+import { Button, Card, Popconfirm, Switch, Table, Tag, message } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { SearchOutlined } from "@ant-design/icons";
 import MotorSearchModal from './motor.search.modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMotor } from '@/redux/slice/motorSlice';
-import queryString from "query-string";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from 'dayjs';
+import UpdateSelectedMotorModal from './update.selected.motor.modal';
 
 const MotorTable = (props) => {
-    const { listMotorsSelected, setListMotorsSelected, total, setTotal } = props
+    const { listMotorsSelected, setListMotorsSelected, total, setTotal, setSearchValue, buildQuery } = props
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-    const loading = useSelector((state) => state.motor.isFetching);
-    const meta = useSelector((state) => state.motor.meta);
     const listMotors = useSelector((state) => state.motor.result);
     const dispatch = useDispatch();
-    const [searchValue, setSearchValue] = useState(null);
+
+    const [updateData, setUpdateData] = useState(null)
+
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
 
     const calculateRentalDays = (startDate, endDate) => {
         const start = startDate ? dayjs(startDate) : dayjs();
@@ -33,67 +34,6 @@ const MotorTable = (props) => {
         }
     }, [listMotorsSelected])
 
-    const buildQuery = (
-        params,
-        sort,
-        filter,
-        page = meta.current,
-        pageSize = meta.pageSize
-    ) => {
-        const clone = { ...params };
-        if (clone.license) clone.license = `/${clone.license}/i`;
-        if (clone.brand) clone.brand = `/${clone.brand}/i`;
-        if (!clone.hasOwnProperty('availability_status')) clone.availability_status = true;
-        else clone.availability_status = `/${clone.availability_status}/i`;
-        if (!clone.hasOwnProperty('rental_status')) clone.rental_status = false;
-        else clone.rental_status = `/${clone.rental_status}/i`;
-
-        let temp = queryString.stringify(clone);
-
-        let sortBy = "";
-        if (sort && sort.license) {
-            sortBy = sort.license === "ascend" ? "sort=license" : "sort=-license";
-        }
-        if (sort && sort.brand) {
-            sortBy = sort.brand === "ascend" ? "sort=brand" : "sort=-brand";
-        }
-        if (sort && sort.availability_status) {
-            sortBy = sort.brand === "ascend" ? "sort=availability_status" : "sort=-availability_status";
-        }
-        if (sort && sort.rental_status) {
-            sortBy = sort.brand === "ascend" ? "sort=rental_status" : "sort=-rental_status";
-        }
-
-        if (sort && sort.createdAt) {
-            sortBy =
-                sort.createdAt === "ascend" ? "sort=createdAt" : "sort=-createdAt";
-        }
-        if (sort && sort.updatedAt) {
-            sortBy =
-                sort.updatedAt === "ascend" ? "sort=updatedAt" : "sort=-updatedAt";
-        }
-
-        //mặc định sort theo updatedAt
-        if (Object.keys(sortBy).length === 0) {
-            temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-createdAt`;
-        } else {
-            temp = `current=${page}&pageSize=${pageSize}&${temp}&${sortBy}`;
-        }
-        return temp;
-    };
-
-    useEffect(() => {
-        const initData = async () => {
-            if (searchValue) {
-                const query = buildQuery(searchValue);
-                dispatch(fetchMotor({ query }));
-            } else {
-                const query = buildQuery();
-                dispatch(fetchMotor({ query }));
-            }
-        };
-        initData();
-    }, [meta.current, meta.pageSize]);
 
     const onSearch = async (value) => {
         let filteredData = {};
@@ -130,6 +70,16 @@ const MotorTable = (props) => {
         }
     };
 
+    const handleSwitchChange = (id, value) => {
+        const newlistMotors = listMotorsSelected.map((item) => {
+            if (item._id === id) {
+                return { ...item, rental_status: value };
+            }
+            return item;
+        });
+        setListMotorsSelected(newlistMotors);
+    };
+
     const columns = [
         {
             // title: "Actions",
@@ -138,7 +88,7 @@ const MotorTable = (props) => {
                 return (
                     <div style={{ display: "flex", flexDirection: "row", gap: 20, justifyContent: "center", paddingRight: 15, paddingLeft: 15 }}>
 
-                        <EditOutlined style={{ fontSize: 20 }} />
+                        <EditOutlined style={{ fontSize: 20 }} onClick={() => { setIsUpdateModalOpen(true), setUpdateData(record) }} />
 
                         <Popconfirm
                             title={`Bạn muốn xoá xe ${record.license} ra khỏi hợp đồng ?`}
@@ -161,6 +111,12 @@ const MotorTable = (props) => {
                 return <div style={{ display: "flex", gap: 10 }}>
                     <h4>{record.brand}</h4>
                     <Tag color="blue" style={{ fontWeight: 500 }}>{record.license}</Tag>
+                    <Switch
+                        checkedChildren="Đã nhận xe"
+                        unCheckedChildren="Chưa nhận xe"
+                        defaultChecked={record.rental_status}
+                        onChange={(value) => handleSwitchChange(record._id, value)}
+                    />
                 </div>;
             },
         },
@@ -201,6 +157,8 @@ const MotorTable = (props) => {
         },
     ];
 
+    // console.log('listMotorsSelected', listMotorsSelected);
+
     return (
         <>
             <div>
@@ -214,7 +172,7 @@ const MotorTable = (props) => {
                             <Button
                                 type="primary"
                                 icon={<SearchOutlined />}
-                                onClick={() => setIsSearchModalOpen(true)}
+                                onClick={() => { setIsSearchModalOpen(true), reloadTable() }}
                             >Chọn xe</Button>
                         </div>
                     </div>
@@ -256,6 +214,13 @@ const MotorTable = (props) => {
                 setListMotorsSelected={setListMotorsSelected}
                 onSearch={onSearch}
                 reloadTable={reloadTable}
+            />
+            <UpdateSelectedMotorModal
+                isUpdateModalOpen={isUpdateModalOpen}
+                setIsUpdateModalOpen={setIsUpdateModalOpen}
+                updateData={updateData}
+                reloadTable={reloadTable}
+                setUpdateData={setUpdateData}
             />
         </>
     )
