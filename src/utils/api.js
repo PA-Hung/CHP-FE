@@ -5,6 +5,10 @@ export const getBooking = (query) => {
     return axios.get(`api/v1/bookings?${query}`)
 }
 
+export const postCreateBooking = (data) => {
+    return axios.post('api/v1/bookings', data)
+}
+
 // guest --------------------------------------
 export const getGuest = (query) => {
     return axios.get(`api/v1/guests?${query}`)

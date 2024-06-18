@@ -23,10 +23,10 @@ export const StatusCard = (props) => {
               allowClear
               value={status}
               options={[
-                { value: "Chờ xác nhận", label: "Chờ xác nhận" },
                 { value: "Đã nhận xe", label: "Đã nhận xe" },
                 { value: "Đã trả xe", label: "Đã trả xe" },
                 { value: "Xe tai nạn", label: "Xe tai nạn" },
+                { value: "Xe mất trộm", label: "Xe mất trộm" },
               ]}
               onSelect={(value) => setStatus(value)}
             />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Table, Button, notification, Popconfirm, message } from "antd";
+import { Table, Button, notification, Popconfirm, message, Tag, Select, Dropdown } from "antd";
 import { deleteApartment } from "@/utils/api";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -9,26 +9,13 @@ import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
 import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
+import { MenuOutlined, DeleteOutlined, PrinterOutlined, EditOutlined, ApiOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 const BookingTable = (props) => {
   const { listBookings, loading, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
-
-  const confirmDelete = async (user) => {
-    const res = await deleteApartment(user._id);
-    if (res.data) {
-      reloadTable();
-      message.success("Xoá căn hộ thành công !");
-    } else {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        placement: "top",
-        description: res.message,
-      });
-    }
-  };
 
   // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
   // const uniqueCodes = [...new Set(listBookings.map(item => item.code))];
@@ -43,6 +30,17 @@ const BookingTable = (props) => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
+
+  const calculateRentalDays = (startDate, endDate) => {
+    const start = startDate ? dayjs(startDate) : dayjs();
+    const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
+    return end.diff(start, 'day');
+  }
+
+  const handleStatusChange = ({ _id, status }) => {
+    console.log('status', status);
+    console.log('_id', _id);
+  }
 
   const columns = [
     {
@@ -72,80 +70,131 @@ const BookingTable = (props) => {
       title: "Xe",
       width: 110,
       render: (_value, record) => {
-        return <div style={{ whiteSpace: "pre-wrap", textAlign: 'center' }}>{record.motor_id.map(item => item.license).join(', \n')}</div>;
+        return (
+          <div style={{ whiteSpace: "pre-wrap", textAlign: 'center', display: "flex", flexDirection: "column", gap: 2 }}>
+            {record.motors.map((item) => (
+              <div key={item._id} style={{ display: "flex", gap: 5 }}>
+                {item.brand}
+                <Tag color="blue">{item.license}</Tag>
+              </div>
+            ))}
+          </div>
+        )
       },
     },
     {
       title: "Ngày thuê",
       render: (_value, record) => {
-        return <div>{record.start_date}</div>;
+        return (
+          <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>
+            {record.motors.map((item) => (
+              <div key={item._id}>
+                {dayjs.utc(item.start_date).format("DD")} - {dayjs.utc(item.end_date).format("DD/MM/YYYY")} {<Tag bordered={true} color="volcano">
+                  {calculateRentalDays(item.start_date, item.end_date)} Ngày
+                </Tag>}
+              </div>
+            ))}
+
+          </div>
+        )
       },
     },
     {
       title: "Tổng tiền",
       render: (_value, record) => {
-        return <div>{formatCurrency(record.amount)}</div>;
+        return <div>{...(record.amount ? formatCurrency(record.amount) : "")}</div>;
       },
     },
     {
       title: "Đã trả",
       render: (_value, record) => {
-        return <div>{formatCurrency(record.amount)}</div>;
+        return <div>{...(record.deposit ? formatCurrency(record.deposit) : "")}</div>;
       },
     },
     {
       title: "Phải thu",
       render: (_value, record) => {
-        return <div></div>;
+        return <div>{...(record.deposit ? formatCurrency(record.amount - record.deposit) : "")}</div>;
       },
     },
     {
       title: "Trạng thái",
       render: (_value, record) => {
-        return <div>{record.status}</div>;
+        return (
+          <div>
+            <Select
+              style={{ width: "100%", height: 40, borderRadius: 10 }}
+              placeholder="Chọn trạng thái"
+              allowClear
+              bordered={true}
+              status="warning"
+              value={record.status}
+              options={[
+                { value: "Đã nhận xe", label: "Đã nhận xe" },
+                { value: "Đã trả xe", label: "Đã trả xe" },
+                { value: "Xe tai nạn", label: "Xe tai nạn" },
+                { value: "Xe mất trộm", label: "Xe mất trộm" },
+              ]}
+              onChange={(value) => handleStatusChange({ _id: record._id, status: value })}
+            />
+          </div>
+        )
       },
     },
     {
       title: "Actions",
+      width: 40,
       render: (record) => {
         return (
-          <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
-            <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.APARTMENT.UPDATE}
-              hideChildren
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Dropdown
+              placement="bottom"
+              menu={{ items }}
             >
-              <div>
-                <Button
-                  danger
-                  onClick={() => {
-                    setIsUpdateModalOpen(true);
-                    setUpdateData(record);
-                  }}
-                >
-                  Cập nhật
-                </Button>
-              </div>
-            </CheckAccess>
-            <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.APARTMENT.DELETE}
-              hideChildren
-            >
-              <div>
-                <Popconfirm
-                  title={`Bạn muốn xoá căn hộ ${record.code} không ?`}
-                  onConfirm={() => confirmDelete(record)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button type={"primary"} danger>
-                    Xoá
-                  </Button>
-                </Popconfirm>
-              </div>
-            </CheckAccess>
+              <MenuOutlined />
+            </Dropdown>
           </div>
         );
       },
+    },
+  ];
+
+  const items = [
+    {
+      key: '1',
+      label: (
+        <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+          <div><EditOutlined /></div>
+          <div>Sửa hợp đồng</div>
+        </div>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+          <div><PrinterOutlined /></div>
+          <div>In hợp đồng</div>
+        </div>
+      ),
+    },
+    {
+      key: '3',
+      label: (
+        <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+          <div><ApiOutlined /></div>
+          <div>Kết thúc hợp đồng</div>
+        </div>
+      ),
+    },
+    {
+      key: '4',
+      label: (
+        <div style={{ display: "flex", flexDirection: "row", gap: 10, color: "red" }}>
+          <div><DeleteOutlined /></div>
+          <div>Huỷ hợp đồng</div>
+        </div>
+      ),
     },
   ];
 

@@ -9,10 +9,8 @@ const MotorSearchModal = (props) => {
     const { isSearchModalOpen, setIsSearchModalOpen, listMotors, setListMotorsSelected, listMotorsSelected, onSearch, reloadTable } = props;
     const [searchValue, setSearchValue] = useState('');
     const [selectedItemIds, setSelectedItemIds] = useState([]);
-    const [dateHire, setDateHire] = useState({
-        start_date: dayjs(),
-        end_date: dayjs().add(1, "day")
-    });
+    const [dateHire, setDateHire] = useState();
+    const [defaultDate, setDefautDate] = useState([dayjs(), dayjs().add(1, 'day')])
 
     const toggleCheckbox = (itemId) => {
         setSelectedItemIds(prevSelectedItemIds =>
@@ -22,27 +20,50 @@ const MotorSearchModal = (props) => {
         );
     };
 
-    const handleClickOk = () => {
-        const selectedMotors = listMotors.filter(item => selectedItemIds.includes(item._id));
-        if (selectedMotors.length > 0) {
-            // Lọc các phần tử chưa có trong listMotorsSelected
-            const newSelectedMotors = selectedMotors.filter(item =>
-                !listMotorsSelected.some(selectedItem => selectedItem._id === item._id)
-            ).map(item => ({
-                ...item,
-                start_date: dateHire.start_date ? dateHire.start_date : dayjs(),
-                end_date: dateHire.end_date ? dateHire.end_date : dayjs().add(1, "day")
-            }));
+    //  Lọc các phần tử đã được chọn từ danh sách motors
+    const filterSelectedMotors = (listMotors, selectedItemIds) => {
+        return listMotors.filter(item => selectedItemIds.includes(item._id));
+    };
 
-            // Chỉ thêm các phần tử mới nếu có
-            if (newSelectedMotors.length > 0) {
-                setListMotorsSelected(prevList => [...prevList, ...newSelectedMotors]);
-            }
+    //  Lọc các phần tử chưa có trong listMotorsSelected
+    const filterNewSelectedMotors = (selectedMotors, listMotorsSelected) => {
+        return selectedMotors.filter(item =>
+            !listMotorsSelected.some(selectedItem => selectedItem._id === item._id)
+        );
+    };
+
+    // Thêm các thuộc tính start_date và end_date cho các phần tử
+    const addDatesToMotors = (motors, dateHire) => {
+        return motors.map(item => ({
+            ...item,
+            start_date: dateHire?.start_date ? dateHire.start_date : dayjs(),
+            end_date: dateHire?.end_date ? dateHire.end_date : dayjs().add(1, "day")
+        }));
+    };
+
+    // Cập nhật danh sách các motors đã được chọn
+    const updateSelectedMotorsList = (newSelectedMotors, setListMotorsSelected) => {
+        if (newSelectedMotors.length > 0) {
+            setListMotorsSelected(prevList => [...prevList, ...newSelectedMotors]);
+        }
+    };
+
+    // Hàm handleClickOk tách riêng từng bước
+    const handleClickOk = () => {
+        const selectedMotors = filterSelectedMotors(listMotors, selectedItemIds);
+        if (selectedMotors.length > 0) {
+            const filteredNewMotors = filterNewSelectedMotors(selectedMotors, listMotorsSelected);
+            const newSelectedMotors = addDatesToMotors(filteredNewMotors, dateHire);
+
+            updateSelectedMotorsList(newSelectedMotors, setListMotorsSelected);
+
             setSearchValue('');
             setSelectedItemIds([]);
         }
+        setDefautDate([dayjs(), dayjs().add(1, 'day')]);
         setIsSearchModalOpen(false);
-    }
+    };
+
 
     const handleTimeChange = (e) => {
         const newDateHire = {
@@ -71,10 +92,11 @@ const MotorSearchModal = (props) => {
                         <div>
                             <RangePicker
                                 showTime={{ format: 'HH' }} // Chỉ hiển thị giờ
-                                format="YYYY-MM-DD HH"      // Định dạng hiển thị ngày tháng năm và giờ
+                                format="HH giờ DD-MM-YYYY"      // Định dạng hiển thị ngày tháng năm và giờ
                                 placeholder={['Ngày bắt đầu', 'Ngày kết thúc']} // Placeholder bằng tiếng Việt 
                                 defaultValue={[dayjs(), dayjs().add(1, 'day')]}
                                 onChange={(e) => handleTimeChange(e)}
+                                value={defaultDate}
                             />
                         </div>
                         <div style={{ display: "flex", gap: 10 }}>

@@ -13,7 +13,6 @@ import SearchModal from "./search.modal";
 import BookingTable from "./booking.table";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import { fetchApartment } from "@/redux/slice/apartmentSlice";
 import { fetchBooking } from "@/redux/slice/bookingSlice";
 
 const BookingPage = () => {
@@ -43,7 +42,7 @@ const BookingPage = () => {
 
   const reloadTable = () => {
     const query = buildQuery();
-    dispatch(fetchApartment({ query }));
+    dispatch(fetchBooking({ query }));
   };
 
   const buildQuery = (
@@ -84,7 +83,7 @@ const BookingPage = () => {
   const onSearch = async (value) => {
     setSearchValue(value);
     const query = buildQuery(value);
-    dispatch(fetchApartment({ query }));
+    dispatch(fetchBooking({ query }));
   };
 
   return (

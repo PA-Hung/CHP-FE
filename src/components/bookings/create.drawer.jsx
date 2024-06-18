@@ -1,5 +1,4 @@
 import { notification, message, Row, Col, Drawer, Space, Button } from "antd";
-import { postApartment } from "@/utils/api";
 import { GuestCard } from "./guest/guest.card";
 import { StatusCard } from "./guest/status.card";
 import MotorTable from "./motor/motor.table";
@@ -7,6 +6,7 @@ import { SalesManCard } from "./guest/salesman.card";
 import BillingCard from "./billing.infomation/billing.card";
 import { useState } from "react";
 import dayjs from "dayjs";
+import { postCreateBooking } from "@/utils/api";
 
 const CreateDrawer = (props) => {
   const { reloadTable, isCreateDrawerOpen, setIsCreateDrawerOpen } = props;
@@ -15,38 +15,54 @@ const CreateDrawer = (props) => {
   const [guestData, setGuestData] = useState(null);
   const [listMotorsSelected, setListMotorsSelected] = useState([])
 
-  const [deposit, setDeposit] = useState(null)
-  const [discount, setDiscount] = useState(null)
-  const [amount, setAmount] = useState(null)
+  const [deposit, setDeposit] = useState("")
+  const [discount, setDiscount] = useState("")
+  const [amount, setAmount] = useState("")
   const [total, setTotal] = useState()
+  const [method, setMethod] = useState()
+
+  console.log('deposit', deposit);
+  console.log('discount', discount);
+  console.log('amount', amount);
 
   const resetDrawer = () => {
     setIsCreateDrawerOpen(false);
     setStatus(null)
     setSalesMan(null)
     setGuestData(null)
-    setDiscount(null)
-    setDeposit(null)
-    setTotal(null)
-    setAmount(null)
-    setListMotorsSelected(null)
+    setDiscount("")
+    setDeposit("")
+    setTotal("")
+    setAmount("")
+    setListMotorsSelected([])
   };
 
-  const onFinish = async (values) => {
-    //console.log("values", values);
-    // const data = values; // viết gọn của 2 dòng trên
-    // const res = await postApartment(data);
-    // if (res.data) {
-    //   reloadTable();
-    //   message.success("Tạo mới căn hộ thành công !");
-    //   resetDrawer();
-    // } else {
-    //   notification.error({
-    //     message: "Có lỗi xảy ra",
-    //     placement: "top",
-    //     description: res.message,
-    //   });
-    // }
+  const onFinish = async () => {
+    const data = {
+      start_date: dayjs(),
+      motors: listMotorsSelected,
+      guest_id: guestData?._id,
+      user_id: salesman,
+      status: status,
+      method: method,
+      discount: discount,
+      deposit: deposit,
+      amount: discount ? amount : total
+    }
+    setIsCreateDrawerOpen(false);
+
+    const res = await postCreateBooking(data);
+    if (res.data) {
+      reloadTable();
+      message.success("Tạo mới hợp đồng thành công !");
+      resetDrawer();
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: res.message,
+      });
+    }
   };
 
   return (
@@ -67,9 +83,9 @@ const CreateDrawer = (props) => {
         }
         style={{ color: "black" }}
       >
-        <Row gutter={[25, 0]} wrap>
+        <Row gutter={[20, 20]} wrap={false}>
           <Col flex="350px">
-            <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <GuestCard
                 setGuestData={setGuestData}
                 guestData={guestData}
@@ -85,7 +101,7 @@ const CreateDrawer = (props) => {
             </div>
           </Col>
           <Col flex="auto" >
-            <div style={{ display: "flex", flexDirection: 'column', gap: 15 }}>
+            <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
               <div>
                 <MotorTable
                   listMotorsSelected={listMotorsSelected}
@@ -103,6 +119,8 @@ const CreateDrawer = (props) => {
                   setDiscount={setDiscount}
                   amount={amount}
                   setAmount={setAmount}
+                  method={method}
+                  setMethod={setMethod}
                 />
               </div>
             </div>

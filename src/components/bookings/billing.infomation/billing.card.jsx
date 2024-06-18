@@ -1,22 +1,27 @@
 import { Card, Checkbox, Form, InputNumber, Select, notification } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const BillingCard = (props) => {
-    const { total, deposit, setDeposit, discount, setDiscount, amount, setAmount } = props
+    const { total, deposit, setDeposit, discount, setDiscount, amount, setAmount, method, setMethod } = props
     const [checkedBox, setCheckedBox] = useState('nodiscount');
     const [form] = Form.useForm();
+
 
     const onChange = (e) => {
         setCheckedBox(e.target.name);
         if (e.target.name === "nodiscount") {
             setDiscount(null)
+            setAmount(total)
         }
     };
+
     const handleChangeDeposit = (value) => {
         // Kiểm tra nếu giá trị nhập vào không phải số
         if (isNaN(value)) {
             return setDeposit(null)
         }
+        setDeposit(value)
+        setAmount(total)
     };
 
     const handleChangeDiscount = (value) => {
@@ -51,40 +56,40 @@ const BillingCard = (props) => {
                 }
                 hoverable
             >
-                <Form
-                    name="billing_info"
-                    layout="vertical"
-                    form={form}
-                >
-                    <div style={{ display: "flex", gap: 50, paddingBottom: 20 }}>
-                        <div>
-                            <Checkbox onChange={onChange} checked={checkedBox === 'nodiscount'} name='nodiscount' >
-                                <div style={{ fontWeight: 600, fontSize: 15 }}>Không giảm giá</div>
-                            </Checkbox>
-                        </div>
-                        <div>
-                            <Checkbox onChange={onChange} checked={checkedBox === 'discount'} name="discount">
-                                <div style={{ fontWeight: 600, fontSize: 15 }}>Giảm theo số tiền</div>
-                            </Checkbox>
-                        </div>
+
+                <div style={{ display: "flex", gap: 50, paddingBottom: 20 }}>
+                    <div>
+                        <Checkbox onChange={onChange} checked={checkedBox === 'nodiscount'} name='nodiscount' >
+                            <div style={{ fontWeight: 600, fontSize: 15 }}>Không giảm giá</div>
+                        </Checkbox>
                     </div>
-                    <div style={{ display: "flex", gap: 20 }}>
-                        <div>
-                            <Select
-                                size="large"
-                                placeholder="Chọn thanh toán"
-                                defaultActiveFirstOption
-                                allowClear
-                                options={[
-                                    { value: "tiền mặt", label: "Tiền mặt" },
-                                    { value: "Chuyển khoản", label: "Chuyển khoản" },
-                                ]}
-                            />
-                        </div>
-                        {checkedBox === 'discount' ? <div>
-                            <Form.Item
-                                name="discount"
-                            >
+                    <div>
+                        <Checkbox onChange={onChange} checked={checkedBox === 'discount'} name="discount">
+                            <div style={{ fontWeight: 600, fontSize: 15 }}>Giảm theo số tiền</div>
+                        </Checkbox>
+                    </div>
+                </div>
+                <div style={{ display: "flex", gap: 20 }}>
+                    <div>
+                        <Select
+                            size="large"
+                            placeholder="Chọn thanh toán"
+                            value={method}
+                            onSelect={(value) => setMethod(value)}
+                            allowClear
+                            options={[
+                                { value: "tiền mặt", label: "Tiền mặt" },
+                                { value: "Chuyển khoản", label: "Chuyển khoản" },
+                            ]}
+                        />
+                    </div>
+                    {checkedBox === 'discount' ? <div>
+                        <Form
+                            name="billing_info"
+                            layout="vertical"
+                            form={form}
+                        >
+                            <Form.Item name="discount">
                                 <InputNumber
                                     placeholder="Giảm giá"
                                     addonAfter={<b>đ</b>}
@@ -97,13 +102,17 @@ const BillingCard = (props) => {
                                     size="large"
                                 />
                             </Form.Item>
-                        </div> : ""}
-                        <div>
-                            <Form.Item
-                                name="deposit"
-                            >
+                        </Form>
+                    </div> : ""}
+                    <div>
+                        <Form
+                            name="billing_info"
+                            layout="vertical"
+                            form={form}
+                        >
+                            <Form.Item name="deposit">
                                 <InputNumber
-                                    placeholder="Đặt cọc"
+                                    placeholder="Đặt cọc hoặc trả hết"
                                     addonAfter={<b>đ</b>}
                                     formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
                                     step={1} // Bước nhảy
@@ -114,13 +123,14 @@ const BillingCard = (props) => {
                                     size="large"
                                 />
                             </Form.Item>
-                        </div>
+                        </Form>
                     </div>
-                    <div style={{ display: "flex", fontSize: 20, fontWeight: 700, gap: 5 }}>
-                        <div >Giá trị hợp đồng = (Tiền thuê xe - Giảm giá) = </div>
-                        <div style={{ color: "red" }}>{formatCurrency(discount ? amount : total)}</div>
-                    </div>
-                </Form>
+                </div>
+                <div style={{ display: "flex", fontSize: 20, fontWeight: 700, gap: 5 }}>
+                    <div >Giá trị hợp đồng = (Tiền thuê xe - Giảm giá) = </div>
+                    <div style={{ color: "red" }}>{formatCurrency(discount ? amount : total)}</div>
+                </div>
+
             </Card>
         </div>
     )
