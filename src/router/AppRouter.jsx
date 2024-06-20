@@ -12,6 +12,7 @@ import ApartmentPage from "../components/apartment/apartment.page";
 import NotFound from "./not.found";
 import BookingPage from "../components/bookings/booking.page";
 import MotorsPage from "../components/motors/motors.page";
+import CalenderTimeLine from "../components/rental_schedule/calenderTimeline.page";
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +91,14 @@ export const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <MotorsPage />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "rental_schedule",
+        element: (
+          // <ProtectedRoute>
+          <CalenderTimeLine />
           // </ProtectedRoute>
         ),
       },

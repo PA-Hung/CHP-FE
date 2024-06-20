@@ -177,7 +177,7 @@ const BookingTable = (props) => {
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
           <div><ApiOutlined /></div>
-          <div>Kết thúc hợp đồng</div>
+          <div>Đóng hợp đồng</div>
         </div>
       ),
     },

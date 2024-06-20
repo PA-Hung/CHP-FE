@@ -2,7 +2,7 @@ import { Card, Checkbox, Modal } from 'antd'
 import Search from 'antd/es/input/Search';
 import React, { useState } from 'react'
 
-const QuestModalTable = (props) => {
+const GuestModalTable = (props) => {
     const { isTableModalOpen, setIsTableModalOpen, listGuests, onSearch, reloadTable, setGuestData } = props;
     const [searchValue, setSearchValue] = useState('');
     const [selectedItemId, setSelectedItemId] = useState('');
@@ -81,4 +81,4 @@ const QuestModalTable = (props) => {
     )
 }
 
-export default QuestModalTable;
+export default GuestModalTable;

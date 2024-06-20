@@ -23,8 +23,6 @@ const MotorsPage = () => {
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState(null);
 
-  console.log('listMotors', listMotors);
-
   useEffect(() => {
     const initData = async () => {
       if (searchValue) {

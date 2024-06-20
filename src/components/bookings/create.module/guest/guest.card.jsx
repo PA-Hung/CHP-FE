@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import { postCreateGuest } from "@/utils/api";
-import QuestModalTable from "./quest.modal.table";
+import GuestModalTable from "./guest.modal.table";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchGuest } from "@/redux/slice/guestSlice";
 import queryString from "query-string";
@@ -136,8 +136,8 @@ export const GuestCard = (props) => {
         <Card
           style={{ margin: 5, cursor: "default" }}
           cover={
-            <div style={{ textAlign: "center", paddingTop: 20 }}>
-              <h2>Khách hàng</h2>
+            <div style={{ textAlign: "center", paddingTop: 20, fontSize: 25, fontWeight: 550 }}>
+              Khách hàng
             </div>
           }
           actions={[
@@ -240,7 +240,7 @@ export const GuestCard = (props) => {
           </Row>
         </Form>
       </Modal>
-      <QuestModalTable
+      <GuestModalTable
         reloadTable={reloadTable}
         onSearch={onSearch}
         listGuests={listGuests}

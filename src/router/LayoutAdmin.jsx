@@ -144,6 +144,14 @@ const LayoutAdmin = () => {
         })
       );
     }
+    if (e.key === "rental_schedule") {
+      dispatch(
+        setActiveKey({
+          activeKey: e.key,
+          title: "Lịch thuê xe",
+        })
+      );
+    }
   };
 
   useEffect(() => {
@@ -181,7 +189,7 @@ const LayoutAdmin = () => {
 
       const full = [
         {
-          label: <Link to={"/admin"}>Trang chủ</Link>,
+          label: <Link style={{ textDecoration: "none" }} to={"/admin"}>Trang chủ</Link>,
           key: "home",
           icon: <HomeOutlined />,
           visible: "true",
@@ -195,7 +203,7 @@ const LayoutAdmin = () => {
             ...(viewApartment
               ? [
                 {
-                  label: <Link to={"/admin/apartment"}>Quản lý căn hộ</Link>,
+                  label: <Link style={{ textDecoration: "none" }} to={"/admin/apartment"}>Quản lý căn hộ</Link>,
                   key: "apartment",
                   icon: <ApartmentOutlined />,
                 },
@@ -204,7 +212,7 @@ const LayoutAdmin = () => {
             ...(viewAccommodation
               ? [
                 {
-                  label: <Link to={"/admin/accommodation"}>Khách lưu trú</Link>,
+                  label: <Link style={{ textDecoration: "none" }} to={"/admin/accommodation"}>Khách lưu trú</Link>,
                   key: "accommodation",
                   icon: <ContactsOutlined />,
                 },
@@ -213,7 +221,7 @@ const LayoutAdmin = () => {
             ...(viewUser
               ? [
                 {
-                  label: <Link to="/admin/user">Quản lý host</Link>,
+                  label: <Link style={{ textDecoration: "none" }} to="/admin/user">Quản lý host</Link>,
                   key: "user",
                   icon: <UserOutlined />,
                 },
@@ -229,17 +237,17 @@ const LayoutAdmin = () => {
           children: [
             {
               key: 'bookings',
-              label: <Link to="/admin/bookings">Hợp đồng thuê</Link>,
+              label: <Link style={{ textDecoration: "none" }} to="/admin/bookings">Hợp đồng thuê</Link>,
               icon: <FileTextOutlined />
             },
             {
-              key: '10',
-              label: 'Lịch cho thuê',
+              key: 'rental_schedule',
+              label: <Link style={{ textDecoration: "none" }} to="/admin/rental_schedule">Lịch thuê xe</Link>,
               icon: <CalendarOutlined />
             },
             {
               key: 'motors',
-              label: <Link to="/admin/motors">Danh sách xe</Link>,
+              label: <Link style={{ textDecoration: "none" }} to="/admin/motors">Danh sách xe</Link>,
               icon: <CarOutlined />
             },
             {
@@ -259,7 +267,7 @@ const LayoutAdmin = () => {
             ...(viewRole
               ? [
                 {
-                  label: <Link to="/admin/role">Quản lý chức danh</Link>,
+                  label: <Link style={{ textDecoration: "none" }} to="/admin/role">Quản lý chức danh</Link>,
                   key: "role",
                   icon: <ExceptionOutlined />,
                 },
@@ -268,7 +276,7 @@ const LayoutAdmin = () => {
             ...(viewPermission
               ? [
                 {
-                  label: <Link to="/admin/permission">Quản lý quyền hạn</Link>,
+                  label: <Link style={{ textDecoration: "none" }} to="/admin/permission">Quản lý quyền hạn</Link>,
                   key: "permission",
                   icon: <ApiOutlined />,
                 },
@@ -279,7 +287,7 @@ const LayoutAdmin = () => {
         },] : []),
 
         {
-          label: <Link onClick={() => handleLogout()}>Đăng xuất</Link>,
+          label: <Link style={{ textDecoration: "none" }} onClick={() => handleLogout()}>Đăng xuất</Link>,
           key: "logout",
           icon: <LogoutOutlined />,
           visible: "true",

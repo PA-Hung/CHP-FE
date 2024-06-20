@@ -4,6 +4,7 @@ import Search from 'antd/es/input/Search';
 import React, { useState } from 'react'
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi'; // import ngôn ngữ Vietnamese nếu cần
+import { useSelector } from 'react-redux';
 
 const MotorSearchModal = (props) => {
     const { isSearchModalOpen, setIsSearchModalOpen, listMotors, setListMotorsSelected, listMotorsSelected, onSearch, reloadTable } = props;
@@ -11,6 +12,7 @@ const MotorSearchModal = (props) => {
     const [selectedItemIds, setSelectedItemIds] = useState([]);
     const [dateHire, setDateHire] = useState();
     const [defaultDate, setDefautDate] = useState([dayjs(), dayjs().add(1, 'day')])
+    const themeMode = useSelector((state) => state.theme.themeMode);
 
     const toggleCheckbox = (itemId) => {
         setSelectedItemIds(prevSelectedItemIds =>
@@ -125,7 +127,11 @@ const MotorSearchModal = (props) => {
                             key={item._id}
                             bordered={true}
                             hoverable
-                            style={{ width: "100%", height: 90, backgroundColor: selectedItemIds.includes(item._id) ? "#e6f7ff" : "" }}
+                            style={{
+                                width: "100%",
+                                height: 90,
+                                backgroundColor: selectedItemIds.includes(item._id) ? (themeMode === "dark" ? "#333" : "#e6f7ff") : ""
+                            }}
                         >
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <div style={{ display: "flex", gap: 20, justifyContent: "start" }}>

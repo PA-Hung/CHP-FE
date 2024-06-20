@@ -93,11 +93,11 @@ const HeaderAdmin = (props) => {
         >
           <Row>
             <Col xs={0} sm={0} md={0} lg={24} xl={24}>
-              <h3>{activeTitle}</h3>
+              <div style={{ fontWeight: 550, fontSize: 20 }}>{activeTitle}</div>
             </Col>
 
             <Col xs={24} sm={24} md={24} lg={0} xl={0}>
-              <h5>{activeTitle}</h5>
+              <div style={{ fontWeight: 550, fontSize: 15 }}>{activeTitle}</div>
             </Col>
           </Row>
         </div>

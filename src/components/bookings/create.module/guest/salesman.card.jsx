@@ -30,8 +30,8 @@ export const SalesManCard = (props) => {
       <Card
         style={{ margin: 5, cursor: "default" }}
         cover={
-          <div style={{ textAlign: "center", paddingTop: 20 }}>
-            <h2>Nhân viên</h2>
+          <div style={{ textAlign: "center", paddingTop: 20, fontSize: 25, fontWeight: 550 }}>
+            Nhân viên
           </div>
         }
         hoverable

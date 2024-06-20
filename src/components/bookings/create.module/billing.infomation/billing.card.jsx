@@ -47,8 +47,8 @@ const BillingCard = (props) => {
             <Card
                 style={{ margin: 5, cursor: "default" }}
                 cover={
-                    <div style={{ textAlign: "left", paddingTop: 20, paddingLeft: 22 }}>
-                        <h2>Thông tin thanh toán</h2>
+                    <div style={{ textAlign: "left", paddingTop: 20, paddingLeft: 22, fontSize: 25, fontWeight: 550 }}>
+                        Thông tin thanh toán
                     </div>
                 }
                 hoverable

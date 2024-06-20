@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchMotor } from '@/redux/slice/motorSlice';
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from 'dayjs';
-import UpdateSelectedMotorModal from './update.selected.motor.modal';
 
 const MotorTable = (props) => {
     const { listMotorsSelected, setListMotorsSelected, total, setTotal, setSearchValue, buildQuery } = props
@@ -167,7 +166,7 @@ const MotorTable = (props) => {
                     hoverable
                 >
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <div><h2>Danh sách xe</h2></div>
+                        <div style={{ fontSize: 25, fontWeight: 550 }}>Danh sách xe</div>
                         <div>
                             <Button
                                 type="primary"
@@ -214,13 +213,6 @@ const MotorTable = (props) => {
                 setListMotorsSelected={setListMotorsSelected}
                 onSearch={onSearch}
                 reloadTable={reloadTable}
-            />
-            <UpdateSelectedMotorModal
-                isUpdateModalOpen={isUpdateModalOpen}
-                setIsUpdateModalOpen={setIsUpdateModalOpen}
-                updateData={updateData}
-                reloadTable={reloadTable}
-                setUpdateData={setUpdateData}
             />
         </>
     )
