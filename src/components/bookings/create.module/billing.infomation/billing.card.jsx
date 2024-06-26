@@ -1,8 +1,15 @@
-import { Card, Checkbox, Form, InputNumber, Select, notification } from "antd";
-import { useState } from "react";
+import { Card, Checkbox, InputNumber, Select, notification } from "antd";
+import { useEffect } from "react";
 
 const BillingCard = (props) => {
-    const { total, deposit, setDeposit, discount, setDiscount, amount, setAmount, method, setMethod, form, checkedBox, setCheckedBox } = props
+    const { total, deposit, setDeposit, discount, setDiscount, amount, setAmount, method, setMethod, checkedBox, setCheckedBox } = props
+
+
+    useEffect(() => {
+        if (deposit) {
+            setCheckedBox('discount')
+        }
+    }, [deposit])
 
     const onChange = (e) => {
         setCheckedBox(e.target.name);
@@ -12,13 +19,13 @@ const BillingCard = (props) => {
         }
     };
 
+
     const handleChangeDeposit = (value) => {
         // Kiểm tra nếu giá trị nhập vào không phải số
         if (isNaN(value)) {
             return setDeposit(null)
         }
         setDeposit(value)
-        setAmount(total)
     };
 
     const handleChangeDiscount = (value) => {
@@ -81,49 +88,33 @@ const BillingCard = (props) => {
                         />
                     </div>
                     {checkedBox === 'discount' ? <div>
-                        <Form
-                            name="billing_info"
-                            layout="vertical"
-                            form={form}
-                        >
-                            <Form.Item name="discount">
-                                <InputNumber
-                                    addonAfter={<b>đ</b>}
-                                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
-                                    step={1} // Bước nhảy
-                                    controls={false}
-                                    placeholder="Giảm giá"
-                                    style={{ width: "100%" }}
-                                    onChange={handleChangeDiscount}
-                                    value={discount}
-                                    size="large"
-                                />
-                            </Form.Item>
-                        </Form>
+                        <InputNumber
+                            addonAfter={<b>đ</b>}
+                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                            step={1} // Bước nhảy
+                            controls={false}
+                            placeholder="Giảm giá"
+                            style={{ width: "100%" }}
+                            onChange={handleChangeDiscount}
+                            value={discount}
+                            size="large"
+                        />
                     </div> : ""}
                     <div>
-                        <Form
-                            name="billing_info"
-                            layout="vertical"
-                            form={form}
-                        >
-                            <Form.Item name="deposit">
-                                <InputNumber
-                                    placeholder="Đặt cọc hoặc trả hết"
-                                    addonAfter={<b>đ</b>}
-                                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
-                                    step={1} // Bước nhảy
-                                    style={{ width: "100%" }}
-                                    controls={false}
-                                    onChange={handleChangeDeposit}
-                                    value={deposit}
-                                    size="large"
-                                />
-                            </Form.Item>
-                        </Form>
+                        <InputNumber
+                            placeholder="Đặt cọc hoặc trả hết"
+                            addonAfter={<b>đ</b>}
+                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                            step={1} // Bước nhảy
+                            style={{ width: "100%" }}
+                            controls={false}
+                            onChange={handleChangeDeposit}
+                            value={deposit}
+                            size="large"
+                        />
                     </div>
                 </div>
-                <div style={{ display: "flex", fontSize: 20, fontWeight: 700, gap: 5 }}>
+                <div style={{ display: "flex", fontSize: 20, fontWeight: 700, marginTop: 20, gap: 6 }}>
                     <div >Giá trị hợp đồng = (Tiền thuê xe - Giảm giá) = </div>
                     <div style={{ color: "red" }}>{formatCurrency(discount ? amount : total)}</div>
                 </div>

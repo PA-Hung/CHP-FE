@@ -1,4 +1,4 @@
-import { notification, message, Row, Col, Drawer, Space, Button, Form } from "antd";
+import { notification, message, Row, Col, Drawer, Space, Button } from "antd";
 import { GuestCard } from "./create.module/guest/guest.card";
 import MotorTable from "./create.module/motor/motor.table";
 import { SalesManCard } from "./create.module/guest/salesman.card";
@@ -24,7 +24,7 @@ const CreateDrawer = (props) => {
   const [method, setMethod] = useState()
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
-  const [form] = Form.useForm();
+  const [commission, setCommission] = useState("")
 
   const resetDrawer = () => {
     setSalesMan(null)
@@ -36,10 +36,10 @@ const CreateDrawer = (props) => {
     setMethod(null)
     setListMotorsSelected([])
     setCheckedBox("nodiscount")
-    form.resetFields();
     const query = buildQuery();
     dispatch(fetchMotor({ query }));
     setIsCreateDrawerOpen(false);
+    setCommission("")
   };
 
   useEffect(() => {
@@ -140,16 +140,18 @@ const CreateDrawer = (props) => {
 
     const data = {
       start_date: dayjs(),
+      end_date: "",
       motors: listMotorsSelected,
       guest_id: guestData?._id,
       user_id: salesman,
+      commission: commission,
       status: "Hợp đồng mở",
       method: method,
       discount: discount,
       deposit: deposit,
       amount: discount ? amount : total
     }
-    setIsCreateDrawerOpen(false);
+
 
     const res = await postCreateBooking(data);
     if (res.data) {
@@ -193,6 +195,8 @@ const CreateDrawer = (props) => {
               <SalesManCard
                 setSalesMan={setSalesMan}
                 salesman={salesman}
+                commission={commission}
+                setCommission={setCommission}
               />
             </div>
           </Col>
@@ -219,7 +223,6 @@ const CreateDrawer = (props) => {
                   setAmount={setAmount}
                   method={method}
                   setMethod={setMethod}
-                  form={form}
                   checkedBox={checkedBox}
                   setCheckedBox={setCheckedBox}
                   setSearchValue={setSearchValue}

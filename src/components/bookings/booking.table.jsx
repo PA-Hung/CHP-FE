@@ -9,10 +9,14 @@ import { useDispatch } from "react-redux";
 import { bookingOnchangeTable } from "@/redux/slice/bookingSlice";
 import { MenuOutlined, DeleteOutlined, PrinterOutlined, EditOutlined, ApiOutlined, CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { deleteBooking } from "@/utils/api";
+import EndBookingModal from "./end.module/end.booking.modal";
+import UpdateDrawer from "./update.drawer";
 
 const BookingTable = (props) => {
   const { listBookings, loading, reloadTable, meta } = props;
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState(false);
+  const [isEndModalOpen, setIsEndModalOpen] = useState(false);
+  const [endData, setEndData] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
 
@@ -63,7 +67,7 @@ const BookingTable = (props) => {
       },
     },
     {
-      title: "Xe / Trạng thái",
+      title: "Xe / Tình trạng",
       width: 250,
       render: (_value, record) => {
         return (
@@ -123,13 +127,13 @@ const BookingTable = (props) => {
     {
       title: "Phải thu",
       render: (_value, record) => {
-        let amount = record.amount || 0;
-        let discount = record.discount || 0;
-        let deposit = record.deposit || 0;
+        const amount = record.amount || 0;
+        const discount = record.discount || 0;
+        const deposit = record.deposit || 0;
         // Tính toán giá trị cần hiển thị trong cột "Phải thu"
-        let dueAmount = amount - discount - deposit;
+        const remaining_amount = amount - discount - deposit;
         return (
-          <div>{formatCurrency(dueAmount)}</div>
+          <div>{formatCurrency(remaining_amount)}</div>
         );
       },
     },
@@ -159,7 +163,7 @@ const BookingTable = (props) => {
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
           <div><EditOutlined /></div>
-          <div>Sửa hợp đồng</div>
+          <div onClick={() => { setIsUpdateDrawerOpen(true), setUpdateData(record) }}>Sửa hợp đồng</div>
         </div>
       ),
     },
@@ -167,22 +171,13 @@ const BookingTable = (props) => {
       key: '2',
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
-          <div><PrinterOutlined /></div>
-          <div>In hợp đồng</div>
+          <div><ApiOutlined /></div>
+          <div onClick={() => { setIsEndModalOpen(true), setEndData(record) }}>Đóng hợp đồng</div>
         </div>
       ),
     },
     {
       key: '3',
-      label: (
-        <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
-          <div><ApiOutlined /></div>
-          <div>Đóng hợp đồng</div>
-        </div>
-      ),
-    },
-    {
-      key: '4',
       label: (
         <Popconfirm
           title={`Bạn muốn xoá hợp đồng của ${record.guest_id.name} không ?`}
@@ -243,13 +238,19 @@ const BookingTable = (props) => {
           defaultPageSize: meta.pageSize,
         }}
       />
-      {/* <UpdateModal
+      <EndBookingModal
+        isEndModalOpen={isEndModalOpen}
+        setIsEndModalOpen={setIsEndModalOpen}
+        endData={endData}
+        setEndData={setEndData}
+      />
+      <UpdateDrawer
         updateData={updateData}
-        reloadTable={reloadTable}
-        isUpdateModalOpen={isUpdateModalOpen}
-        setIsUpdateModalOpen={setIsUpdateModalOpen}
         setUpdateData={setUpdateData}
-      /> */}
+        reloadTable={reloadTable}
+        isUpdateDrawerOpen={isUpdateDrawerOpen}
+        setIsUpdateDrawerOpen={setIsUpdateDrawerOpen}
+      />
     </>
   );
 };

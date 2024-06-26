@@ -84,7 +84,7 @@ const CalenderTimeLine = () => {
 
   const listEvents = listBookings.flatMap((item) =>
     item.motors.map((motor) => ({
-      title: `${calculateRentalDays(motor.start_date, motor.end_date)} ngày`,
+      title: `${item.guest_id.name} - ${calculateRentalDays(motor.start_date, motor.end_date)} ngày`,
       id: motor._id,
       start: new Date(motor.start_date),
       end: new Date(motor.end_date),
@@ -99,8 +99,6 @@ const CalenderTimeLine = () => {
       textColor: "#FFFFFF",
     }))
   );
-
-  console.log('listEvents', listEvents);
 
   const eventDidMount = (info) => {
     console.log('info', info);
@@ -128,11 +126,6 @@ const CalenderTimeLine = () => {
     return color;
   }
 
-  const resourceLabelDidMount = (info) => {
-    //info.el.style.color = "white";
-    // info.el.style.backgroundColor = "white";
-    // console.log("info.el.style", info.el.style);
-  };
 
   return (
     <div style={{ color: "black", padding: "15px" }}>
@@ -148,9 +141,13 @@ const CalenderTimeLine = () => {
         buttonText={viTranslation}
         schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
         plugins={[resourceTimelinePlugin]}
-        initialView="resourceTimelineMonth" // resourceTimelineDay resourceTimelineWeek resourceTimelineMonth resourceTimelineYear
-        resourceAreaWidth={"20%"}
+        initialView="resourceTimelineWeek" // resourceTimelineDay resourceTimelineWeek resourceTimelineMonth resourceTimelineYear
+        resourceAreaWidth={"15%"}
         displayEventTime={false}
+        duration={7}
+        slotDuration={{ days: 1 }} // Đặt slotDuration thành 1 ngày
+        slotMinTime="00:00:00" // Bắt đầu từ đầu ngày
+        slotMaxTime="24:00:00" // Kết thúc vào cuối ngày
         resourceAreaColumns={[
           {
             field: "title",

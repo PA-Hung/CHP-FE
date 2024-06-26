@@ -87,7 +87,7 @@ const MotorTable = (props) => {
                 return (
                     <div style={{ display: "flex", flexDirection: "row", gap: 20, justifyContent: "center", paddingRight: 15, paddingLeft: 15 }}>
 
-                        <EditOutlined style={{ fontSize: 20 }} onClick={() => { setIsUpdateModalOpen(true), setUpdateData(record) }} />
+                        {/* <EditOutlined style={{ fontSize: 20 }} onClick={() => { setIsUpdateModalOpen(true), setUpdateData(record) }} /> */}
 
                         <Popconfirm
                             title={`Bạn muốn xoá xe ${record.license} ra khỏi hợp đồng ?`}
@@ -108,7 +108,7 @@ const MotorTable = (props) => {
             key: "code",
             render: (_value, record) => {
                 return <div style={{ display: "flex", gap: 10 }}>
-                    <h4>{record.brand}</h4>
+                    <div style={{ fontWeight: 550 }}>{record.brand}</div>
                     <Tag color="blue" style={{ fontWeight: 500 }}>{record.license}</Tag>
                     <Switch
                         checkedChildren="Đã nhận xe"
@@ -156,7 +156,6 @@ const MotorTable = (props) => {
         },
     ];
 
-    // console.log('listMotorsSelected', listMotorsSelected);
 
     return (
         <>

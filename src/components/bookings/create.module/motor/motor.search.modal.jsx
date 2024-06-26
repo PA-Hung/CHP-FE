@@ -34,13 +34,20 @@ const MotorSearchModal = (props) => {
         );
     };
 
-    // Thêm các thuộc tính start_date và end_date cho các phần tử
+    const calculateRentalDays = (startDate, endDate) => {
+        const start = startDate ? dayjs(startDate) : dayjs();
+        const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
+        return end.diff(start, 'day');
+    }
+
+    // Thêm các thuộc tính cần thiết cho các phần tử trong listMotorsSelected
     const addDatesToMotors = (motors, dateHire) => {
         return motors.map(item => ({
             ...item,
             start_date: dateHire?.start_date ? dateHire.start_date : dayjs(),
             end_date: dateHire?.end_date ? dateHire.end_date : dayjs().add(1, "day"),
-            rental_status: true
+            rental_status: true,
+            amount: item.priceD * calculateRentalDays(dateHire?.start_date, dateHire?.end_date)
         }));
     };
 

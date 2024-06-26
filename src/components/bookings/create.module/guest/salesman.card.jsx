@@ -1,4 +1,4 @@
-import { Card, Select } from "antd";
+import { Card, InputNumber, Select } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import { useEffect, useState } from "react";
@@ -6,7 +6,7 @@ import { getUsers } from "@/utils/api";
 dayjs.locale("vi");
 
 export const SalesManCard = (props) => {
-  const { setSalesMan, salesman } = props
+  const { setSalesMan, salesman, commission, setCommission } = props
   const [listUser, SetListUser] = useState([]);
 
   const groupBySelect = (data) => {
@@ -38,14 +38,26 @@ export const SalesManCard = (props) => {
       >
         <Meta
           description={
-            <Select
-              style={{ width: "100%", height: 50, fontWeight: 600 }}
-              placeholder="Chọn nhân viên"
-              allowClear
-              value={salesman}
-              options={listUser}
-              onSelect={(value) => setSalesMan(value)}
-            />
+            <div style={{ display: "flex", flexDirection: 'column', gap: 10 }}>
+              <Select
+                size="large"
+                placeholder="Chọn nhân viên"
+                allowClear
+                value={salesman}
+                options={listUser}
+                onSelect={(value) => { setSalesMan(value) }}
+              />
+              <InputNumber
+                size="large"
+                placeholder="Tiền hoa hồng"
+                onChange={(e) => setCommission(e)}
+                addonAfter={<b>đ</b>}
+                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                step={1} // Bước nhảy
+                controls={false}
+                value={commission}
+              />
+            </div>
           }
         />
       </Card>
