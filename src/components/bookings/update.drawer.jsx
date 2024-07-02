@@ -167,7 +167,6 @@ const UpdateDrawer = (props) => {
       amount: discount ? amount : total
     }
 
-
     const res = await updateBooking(data);
     if (res.data) {
       reloadTable();

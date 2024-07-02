@@ -1,5 +1,10 @@
 import axios from '@/utils/axiosCustomize'
 
+// payment    ------------------------------------
+export const postCreatePayment = (data) => {
+    return axios.post('api/v1/payments', data)
+}
+
 // booking    ------------------------------------
 export const getBooking = (query) => {
     return axios.get(`api/v1/bookings?${query}`)

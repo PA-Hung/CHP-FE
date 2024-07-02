@@ -2,22 +2,16 @@ import { useEffect, useState } from "react";
 import { Modal, notification, message, Row, Col, DatePicker, Card, Space, InputNumber, Select, Tag, Button } from "antd";
 import dayjs from "dayjs";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { postCreatePayment } from "@/utils/api";
 
 const EndBookingModal = (props) => {
   const { endData, setEndData, isEndModalOpen, setIsEndModalOpen, reloadTable } = props;
-  const [license, setLicense] = useState([]);
-  const [remainingAmount, setRemainingAmount] = useState();
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [numberItems, setNumberItems] = useState(0);
-  const [expired_hours, setExpired_hours] = useState(0);
+  const [remainingAmount, setRemainingAmount] = useState(0);
   const [late_fee_amount, setLate_fee_amount] = useState(0); // Thêm trạng thái cho phí quá giờ tổng cộng
-  const [endDates, setEndDates] = useState({});
+  const [endContractDate, setEndContractDate] = useState(dayjs())
 
-  console.log('endData', endData);
-
-  const groupBySelect = (data) => {
-    return data.map((item) => ({ value: item._id, label: item.license }));
-  };
+  const [finalAmount, setFinalAmount] = useState(0);
+  const [finalPayment, setFinalPayment] = useState(0);
 
   const calculateRentalDays = (startDate, endDate) => {
     const start = startDate ? dayjs(startDate) : dayjs();
@@ -25,70 +19,81 @@ const EndBookingModal = (props) => {
     return end.diff(start, 'day');
   };
 
+  const calculateRentalHours = (startDate, endDate) => {
+    const start = startDate ? dayjs(startDate) : dayjs();
+    const end = dayjs(endDate)
+    return end.diff(start, 'hour'); // Thay đổi đơn vị từ 'day' sang 'hour'
+  };
+
   useEffect(() => {
     if (endData) {
       const amount = endData.amount || 0;
       const discount = endData.discount || 0;
       const deposit = endData.deposit || 0;
-      setRemainingAmount(amount - discount - deposit - (late_fee_amount || 0));
-      setLicense(groupBySelect(endData.motors));
+      setRemainingAmount(amount - discount - deposit + (late_fee_amount));
+      setFinalAmount((amount - discount - deposit + (late_fee_amount) - finalPayment))
     }
-  }, [endData, late_fee_amount]);
+  }, [endData, late_fee_amount, finalPayment]);
 
   const onFinish = async () => {
-    // Xử lý hoàn tất thanh toán
-    resetModal()
+    if (finalAmount > 0) {
+      message.error("Bạn phải thanh toán đủ tiền !");
+    }
+    else {
+      // Xử lý hoàn tất thanh toán
+      const data = {
+        booking_id: endData._id,
+        guest_id: endData.guest_id._id,
+        user_id: endData.user_id,
+        commission: endData.commission || 0,
+        discount: endData.discount || 0,
+        deposit: endData.deposit || 0,
+        amount: endData.amount,
+        paid: finalPayment || 0,
+        payment_date: endContractDate,
+        payment_method: endData.method
+      }
+
+      console.log('data', data);
+      const res = await postCreatePayment(data);
+      if (res.data) {
+        reloadTable();
+        message.success("Hợp đồng hoàn tất !");
+        resetModal()
+      } else {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          placement: "top",
+          description: res.message,
+        });
+      }
+
+    }
   };
 
   const resetModal = () => {
     setIsEndModalOpen(false);
     setEndData(null);
-    setLicense([]);
-    setRemainingAmount(null);
-    setExpired_hours(0);
+    setRemainingAmount(0);
     setLate_fee_amount(0);
-    setSelectedItems([]);
+    setFinalPayment(0)
+    setFinalAmount(0)
   };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
 
-  const handleSelect = (value) => {
-    setSelectedItems((prevSelectedItems) => {
-      const newSelectedItems = [...prevSelectedItems, value];
-      setNumberItems(newSelectedItems.length);
-      return newSelectedItems;
-    });
-  };
-
-  const handleDeselect = (value) => {
-    setSelectedItems((prevSelectedItems) => {
-      const newSelectedItems = prevSelectedItems.filter((item) => item !== value);
-      setNumberItems(newSelectedItems.length);
-      return newSelectedItems;
-    });
-  };
-
   useEffect(() => {
     // Tính tổng phí quá giờ
     let totalLateFee = 0;
-    selectedItems.forEach((itemId) => {
-      const motor = endData.motors.find((item) => item._id === itemId);
-      if (motor) {
-        const lateFeeForThisMotor = motor.priceH * expired_hours;
-        totalLateFee += lateFeeForThisMotor;
-      }
+    endData?.motors?.forEach((motor) => {
+      const lateFeeForThisMotor = motor.priceH * calculateRentalHours(motor.end_date, endContractDate) > 0 ? calculateRentalHours(motor.end_date, endContractDate) : 0;
+      totalLateFee += lateFeeForThisMotor;
     });
     setLate_fee_amount(totalLateFee);
-  }, [expired_hours, selectedItems]);
+  }, [endContractDate, endData]);
 
-  const handleDateChange = (date, dateString, id) => {
-    setEndDates(prevValues => ({
-      ...prevValues,
-      [id]: date ? dateString : dayjs()
-    }));
-  };
 
   return (
     <>
@@ -110,7 +115,12 @@ const EndBookingModal = (props) => {
           <Card hoverable style={{ cursor: "default" }} >
             <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
               <Col><span style={{ fontWeight: 500 }}>Ngày hoàn tất hợp đồng :</span></Col>
-              <Col><DatePicker format={"HH giờ DD/MM/YYYY"} defaultValue={dayjs()} showTime={{ format: 'HH' }} /></Col>
+              <Col><DatePicker
+                format={"HH giờ DD/MM/YYYY"}
+                defaultValue={dayjs()}
+                showTime={{ format: 'HH' }}
+                onChange={(date) => setEndContractDate(date)}
+              /></Col>
             </Row>
           </Card>
           <Card hoverable style={{ cursor: "default" }} >
@@ -136,19 +146,12 @@ const EndBookingModal = (props) => {
               <Row gutter={[8, 8]} justify="end" wrap={true} align={"middle"}>
                 <Col>
                   {endData?.motors?.map((item) => (
-                    <div key={item._id} style={{ fontWeight: 450, display: "flex", gap: 10 }}>
-                      <DatePicker
-                        format={"HH giờ DD/MM/YYYY"}
-                        defaultValue={dayjs()}
-                        showTime={{ format: 'HH' }}
-                        size="small"
-                        onChange={(date, dateString) => handleDateChange(date, dateString, item._id)}
-                      />
-                      <span>{item.brand} {<Tag color="blue">{item.license}</Tag>}
-                        {<Tag bordered={true} color="volcano">
-                          {calculateRentalDays(item.start_date, item.end_date)} Ngày
-                        </Tag>}:
-                      </span>
+                    <div key={item._id} style={{ fontWeight: 450, display: "flex", gap: 5 }}>
+                      <span>{item.brand} {<Tag color="blue">{item.license}</Tag>}</span>
+                      {dayjs.utc(item.start_date).format("DD")} - {dayjs.utc(item.end_date).format("DD/MM/YYYY")}
+                      {<Tag bordered={true} color="volcano">
+                        {calculateRentalDays(item.start_date, item.end_date)} Ngày
+                      </Tag>}:
                       <span style={{ fontWeight: 550 }}>{formatCurrency(item.amount)}</span>
                     </div>
                   ))}
@@ -190,6 +193,19 @@ const EndBookingModal = (props) => {
                   </span>
                 </Col>
               </Row>
+              <Row gutter={[8, 8]} justify="end" wrap={true} align={"middle"}>
+                <Col>
+                  {endData?.motors?.map((item) => (
+                    <div key={item._id} style={{ fontWeight: 450, display: "flex", gap: 5 }}>
+                      <span>{item.brand} {<Tag color="blue">{item.license}</Tag>}</span>quá hạn
+                      {<Tag bordered={true} color="volcano">
+                        {calculateRentalHours(item.end_date, endContractDate) > 0 ? calculateRentalHours(item.end_date, endContractDate) : 0} giờ
+                      </Tag>}:
+                      <span style={{ fontWeight: 550 }}>{formatCurrency(item.priceH * calculateRentalHours(item.end_date, endContractDate) > 0 ? calculateRentalHours(item.end_date, endContractDate) : 0)}</span>
+                    </div>
+                  ))}
+                </Col>
+              </Row>
 
               <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
                 <Col>
@@ -197,9 +213,7 @@ const EndBookingModal = (props) => {
                 </Col>
                 <Col>
                   <span style={{ fontWeight: 550, fontSize: 20, color: '#17c653' }}>
-                    {
-                      formatCurrency(remainingAmount)
-                    }
+                    {formatCurrency(remainingAmount)}
                   </span>
                 </Col>
               </Row>
@@ -215,30 +229,6 @@ const EndBookingModal = (props) => {
                 display: 'flex',
               }}
             >
-              <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
-                <Col><span style={{ fontWeight: 500 }}>Số giờ quá hạn :</span></Col>
-                <Col>
-                  <InputNumber
-                    style={{ width: 50 }}
-                    min={0}
-                    controls={false}
-                    formatter={value => value.replace(/\D/g, '')} // Chỉ cho phép nhập số
-                    parser={value => value.replace(/\D/g, '')} // Loại bỏ các ký tự không phải là số
-                    defaultValue={expired_hours}
-                    onChange={(value) => setExpired_hours(value)}
-                  />
-                </Col>
-                <Col>
-                  <Select
-                    placeholder="Chọn xe quá giờ"
-                    onSelect={(value) => handleSelect(value)}
-                    onDeselect={(value) => handleDeselect(value)}
-                    options={license}
-                    style={{ minWidth: 160 }}
-                    mode="multiple"
-                  />
-                </Col>
-              </Row>
 
               {endData?.discount ? "" : (
                 <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
@@ -269,8 +259,8 @@ const EndBookingModal = (props) => {
                     step={1} // Bước nhảy
                     controls={false}
                     style={{ width: "100%" }}
-                  //onChange={handleChangeDiscount}
-                  //value={discount}
+                    onChange={(value) => setFinalPayment(value)}
+                    value={finalPayment}
                   />
                 </Col>
               </Row>

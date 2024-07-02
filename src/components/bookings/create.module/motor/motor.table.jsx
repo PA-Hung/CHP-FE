@@ -72,7 +72,7 @@ const MotorTable = (props) => {
     const handleSwitchChange = (id, value) => {
         const newlistMotors = listMotorsSelected.map((item) => {
             if (item._id === id) {
-                return { ...item, rental_status: value };
+                return { ...item, rental_status: value, status: value === true ? "Đã nhận xe" : "Chưa nhận xe" };
             }
             return item;
         });

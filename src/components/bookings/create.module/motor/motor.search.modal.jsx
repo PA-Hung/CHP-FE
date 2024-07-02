@@ -47,6 +47,7 @@ const MotorSearchModal = (props) => {
             start_date: dateHire?.start_date ? dateHire.start_date : dayjs(),
             end_date: dateHire?.end_date ? dateHire.end_date : dayjs().add(1, "day"),
             rental_status: true,
+            status: "Đã nhận xe",
             amount: item.priceD * calculateRentalDays(dateHire?.start_date, dateHire?.end_date)
         }));
     };

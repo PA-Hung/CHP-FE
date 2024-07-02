@@ -132,7 +132,7 @@ const CalenderTimeLine = () => {
       <FullCalendar
         ref={calendarRef} // Sử dụng useRef để gắn FullCalendar
         headerToolbar={{
-          left: "today",
+          left: 'resourceTimelineWeek,resourceTimelineMonth',
           center: "title",
           right: "prev,next",
         }}

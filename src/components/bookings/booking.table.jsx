@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Table, Button, notification, Popconfirm, message, Tag, Select, Dropdown } from "antd";
+import { Table, Button, notification, Popconfirm, message, Tag, Select, Dropdown, Modal, DatePicker } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
@@ -7,10 +7,12 @@ import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
 import { bookingOnchangeTable } from "@/redux/slice/bookingSlice";
-import { MenuOutlined, DeleteOutlined, PrinterOutlined, EditOutlined, ApiOutlined, CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { MenuOutlined, DeleteOutlined, ExclamationCircleOutlined, EditOutlined, ApiOutlined, CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { deleteBooking } from "@/utils/api";
 import EndBookingModal from "./end.module/end.booking.modal";
 import UpdateDrawer from "./update.drawer";
+import { updateBooking } from "@/utils/api";
+
 
 const BookingTable = (props) => {
   const { listBookings, loading, reloadTable, meta } = props;
@@ -19,6 +21,8 @@ const BookingTable = (props) => {
   const [endData, setEndData] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
+
+  const [end_date, setEnd_date] = useState(dayjs());
 
   // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
   // const uniqueCodes = [...new Set(listBookings.map(item => item.code))];
@@ -30,8 +34,6 @@ const BookingTable = (props) => {
   // // Tạo các bộ lọc từ các giá trị duy nhất
   // const filtersHost = uniqueHosts.map(user => ({ text: `Host "${user}"`, value: user }));
 
-
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
@@ -41,6 +43,88 @@ const BookingTable = (props) => {
     const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
     return end.diff(start, 'day');
   }
+
+  const handleOkStatusChange = async (value, motors, record) => {
+    // Cập nhật trạng thái của motors
+    const updatedMotors = record.motors.map(motor => {
+      if (value !== "Đã trả xe" && motor._id === motors._id) {
+        return { ...motor, status: value };
+      }
+      if (value === "Đã trả xe" && motor._id === motors._id) {
+        return { ...motor, status: value, end_date: end_date };
+      }
+      return motor;
+    });
+
+    // Tạo đối tượng dữ liệu mới với motors đã cập nhật
+    const data = {
+      _id: record._id,
+      motors: updatedMotors,
+    };
+
+    try {
+      const res = await updateBooking(data);
+      if (res.data) {
+        reloadTable();
+        message.success("Cập nhật trạng thái hợp đồng thành công !");
+      } else {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          placement: "top",
+          description: res.message,
+        });
+      }
+    } catch (error) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: error.message,
+      });
+    }
+  }
+
+  const handleStatusChange = (value, item, record) => {
+    if (value !== "Đã trả xe") {
+      Modal.confirm({
+        title: 'Xác nhận thay đổi',
+        okText: 'Xác nhận',
+        cancelText: 'Hủy bỏ',
+        content: (
+          <div>Bạn có muốn thay đổi trạng thái hợp đồng từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>),
+        onOk: () => {
+          handleOkStatusChange(value, item, record);
+        },
+      });
+    }
+    if (value === "Đã trả xe") {
+      Modal.confirm({
+        title: 'Xác nhận thay đổi',
+        okText: 'Xác nhận',
+        cancelText: 'Hủy bỏ',
+        content: (
+          <>
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              <div>Bạn có muốn thay đổi trạng thái hợp đồng từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 5 }}>
+                <div>Thời gian trả xe : </div>
+                <div>
+                  <DatePicker
+                    showTime={{ format: 'HH' }} // Chỉ hiển thị giờ
+                    defaultValue={dayjs()}
+                    format="HH giờ DD-MM-YYYY"
+                    onChange={(e) => setEnd_date(e)}
+                  /></div>
+              </div>
+            </div>
+          </>
+        ),
+        onOk: () => {
+          handleOkStatusChange(value, item, record);
+        },
+      });
+    }
+
+  };
 
   const columns = [
     {
@@ -76,12 +160,19 @@ const BookingTable = (props) => {
               <div key={item._id} style={{ display: "flex", gap: 5 }}>
                 {item.brand}
                 <Tag color="blue">{item.license}</Tag>
-                {
-                  item.rental_status === true ?
-                    <Tag icon={<CheckCircleOutlined />} color="#f50" style={{ fontWeight: 550 }}>Đã nhận xe</Tag>
-                    : <Tag icon={<MinusCircleOutlined />} color="default" style={{ fontWeight: 550 }}>Chưa nhận xe</Tag>
-                }
-
+                <Select
+                  status="warning"
+                  size="small"
+                  style={{ width: 150 }}
+                  onChange={(value) => handleStatusChange(value, item, record)}
+                  placeholder="Select an option"
+                  options={[
+                    { value: "Chưa nhận xe", label: "Chưa nhận xe" },
+                    { value: "Đã nhận xe", label: "Đã nhận xe" },
+                    { value: "Đã trả xe", label: "Đã trả xe" },
+                  ]}
+                  value={item.status}
+                />
               </div>
             ))}
           </div>
@@ -243,6 +334,7 @@ const BookingTable = (props) => {
         setIsEndModalOpen={setIsEndModalOpen}
         endData={endData}
         setEndData={setEndData}
+        reloadTable={reloadTable}
       />
       <UpdateDrawer
         updateData={updateData}
