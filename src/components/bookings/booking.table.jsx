@@ -181,7 +181,7 @@ const BookingTable = (props) => {
     },
     {
       title: "Ngày thuê",
-      width: 190,
+      width: 220,
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>

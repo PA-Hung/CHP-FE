@@ -10,52 +10,50 @@ import { fetchMotor } from '@/redux/slice/motorSlice';
 import queryString from "query-string";
 
 const UpdateDrawer = (props) => {
-  const { reloadTable, isUpdateDrawerOpen, setIsUpdateDrawerOpen, updateData, setUpdateData } = props;
+  const { reloadTable, isUpdateDrawerOpen, setIsUpdateDrawerOpen, updateData } = props;
   const [salesman, setSalesMan] = useState(null)
   const [guestData, setGuestData] = useState(null);
   const [listMotorsSelected, setListMotorsSelected] = useState([])
   const meta = useSelector((state) => state.motor.meta);
   const dispatch = useDispatch();
-  const [deposit, setDeposit] = useState("")
-  const [discount, setDiscount] = useState("")
-  const [amount, setAmount] = useState("")
-  const [total, setTotal] = useState()
+  const [deposit, setDeposit] = useState(0)
+  const [discount, setDiscount] = useState(0)
+  const [total, setTotal] = useState(0)
   const [method, setMethod] = useState()
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
   const [commission, setCommission] = useState("")
 
+
+
   useEffect(() => {
     if (isUpdateDrawerOpen && updateData) {
       setSalesMan(updateData.user_id || null);
       setGuestData(updateData.guest_id || null);
-      setDiscount(updateData.discount || "");
-      setDeposit(updateData.deposit || "");
-      setTotal(updateData.total || "");
-      setAmount(updateData.amount || "");
+      setDiscount(updateData.discount || 0);
+      setDeposit(updateData.deposit || 0);
+      setTotal(updateData.total || 0);
       setMethod(updateData.method || null);
       setListMotorsSelected(updateData.motors || []);
       setCommission(updateData.commission || "");
       setDeposit(updateData.deposit || "")
       setDiscount(updateData.discount || "")
-      setAmount(updateData.amount || "")
     }
   }, [isUpdateDrawerOpen, updateData]);
 
   const resetDrawer = () => {
     setSalesMan(null)
     setGuestData(null)
-    setDiscount(null)
-    setDeposit(null)
-    setTotal("")
-    setAmount("")
+    setDiscount(0)
+    setDeposit(0)
+    setTotal(0)
     setMethod(null)
     setListMotorsSelected([])
     setCheckedBox("nodiscount")
     const query = buildQuery();
     dispatch(fetchMotor({ query }));
-    setIsUpdateDrawerOpen(false);
     setCommission("")
+    setIsUpdateDrawerOpen(false);
   };
 
   useEffect(() => {
@@ -164,7 +162,7 @@ const UpdateDrawer = (props) => {
       method: method,
       discount: discount,
       deposit: deposit,
-      amount: discount ? amount : total
+      amount: total
     }
 
     const res = await updateBooking(data);
@@ -233,8 +231,6 @@ const UpdateDrawer = (props) => {
                   setDeposit={setDeposit}
                   discount={discount}
                   setDiscount={setDiscount}
-                  amount={amount}
-                  setAmount={setAmount}
                   method={method}
                   setMethod={setMethod}
                   checkedBox={checkedBox}

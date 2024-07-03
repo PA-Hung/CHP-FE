@@ -1,49 +1,43 @@
-import { Card, Checkbox, InputNumber, Select, notification } from "antd";
-import { useEffect } from "react";
+import { Card, Checkbox, Form, InputNumber, Select, message, notification } from "antd";
+import { useCallback, useEffect, useState } from "react";
+import _ from 'lodash';
 
 const BillingCard = (props) => {
-    const { total, deposit, setDeposit, discount, setDiscount, amount, setAmount, method, setMethod, checkedBox, setCheckedBox } = props
-
-
-    useEffect(() => {
-        if (deposit) {
-            setCheckedBox('discount')
-        }
-    }, [deposit])
+    const { total, deposit, setDeposit, discount, setDiscount, method, setMethod, checkedBox, setCheckedBox } = props;
+    const [pay, setPay] = useState(total); // Khởi tạo pay bằng tổng số tiền ban đầu
 
     const onChange = (e) => {
         setCheckedBox(e.target.name);
         if (e.target.name === "nodiscount") {
-            setDiscount(null)
-            setAmount(total)
+            setDiscount(0);
+            setPay(total - deposit);
         }
     };
 
-
-    const handleChangeDeposit = (value) => {
-        // Kiểm tra nếu giá trị nhập vào không phải số
-        if (isNaN(value)) {
-            return setDeposit(null)
+    useEffect(() => {
+        if (discount) {
+            setCheckedBox('discount')
         }
-        setDeposit(value)
-    };
+    }, [discount])
 
-    const handleChangeDiscount = (value) => {
-        if (isNaN(value)) {
-            return setDiscount(null)
-        }
-        setDiscount(value)
-        if (total - value > 0) {
-            setAmount(total - value)
-        } else {
-            notification.error({
-                message: "Có lỗi xảy ra",
-                placement: "top",
-                description: "Tiền giảm giá phải nhỏ hơn tổng tiền thuê xe",
-            });
-        }
+    const handleChangeDeposit = useCallback(_.debounce((value) => {
+        setDeposit(value || 0);
+        updatePay(total, discount, value || 0);
+    }, 300), [total, discount]);
 
-    };
+    const handleChangeDiscount = useCallback(_.debounce((value) => {
+        setDiscount(value || 0);
+        updatePay(total, value || 0, deposit);
+    }, 300), [total, deposit]);
+
+    const updatePay = useCallback(_.debounce((total, discount, deposit) => {
+        const newPay = total - discount - deposit;
+        setPay(newPay);
+    }, 300), []);
+
+    useEffect(() => {
+        updatePay(total, discount, deposit);
+    }, [total, discount, deposit]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -60,7 +54,6 @@ const BillingCard = (props) => {
                 }
                 hoverable
             >
-
                 <div style={{ display: "flex", gap: 50, paddingBottom: 20 }}>
                     <div>
                         <Checkbox onChange={onChange} checked={checkedBox === 'nodiscount'} name='nodiscount' >
@@ -76,7 +69,7 @@ const BillingCard = (props) => {
                 <div style={{ display: "flex", gap: 20 }}>
                     <div>
                         <Select
-                            size="large"
+                            size="middle"
                             placeholder="Chọn thanh toán"
                             value={method}
                             onSelect={(value) => setMethod(value)}
@@ -87,41 +80,45 @@ const BillingCard = (props) => {
                             ]}
                         />
                     </div>
-                    {checkedBox === 'discount' ? <div>
-                        <InputNumber
-                            addonAfter={<b>đ</b>}
-                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
-                            step={1} // Bước nhảy
-                            controls={false}
-                            placeholder="Giảm giá"
-                            style={{ width: "100%" }}
-                            onChange={handleChangeDiscount}
-                            value={discount}
-                            size="large"
-                        />
-                    </div> : ""}
+                    {checkedBox === 'discount' && (
+                        <div>
+                            <Form.Item label="Giảm giá" style={{ fontWeight: 550 }}>
+                                <InputNumber
+                                    addonAfter={<b>đ</b>}
+                                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                                    step={1} // Bước nhảy
+                                    controls={false}
+                                    style={{ width: "100%" }}
+                                    onChange={handleChangeDiscount}
+                                    value={discount}
+                                    size="middle"
+                                />
+                            </Form.Item>
+                        </div>
+                    )}
                     <div>
-                        <InputNumber
-                            placeholder="Đặt cọc hoặc trả hết"
-                            addonAfter={<b>đ</b>}
-                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
-                            step={1} // Bước nhảy
-                            style={{ width: "100%" }}
-                            controls={false}
-                            onChange={handleChangeDeposit}
-                            value={deposit}
-                            size="large"
-                        />
+                        <Form.Item label="Đặt cọc" style={{ fontWeight: 550 }}>
+                            <InputNumber
+                                placeholder="Đặt cọc hoặc trả hết"
+                                addonAfter={<b>đ</b>}
+                                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                                step={1} // Bước nhảy
+                                style={{ width: "100%" }}
+                                controls={false}
+                                onChange={handleChangeDeposit}
+                                value={deposit}
+                                size="middle"
+                            />
+                        </Form.Item>
                     </div>
                 </div>
                 <div style={{ display: "flex", fontSize: 20, fontWeight: 700, marginTop: 20, gap: 6 }}>
-                    <div >Giá trị hợp đồng = (Tiền thuê xe - Giảm giá) = </div>
-                    <div style={{ color: "red" }}>{formatCurrency(discount ? amount : total)}</div>
+                    <div>Số tiền phải thanh toán = </div>
+                    <div style={{ color: "red" }}>{formatCurrency(pay)}</div>
                 </div>
-
             </Card>
         </div>
-    )
-}
+    );
+};
 
-export default BillingCard
+export default BillingCard;

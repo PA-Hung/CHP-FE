@@ -17,10 +17,9 @@ const CreateDrawer = (props) => {
   const [listMotorsSelected, setListMotorsSelected] = useState([])
   const meta = useSelector((state) => state.motor.meta);
   const dispatch = useDispatch();
-  const [deposit, setDeposit] = useState("")
-  const [discount, setDiscount] = useState("")
-  const [amount, setAmount] = useState("")
-  const [total, setTotal] = useState()
+  const [deposit, setDeposit] = useState(0)
+  const [discount, setDiscount] = useState(0)
+  const [total, setTotal] = useState(0)
   const [method, setMethod] = useState()
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
@@ -29,17 +28,16 @@ const CreateDrawer = (props) => {
   const resetDrawer = () => {
     setSalesMan(null)
     setGuestData(null)
-    setDiscount(null)
-    setDeposit(null)
-    setTotal("")
-    setAmount("")
+    setDiscount(0)
+    setDeposit(0)
+    setTotal(0)
     setMethod(null)
     setListMotorsSelected([])
     setCheckedBox("nodiscount")
     const query = buildQuery();
     dispatch(fetchMotor({ query }));
-    setIsCreateDrawerOpen(false);
     setCommission("")
+    setIsCreateDrawerOpen(false);
   };
 
   useEffect(() => {
@@ -137,6 +135,15 @@ const CreateDrawer = (props) => {
       });
       return
     }
+    const newPay = total - discount - deposit;
+    if (newPay < 0) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: "Số tiền thanh toán cần phải lớn hơn hoặc bằng 0 !",
+      });
+      return
+    }
 
     const data = {
       start_date: dayjs(),
@@ -149,7 +156,7 @@ const CreateDrawer = (props) => {
       method: method,
       discount: discount,
       deposit: deposit,
-      amount: discount ? amount : total
+      amount: total
     }
 
 
@@ -219,8 +226,6 @@ const CreateDrawer = (props) => {
                   setDeposit={setDeposit}
                   discount={discount}
                   setDiscount={setDiscount}
-                  amount={amount}
-                  setAmount={setAmount}
                   method={method}
                   setMethod={setMethod}
                   checkedBox={checkedBox}

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal, notification, message, Row, Col, DatePicker, Card, Space, InputNumber, Select, Tag, Button } from "antd";
 import dayjs from "dayjs";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { postCreatePayment } from "@/utils/api";
+import { postCreatePayment, updateBooking } from "@/utils/api";
 
 const EndBookingModal = (props) => {
   const { endData, setEndData, isEndModalOpen, setIsEndModalOpen, reloadTable } = props;
@@ -35,13 +35,28 @@ const EndBookingModal = (props) => {
     }
   }, [endData, late_fee_amount, finalPayment]);
 
+  // console.log('endData', endData);
+
   const onFinish = async () => {
     if (finalAmount > 0) {
       message.error("Bạn phải thanh toán đủ tiền !");
     }
     else {
       // Xử lý hoàn tất thanh toán
-      const data = {
+      const bookingsData = {
+        _id: endData._id,
+        motors: endData.motors,
+        guest_id: endData.guest_id._id,
+        user_id: endData.user_id,
+        commission: endData.commission || 0,
+        status: "Hợp đồng đóng",
+        method: endData.method,
+        discount: endData.deposit || 0,
+        deposit: endData.deposit || 0,
+        amount: endData.deposit || 0
+      }
+
+      const paymentsData = {
         booking_id: endData._id,
         guest_id: endData.guest_id._id,
         user_id: endData.user_id,
@@ -54,9 +69,9 @@ const EndBookingModal = (props) => {
         payment_method: endData.method
       }
 
-      console.log('data', data);
-      const res = await postCreatePayment(data);
-      if (res.data) {
+      const resPayments = await postCreatePayment(paymentsData);
+      const resBookings = await updateBooking(bookingsData);
+      if (resPayments.data && resBookings.data) {
         reloadTable();
         message.success("Hợp đồng hoàn tất !");
         resetModal()
@@ -64,10 +79,9 @@ const EndBookingModal = (props) => {
         notification.error({
           message: "Có lỗi xảy ra",
           placement: "top",
-          description: res.message,
+          description: resPayments.message,
         });
       }
-
     }
   };
 
