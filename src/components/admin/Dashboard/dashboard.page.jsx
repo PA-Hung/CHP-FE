@@ -131,7 +131,6 @@ const DashboardPage = () => {
       </div>
     </div>;
 
-  console.log('isHost', isHost);
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30, }}>

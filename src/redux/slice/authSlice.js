@@ -17,8 +17,8 @@ const initialState = {
     errorRefreshToken: "",
     user: {
         _id: "",
-        email: "",
         name: "",
+        phone: "",
         role: {
             _id: "",
             name: "",
@@ -36,7 +36,7 @@ const authSlice = createSlice({
             state.isAuthenticated = true;
             state.isLoading = false;
             state.user._id = action?.payload?._id;
-            state.user.email = action.payload.email;
+            state.user.phone = action.payload.phone;
             state.user.name = action.payload.name;
             state.user.role = action?.payload?.role;
             state.user.permissions = action?.payload?.permissions;
@@ -47,7 +47,7 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.user = {
                 _id: "",
-                email: "",
+                phone: "",
                 name: "",
                 role: {
                     _id: "",
@@ -75,7 +75,7 @@ const authSlice = createSlice({
                 state.isAuthenticated = true;
                 state.isLoading = false;
                 state.user._id = action?.payload?.user?._id;
-                state.user.email = action.payload.user?.email;
+                state.user.phone = action.payload.user?.phone;
                 state.user.name = action.payload.user?.name;
                 state.user.role = action?.payload?.user?.role;
                 state.user.permissions = action?.payload?.user?.permissions;

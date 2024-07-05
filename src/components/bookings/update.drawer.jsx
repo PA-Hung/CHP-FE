@@ -22,7 +22,7 @@ const UpdateDrawer = (props) => {
   const [method, setMethod] = useState()
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
-  const [commission, setCommission] = useState("")
+  const [commission, setCommission] = useState(0)
 
 
 
@@ -35,9 +35,7 @@ const UpdateDrawer = (props) => {
       setTotal(updateData.total || 0);
       setMethod(updateData.method || null);
       setListMotorsSelected(updateData.motors || []);
-      setCommission(updateData.commission || "");
-      setDeposit(updateData.deposit || "")
-      setDiscount(updateData.discount || "")
+      setCommission(updateData.commission || 0);
     }
   }, [isUpdateDrawerOpen, updateData]);
 
@@ -152,6 +150,16 @@ const UpdateDrawer = (props) => {
       return
     }
 
+    const newPay = total - discount - deposit;
+    if (newPay < 0) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        placement: "top",
+        description: "Số tiền thanh toán cần phải lớn hơn hoặc bằng 0 !",
+      });
+      return
+    }
+
     const data = {
       _id: updateData._id,
       motors: listMotorsSelected,
@@ -162,7 +170,8 @@ const UpdateDrawer = (props) => {
       method: method,
       discount: discount,
       deposit: deposit,
-      amount: total
+      amount: total,
+      remaining_amount: newPay || 0,
     }
 
     const res = await updateBooking(data);

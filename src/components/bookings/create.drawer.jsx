@@ -23,7 +23,8 @@ const CreateDrawer = (props) => {
   const [method, setMethod] = useState()
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
-  const [commission, setCommission] = useState("")
+  const [commission, setCommission] = useState(0)
+  const [late_fee_amount, setLate_fee_amount] = useState(0);
 
   const resetDrawer = () => {
     setSalesMan(null)
@@ -36,7 +37,7 @@ const CreateDrawer = (props) => {
     setCheckedBox("nodiscount")
     const query = buildQuery();
     dispatch(fetchMotor({ query }));
-    setCommission("")
+    setCommission(0)
     setIsCreateDrawerOpen(false);
   };
 
@@ -135,6 +136,7 @@ const CreateDrawer = (props) => {
       });
       return
     }
+
     const newPay = total - discount - deposit;
     if (newPay < 0) {
       notification.error({
@@ -156,6 +158,8 @@ const CreateDrawer = (props) => {
       method: method,
       discount: discount,
       deposit: deposit,
+      late_fee_amount: late_fee_amount,
+      remaining_amount: newPay || 0,
       amount: total
     }
 

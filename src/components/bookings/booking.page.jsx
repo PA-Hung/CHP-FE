@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Row, Col } from "antd";
+import { Button, Row, Col, Tabs } from "antd";
 import queryString from "query-string";
 import {
   PlusOutlined,
@@ -14,6 +14,8 @@ import BookingTable from "./booking.table";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { fetchBooking } from "@/redux/slice/bookingSlice";
+import BookingCompletedTable from "./booking.completed.table";
+import { fetchCompletedBooking } from "@/redux/slice/bookingCompletedSlice";
 
 const BookingPage = () => {
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
@@ -25,7 +27,22 @@ const BookingPage = () => {
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState(null);
 
+  const loadingCompleted = useSelector((state) => state.bookingCompleted.isFetching);
+  const metaCompleted = useSelector((state) => state.bookingCompleted.meta);
+  const listBookingsCompleted = useSelector((state) => state.bookingCompleted.result);
 
+  useEffect(() => {
+    const initData = async () => {
+      if (searchValue) {
+        const query = buildCompletedQuery(searchValue);
+        dispatch(fetchCompletedBooking({ query }));
+      } else {
+        const query = buildCompletedQuery();
+        dispatch(fetchCompletedBooking({ query }));
+      }
+    };
+    initData();
+  }, [meta.current, meta.pageSize]);
 
   useEffect(() => {
     const initData = async () => {
@@ -45,6 +62,12 @@ const BookingPage = () => {
     dispatch(fetchBooking({ query }));
   };
 
+  const reloadTableCompleted = () => {
+    const query = buildCompletedQuery();
+    dispatch(fetchCompletedBooking({ query }));
+  };
+
+
   const buildQuery = (
     params,
     sort,
@@ -53,13 +76,14 @@ const BookingPage = () => {
     pageSize = meta.pageSize
   ) => {
     const clone = { ...params };
-    if (clone.code) clone.code = `/${clone.code}/i`;
+
+    clone.status = "Hợp đồng mở";
 
     let temp = queryString.stringify(clone);
 
     let sortBy = "";
-    if (sort && sort.code) {
-      sortBy = sort.code === "ascend" ? "sort=code" : "sort=-code";
+    if (sort && sort.status) {
+      sortBy = sort.status === "ascend" ? "sort=status" : "sort=-status";
     }
 
     if (sort && sort.createdAt) {
@@ -80,11 +104,82 @@ const BookingPage = () => {
     return temp;
   };
 
+  const buildCompletedQuery = (
+    params,
+    sort,
+    filter,
+    page = meta.current,
+    pageSize = meta.pageSize
+  ) => {
+    const clone = { ...params };
+
+    clone.status = "Hợp đồng đóng";
+
+    let temp = queryString.stringify(clone);
+
+    let sortBy = "";
+    if (sort && sort.status) {
+      sortBy = sort.status === "ascend" ? "sort=status" : "sort=-status";
+    }
+
+    if (sort && sort.createdAt) {
+      sortBy =
+        sort.createdAt === "ascend" ? "sort=createdAt" : "sort=-createdAt";
+    }
+    if (sort && sort.updatedAt) {
+      sortBy =
+        sort.updatedAt === "ascend" ? "sort=updatedAt" : "sort=-updatedAt";
+    }
+
+    //mặc định sort theo updatedAt
+    if (Object.keys(sortBy).length === 0) {
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-createdAt`;
+    } else {
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&${sortBy}`;
+    }
+    return temp;
+  };
+
+
   const onSearch = async (value) => {
     setSearchValue(value);
     const query = buildQuery(value);
     dispatch(fetchBooking({ query }));
   };
+
+  const tabsItems = [
+    {
+      key: '1',
+      label: (<div style={{ fontWeight: 550 }}>Đang Thuê ({listBookings.length})</div>),
+      children: (
+        <>
+          <BookingTable
+            listBookings={listBookings}
+            loading={loading}
+            reloadTable={reloadTable}
+            reloadTableCompleted={reloadTableCompleted}
+            meta={meta}
+          />
+        </>
+      ),
+    },
+    {
+      key: '2',
+      label: (<div style={{ fontWeight: 550 }}>Hoàn Thành ({listBookingsCompleted.length})</div>),
+      children: (
+        <>
+          <BookingCompletedTable
+            loadingCompleted={loadingCompleted}
+            listBookingsCompleted={listBookingsCompleted}
+            reloadTableCompleted={reloadTableCompleted}
+            reloadTable={reloadTable}
+            metaCompleted={metaCompleted}
+          />
+        </>
+      ),
+    },
+
+  ];
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
@@ -118,12 +213,7 @@ const BookingPage = () => {
           />
         </Col> */}
         <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-          <BookingTable
-            listBookings={listBookings}
-            loading={loading}
-            reloadTable={reloadTable}
-            meta={meta}
-          />
+          <Tabs defaultActiveKey="1" items={tabsItems} size="large" />
         </Col>
       </Row>
       <CreateDrawer

@@ -1,21 +1,22 @@
 import { useState } from "react";
-import { Table, Button, notification, Popconfirm, message, Tag, Select, Dropdown, Modal, DatePicker, Tabs } from "antd";
+import { Table, notification, Popconfirm, message, Tag, Select, Dropdown, Modal, DatePicker } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
-import { bookingOnchangeTable } from "@/redux/slice/bookingSlice";
 import { MenuOutlined, DeleteOutlined, ExclamationCircleOutlined, EditOutlined, ApiOutlined, CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { deleteBooking } from "@/utils/api";
 import EndBookingModal from "./end.module/end.booking.modal";
 import UpdateDrawer from "./update.drawer";
 import { updateBooking } from "@/utils/api";
+import { bookingCompletedOnchangeTable } from "@/redux/slice/bookingCompletedSlice";
 
 
-const BookingTable = (props) => {
-  const { listBookings, loading, reloadTable, meta, reloadTableCompleted } = props;
+const BookingCompletedTable = (props) => {
+  const { listBookingsCompleted, loadingCompleted, reloadTableCompleted, metaCompleted, reloadTable } = props;
+
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState(false);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [endData, setEndData] = useState(null);
@@ -65,6 +66,7 @@ const BookingTable = (props) => {
     try {
       const res = await updateBooking(data);
       if (res.data) {
+        reloadTableCompleted();
         reloadTable();
         message.success("Cập nhật trạng thái hợp đồng thành công !");
       } else {
@@ -125,7 +127,7 @@ const BookingTable = (props) => {
     }
   };
 
-  const handleUpdateBooking = (record) => {
+  const handleUpdateCompletedBooking = (record) => {
     if (record.status === "Hợp đồng đóng") {
       notification.warning({
         message: "Thông báo",
@@ -138,6 +140,43 @@ const BookingTable = (props) => {
     }
   }
 
+  const handleOpenCompletedBooking = async (record) => {
+    if (record.status !== "Hợp đồng đóng") {
+      notification.warning({
+        message: "Thông báo",
+        placement: "top",
+        description: "Hợp đồng này đã hoàn thành !",
+      });
+    } else {
+      const newMotors = record.motors.map((item) => ({ ...item, status: "Đã nhận xe" }));
+      const data = {
+        _id: record._id,
+        motors: newMotors,
+        guest_id: record?.guest_id._id,
+        user_id: record.user_id,
+        commission: record.commission,
+        status: "Hợp đồng mở",
+        method: record.method,
+        discount: record.discount,
+        deposit: record.deposit,
+        amount: record.total,
+        remaining_amount: 0,
+      }
+      const resBookings = await updateBooking(data);
+      if (resBookings.data) {
+        reloadTable();
+        reloadTableCompleted();
+        message.success("Mở lại hợp đồng thành công !");
+      } else {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          placement: "top",
+          description: resBookings.message,
+        });
+      }
+    }
+  }
+
   const columns = [
     {
       title: "STT",
@@ -145,7 +184,7 @@ const BookingTable = (props) => {
       width: 50,
       align: "center",
       render: (text, record, index) => {
-        return <>{index + 1 + (meta.current - 1) * meta.pageSize}</>;
+        return <>{index + 1 + (metaCompleted.current - 1) * metaCompleted.pageSize}</>;
       },
       hideInSearch: true,
     },
@@ -222,16 +261,23 @@ const BookingTable = (props) => {
       },
     },
     {
+      title: "Phí quá hạn",
+      render: (_value, record) => {
+        return <div>{...(record.late_fee_amount ? formatCurrency(record.late_fee_amount) : "")}</div>;
+      },
+    },
+    {
       title: "Đã trả",
       render: (_value, record) => {
         return <div>{...(record.deposit ? formatCurrency(record.deposit) : "")}</div>;
       },
     },
+
     {
       title: "Phải thu",
       render: (_value, record) => {
         return (
-          <div>{...(record.remaining_amount ? formatCurrency(record.remaining_amount) : "")}</div>
+          <div>{formatCurrency(record.remaining_amount)}</div>
         );
       },
     },
@@ -254,6 +300,18 @@ const BookingTable = (props) => {
     },
   ];
 
+  const handleDeleteCompletedBooking = (record) => {
+    if (record.status === "Hợp đồng đóng") {
+      notification.warning({
+        message: "Thông báo",
+        placement: "top",
+        description: "Bạn không có quyền xoá hợp đồng này, hãy liên hệ admin !",
+      });
+    } else {
+      confirmDeleteBooking(record)
+    }
+  }
+
 
   const items = (record) => [
     {
@@ -261,7 +319,7 @@ const BookingTable = (props) => {
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
           <div><EditOutlined /></div>
-          <div onClick={() => handleUpdateBooking(record)}>Sửa hợp đồng</div>
+          <div onClick={() => handleUpdateCompletedBooking(record)}>Sửa hợp đồng</div>
         </div>
       ),
     },
@@ -270,7 +328,7 @@ const BookingTable = (props) => {
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
           <div><ApiOutlined /></div>
-          <div onClick={() => { setIsEndModalOpen(true), setEndData(record) }}>Đóng hợp đồng</div>
+          <div onClick={() => handleOpenCompletedBooking(record)}>Mở hợp đồng</div>
         </div>
       ),
     },
@@ -279,7 +337,7 @@ const BookingTable = (props) => {
       label: (
         <Popconfirm
           title={`Bạn muốn xoá hợp đồng của ${record.guest_id.name} không ?`}
-          onConfirm={() => confirmDeleteBooking(record)}
+          onConfirm={() => handleDeleteCompletedBooking(record)}
           okText="Yes"
           cancelText="No"
         >
@@ -312,42 +370,42 @@ const BookingTable = (props) => {
         size="small"
         scroll={{ x: true }}
         columns={columns}
-        dataSource={listBookings}
+        dataSource={listBookingsCompleted}
         rowKey={"_id"}
-        loading={loading}
+        loading={loadingCompleted}
         bordered={true}
         pagination={{
           position: ["bottomCenter"],
-          current: meta.current,
-          pageSize: meta.pageSize,
-          total: meta.total,
+          current: metaCompleted.current,
+          pageSize: metaCompleted.pageSize,
+          total: metaCompleted.total,
           showTotal: (total, range) =>
             `${range[0]} - ${range[1]} of ${total} items`,
           onChange: (page, pageSize) =>
             dispatch(
-              bookingOnchangeTable({
+              bookingCompletedOnchangeTable({
                 current: page,
                 pageSize: pageSize,
-                pages: meta.pages,
-                total: meta.total,
+                pages: metaCompleted.pages,
+                total: metaCompleted.total,
               })
             ),
           showSizeChanger: true,
-          defaultPageSize: meta.pageSize,
+          defaultPageSize: metaCompleted.pageSize,
         }}
       />
       <EndBookingModal
         isEndModalOpen={isEndModalOpen}
         setIsEndModalOpen={setIsEndModalOpen}
-        reloadTableCompleted={reloadTableCompleted}
         endData={endData}
         setEndData={setEndData}
+        reloadTableCompleted={reloadTableCompleted}
         reloadTable={reloadTable}
       />
       <UpdateDrawer
         updateData={updateData}
         setUpdateData={setUpdateData}
-        reloadTable={reloadTable}
+        reloadTableCompleted={reloadTableCompleted}
         isUpdateDrawerOpen={isUpdateDrawerOpen}
         setIsUpdateDrawerOpen={setIsUpdateDrawerOpen}
       />
@@ -355,4 +413,4 @@ const BookingTable = (props) => {
   );
 };
 
-export default BookingTable;
+export default BookingCompletedTable;

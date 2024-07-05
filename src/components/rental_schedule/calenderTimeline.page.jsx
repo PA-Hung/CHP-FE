@@ -101,7 +101,6 @@ const CalenderTimeLine = () => {
   );
 
   const eventDidMount = (info) => {
-    console.log('info', info);
     return new Popover(info.el, {
       title: info.event.extendedProps.name,
       placement: "auto",

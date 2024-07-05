@@ -88,7 +88,6 @@ export const GuestCard = (props) => {
 
   const onFinish = async (values) => {
     const data = values; // viết gọn của 2 dòng trên
-    console.log('guestData', data);
     const res = await postCreateGuest(data);
     if (res.data) {
       setGuestData(data)

@@ -5,7 +5,7 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import { postCreatePayment, updateBooking } from "@/utils/api";
 
 const EndBookingModal = (props) => {
-  const { endData, setEndData, isEndModalOpen, setIsEndModalOpen, reloadTable } = props;
+  const { endData, setEndData, isEndModalOpen, setIsEndModalOpen, reloadTable, reloadTableCompleted } = props;
   const [remainingAmount, setRemainingAmount] = useState(0);
   const [late_fee_amount, setLate_fee_amount] = useState(0); // Thêm trạng thái cho phí quá giờ tổng cộng
   const [endContractDate, setEndContractDate] = useState(dayjs())
@@ -30,8 +30,8 @@ const EndBookingModal = (props) => {
       const amount = endData.amount || 0;
       const discount = endData.discount || 0;
       const deposit = endData.deposit || 0;
-      setRemainingAmount(amount - discount - deposit + (late_fee_amount));
-      setFinalAmount((amount - discount - deposit + (late_fee_amount) - finalPayment))
+      setRemainingAmount(amount - discount - deposit + late_fee_amount);
+      setFinalAmount((amount - discount - deposit - late_fee_amount - finalPayment))
     }
   }, [endData, late_fee_amount, finalPayment]);
 
@@ -43,17 +43,21 @@ const EndBookingModal = (props) => {
     }
     else {
       // Xử lý hoàn tất thanh toán
+      const newMotors = endData.motors.map((item) => ({ ...item, status: "Đã trả xe" }));
       const bookingsData = {
         _id: endData._id,
-        motors: endData.motors,
+        end_date: endContractDate,
+        motors: newMotors,
         guest_id: endData.guest_id._id,
         user_id: endData.user_id,
         commission: endData.commission || 0,
         status: "Hợp đồng đóng",
         method: endData.method,
-        discount: endData.deposit || 0,
-        deposit: endData.deposit || 0,
-        amount: endData.deposit || 0
+        discount: endData.discount || 0,
+        deposit: endData.deposit + finalPayment || 0,
+        amount: endData.amount || 0,
+        late_fee_amount: late_fee_amount,
+        remaining_amount: (endData.amount + late_fee_amount) - (endData.discount + endData.deposit + finalPayment)
       }
 
       const paymentsData = {
@@ -63,8 +67,9 @@ const EndBookingModal = (props) => {
         commission: endData.commission || 0,
         discount: endData.discount || 0,
         deposit: endData.deposit || 0,
+        late_fee_amount: late_fee_amount,
         amount: endData.amount,
-        paid: finalPayment || 0,
+        paid: finalPayment,
         payment_date: endContractDate,
         payment_method: endData.method
       }
@@ -73,6 +78,7 @@ const EndBookingModal = (props) => {
       const resBookings = await updateBooking(bookingsData);
       if (resPayments.data && resBookings.data) {
         reloadTable();
+        reloadTableCompleted();
         message.success("Hợp đồng hoàn tất !");
         resetModal()
       } else {
@@ -102,7 +108,7 @@ const EndBookingModal = (props) => {
     // Tính tổng phí quá giờ
     let totalLateFee = 0;
     endData?.motors?.forEach((motor) => {
-      const lateFeeForThisMotor = motor.priceH * calculateRentalHours(motor.end_date, endContractDate) > 0 ? calculateRentalHours(motor.end_date, endContractDate) : 0;
+      const lateFeeForThisMotor = motor.priceH * (calculateRentalHours(motor.end_date, endContractDate) > 0 ? calculateRentalHours(motor.end_date, endContractDate) : 0);
       totalLateFee += lateFeeForThisMotor;
     });
     setLate_fee_amount(totalLateFee);
@@ -215,7 +221,7 @@ const EndBookingModal = (props) => {
                       {<Tag bordered={true} color="volcano">
                         {calculateRentalHours(item.end_date, endContractDate) > 0 ? calculateRentalHours(item.end_date, endContractDate) : 0} giờ
                       </Tag>}:
-                      <span style={{ fontWeight: 550 }}>{formatCurrency(item.priceH * calculateRentalHours(item.end_date, endContractDate) > 0 ? calculateRentalHours(item.end_date, endContractDate) : 0)}</span>
+                      <span style={{ fontWeight: 550 }}>{formatCurrency(item.priceH * (calculateRentalHours(item.end_date, endContractDate) > 0 ? calculateRentalHours(item.end_date, endContractDate) : 0))}</span>
                     </div>
                   ))}
                 </Col>

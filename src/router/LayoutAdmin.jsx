@@ -21,7 +21,8 @@ import {
   ContactsOutlined,
   RedditOutlined,
   FileTextOutlined,
-  TeamOutlined
+  TeamOutlined,
+  BarChartOutlined
 } from "@ant-design/icons";
 import Logo from "@/components/admin/logo.jsx";
 import ToggleThemeButton from "@/components/admin/toggleTheme.jsx";
@@ -50,6 +51,8 @@ const LayoutAdmin = () => {
   const [menuItems, setMenuItems] = useState(["items"]);
 
   const isAdmin = useSelector((state) => state.auth.user.role);
+  const user = useSelector((state) => state.auth.user);
+
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -230,7 +233,7 @@ const LayoutAdmin = () => {
           ],
         },] : []),
 
-        ...(isAdmin.name === "SUPER_ADMIN" ? [{
+        ...(user.phone === "0963686963" || user.phone === "0933634933" || user.phone === "0933048933" || user.phone === "0862676967" || user.phone === "0377832014" ? [{
           key: 'sub2',
           label: 'Quản lý thuê xe',
           icon: <CarOutlined />,
@@ -254,6 +257,11 @@ const LayoutAdmin = () => {
               key: '12',
               label: 'Khách hàng',
               icon: <TeamOutlined />
+            },
+            {
+              key: '12',
+              label: 'Báo cáo',
+              icon: <BarChartOutlined />
             },
           ],
         },
