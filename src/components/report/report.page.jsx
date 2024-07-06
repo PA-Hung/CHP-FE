@@ -17,6 +17,10 @@ import ProfitTable from "./profit.table";
 import { fetchPayment } from "@/redux/slice/paymentSlice";
 import { ProfitBarChart } from "./profit.BarChart";
 const { RangePicker } = DatePicker;
+import { formatCurrency } from "@/utils/api";
+import SalesTable from "./sales.table";
+import { fetchSale } from "@/redux/slice/saleSlice";
+import { SaleBarChart } from "./sale.BarChart";
 
 const ReportPage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -30,6 +34,25 @@ const ReportPage = () => {
   const listPayments = useSelector((state) => state.payment.result);
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState(null);
+  const [totalPaid, setTotalPaid] = useState(0)
+
+  const loadingSale = useSelector((state) => state.sale.isFetching);
+  const metaSale = useSelector((state) => state.sale.meta);
+  const listSales = useSelector((state) => state.sale.result);
+  const [totalCommission, setTotalCommission] = useState(0)
+
+  useEffect(() => {
+    const initData = async () => {
+      if (searchValue) {
+        const query = saleQuery(searchValue);
+        dispatch(fetchSale({ query }));
+      } else {
+        const query = saleQuery();
+        dispatch(fetchSale({ query }));
+      }
+    };
+    initData();
+  }, [metaSale.current, metaSale.pageSize]);
 
 
   useEffect(() => {
@@ -48,6 +71,46 @@ const ReportPage = () => {
   const reloadTable = () => {
     const query = buildQuery();
     dispatch(fetchPayment({ query }));
+  };
+
+  const saleQuery = (
+    params,
+    sort,
+    filter,
+    page = meta.current,
+    pageSize = meta.pageSize
+  ) => {
+    const clone = { ...params };
+    if (clone.start_date) clone.start_date = `/${clone.start_date}/i`;
+    if (clone.end_date) clone.end_date = `/${clone.end_date}/i`;
+
+    let temp = queryString.stringify(clone);
+
+    let sortBy = "";
+    if (sort && sort.start_date) {
+      sortBy = sort.start_date === "ascend" ? "sort=start_date" : "sort=-start_date";
+    }
+
+    if (sort && sort.end_date) {
+      sortBy = sort.end_date === "ascend" ? "sort=end_date" : "sort=-end_date";
+    }
+
+    if (sort && sort.createdAt) {
+      sortBy =
+        sort.createdAt === "ascend" ? "sort=createdAt" : "sort=-createdAt";
+    }
+    if (sort && sort.updatedAt) {
+      sortBy =
+        sort.updatedAt === "ascend" ? "sort=updatedAt" : "sort=-updatedAt";
+    }
+
+    //mặc định sort theo updatedAt
+    if (Object.keys(sortBy).length === 0) {
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&sort=-createdAt`;
+    } else {
+      temp = `current=${page}&pageSize=${pageSize}&${temp}&${sortBy}`;
+    }
+    return temp;
   };
 
   const buildQuery = (
@@ -101,7 +164,7 @@ const ReportPage = () => {
               <Row gutter={[16, 16]} justify={"space-between"}>
                 <Col >
                   <div style={{ fontSize: 17, fontWeight: 550 }}>
-                    Báo cáo doanh thu theo ngày
+                    Báo cáo doanh thu theo tháng
                   </div>
                 </Col>
                 <Col >
@@ -113,20 +176,32 @@ const ReportPage = () => {
                     defaultValue={[defaultStartDate, defaultEndDate]}
                   />
                 </Col>
+                <Col span={24} >
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <div style={{ fontSize: 40, fontWeight: 600 }}>Tổng doanh thu : </div>
+                    <div style={{ fontSize: 40, fontWeight: 600, color: "blueviolet" }}>
+                      {formatCurrency(totalPaid)}
+                    </div>
+                  </div>
+                </Col>
               </Row>
             </Col>
             <Col span={24} >
-              {/* <Row gutter={[16, 16]}>
+              <Row gutter={[16, 16]}>
                 <Col span={24}>
                   <ProfitBarChart
                     listPayments={listPayments}
-                    loading={loading}
                   />
                 </Col>
-              </Row> */}
+              </Row>
               <Row gutter={[16, 16]}>
                 <Col span={24}>
+                  <div style={{ fontSize: 17, fontWeight: 550 }}>Chi tiết theo ngày</div>
+                </Col>
+                <Col span={24}>
                   <ProfitTable
+                    totalPaid={totalPaid}
+                    setTotalPaid={setTotalPaid}
                     listPayments={listPayments}
                     loading={loading}
                     reloadTable={reloadTable}
@@ -141,13 +216,73 @@ const ReportPage = () => {
     },
     {
       key: '2',
-      label: (<div>Nhân Viên</div>),
+      label: (<div style={{ fontWeight: 600 }}>Nhân Viên</div>),
       children: (
         <>
-          <ProfitBarChart
-            listPayments={listPayments}
-            loading={loading}
-          />
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
+              <Row gutter={[16, 16]} justify={"space-between"}>
+                <Col >
+                  <div style={{ fontSize: 17, fontWeight: 550 }}>
+                    Báo cáo doanh thu theo tháng
+                  </div>
+                </Col>
+                <Col >
+                  <RangePicker
+                    size="large"
+                    status="warning"
+                    onChange={(e) => handleTimeChange(e)}
+                    format={'DD/MM/YYYY'}
+                    defaultValue={[defaultStartDate, defaultEndDate]}
+                  />
+                </Col>
+                <Col span={24} >
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <div style={{ fontSize: 40, fontWeight: 600 }}>Tổng doanh thu : </div>
+                      <div style={{ fontSize: 40, fontWeight: 600, color: "blueviolet" }}>
+                        {formatCurrency(totalPaid)}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <div style={{ fontSize: 40, fontWeight: 600 }}>Tổng hoa hồng : </div>
+                      <div style={{ fontSize: 40, fontWeight: 600, color: "orangered" }}>
+                        {formatCurrency(totalCommission)}
+                      </div>
+                    </div>
+
+                  </div>
+                </Col>
+
+              </Row>
+            </Col>
+            <Col span={24} >
+              <Row gutter={[16, 16]}>
+                <Col span={24}>
+                  <SaleBarChart
+                    listSales={listSales}
+                  />
+                </Col>
+              </Row>
+              <Row gutter={[16, 16]}>
+                <Col span={24}>
+                  <div style={{ fontSize: 17, fontWeight: 550 }}>Chi tiết theo nhân viên</div>
+                </Col>
+                <Col span={24}>
+                  <SalesTable
+                    totalPaid={totalPaid}
+                    setTotalPaid={setTotalPaid}
+                    totalCommission={totalCommission}
+                    setTotalCommission={setTotalCommission}
+                    listSales={listSales}
+                    loadingSale={loadingSale}
+                    reloadTable={reloadTable}
+                    metaSale={metaSale}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
         </>
       ),
     },

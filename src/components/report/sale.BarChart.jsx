@@ -3,26 +3,26 @@ import { Column } from '@ant-design/plots';
 import dayjs from 'dayjs';
 import { formatCurrency } from '@/utils/api';
 
-export const ProfitBarChart = (props) => {
-    const { listPayments } = props;
+export const SaleBarChart = (props) => {
+    const { listSales } = props;
 
 
-    const data = listPayments.map(item => ({
-        _id: dayjs(item._id).format("DD/MM/YYYY"),
-        totalPaid: item.totalPaid,
+    const data = listSales.map(item => ({
+        user: item.user[0].name,
+        totalCommission: item.totalCommission,
     }));
 
     const config = {
         data: data,
-        xField: '_id',
-        yField: 'totalPaid',
+        xField: 'user',
+        yField: 'totalCommission',
         // scrollbar: {
         //     x: {
         //         ratio: 20,
         //     },
         // },
         label: {
-            text: (d) => `${formatCurrency(d.totalPaid)}`,
+            text: (d) => `${formatCurrency(d.totalCommission)}`,
             position: 'inside',
             transform: [
                 {

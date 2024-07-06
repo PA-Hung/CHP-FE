@@ -1,46 +1,51 @@
 import React from 'react';
-import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
+import { Column } from '@ant-design/plots';
 
 export const SimpleBarChart = (props) => {
-    const { result, isFetching } = props;
+    const { result } = props;
 
-    // console.log('result', result);
+    const data = result.map(item => ({
+        code: item.code,
+        count: item.count,
+    }));
+
+    const config = {
+        data: data,
+        xField: 'code',
+        yField: 'count',
+        label: {
+            text: (d) => `${d.count}`,
+            position: 'inside',
+            transform: [
+                {
+                    type: 'overflowHide',
+                },
+            ],
+        },
+        axis: {
+            y: {
+                labelFormatter: (val) => (val),
+            },
+        },
+        tooltip: {
+            title: '_id',
+            items: [{
+                channel: 'y',
+                name: "Lượt khách :",
+                valueFormatter: (d) => (d),
+            }],
+        },
+        style: {
+            radiusTopLeft: 10,
+            radiusTopRight: 10,
+        },
+    };
+
 
     return (
-        <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-                width={500}
-                height={300}
-                data={result}
-                margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                }}
-                loading={isFetching}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                    dataKey="code"
-                    interval={0}
-                    fontSize={9}
-                    fontWeight={'bold'}
-                />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar
-                    dataKey="count"
-                    name={"Số lượng khách theo mã căn"}
-                    fill="#8884d8"
-                    activeBar={<Rectangle
-                        fill="pink"
-                        stroke="blue"
-                    />}
-                />
+        <>
+            <Column {...config} />
+        </>
 
-            </BarChart>
-        </ResponsiveContainer>
     )
 }

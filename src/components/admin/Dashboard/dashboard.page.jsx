@@ -59,10 +59,6 @@ const DashboardPage = () => {
   });
   result.sort((a, b) => a.count - b.count);
 
-  // console.log('apartment', apartment);
-  // console.log('dashboard', dashboard);
-  // console.log('result', result);
-
   const buildQuery = (
     params,
     sort,
@@ -152,6 +148,7 @@ const DashboardPage = () => {
         <div style={{ paddingTop: 30 }}>
           <div style={{ paddingBottom: 20 }}>
             Chọn ngày : <RangePicker
+              status="warning"
               onChange={(e) => handleTimeChange(e)}
               format={'DD/MM/YYYY'}
               defaultValue={[dayjs(), dayjs().add(1, 'day')]}

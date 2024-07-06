@@ -11,27 +11,30 @@ import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
 import { formatCurrency } from "@/utils/api";
 
 
-const ProfitTable = (props) => {
-  const { listPayments, loading, reloadTable, meta, totalPaid, setTotalPaid } = props;
+const SalesTable = (props) => {
+  const { listSales, loadingSale, reloadTable, metaSale, totalPaid, setTotalPaid, setTotalCommission, totalCommission } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
 
   const [totalContract, setTotalContract] = useState(0)
 
-
   useEffect(() => {
-    if (listPayments) {
-      const totalCount = listPayments.reduce((accumulator, item) => {
+    if (listSales) {
+      const totalCount = listSales.reduce((accumulator, item) => {
         return accumulator + item.count;
       }, 0);
-      const totalPaid = listPayments.reduce((accumulator, item) => {
+      const totalPaid = listSales.reduce((accumulator, item) => {
         return accumulator + item.totalPaid;
+      }, 0);
+      const totalCommission = listSales.reduce((accumulator, item) => {
+        return accumulator + item.totalCommission;
       }, 0);
       setTotalContract(totalCount)
       setTotalPaid(totalPaid)
+      setTotalCommission(totalCommission)
     }
-  }, [listPayments]);
+  }, [listSales]);
 
 
   // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
@@ -51,13 +54,13 @@ const ProfitTable = (props) => {
       width: 50,
       align: "center",
       render: (text, record, index) => {
-        return <>{index + 1 + (meta.current - 1) * meta.pageSize}</>;
+        return <>{index + 1 + (metaSale.current - 1) * metaSale.pageSize}</>;
       },
       hideInSearch: true,
     },
     {
-      title: "Ngày",
-      dataIndex: "payment_date",
+      title: "Nhân viên",
+      dataIndex: "user",
       // key: "code",
       // sorter: (a, b) => a.code.localeCompare(b.code),
       // filters: filtersCode,
@@ -65,7 +68,7 @@ const ProfitTable = (props) => {
       // filterMode: 'tree',
       // filterSearch: true,
       render: (_value, record) => {
-        return <div style={{ fontWeight: 550 }}>{dayjs(record._id).format("DD/MM/YYYY")}</div>;
+        return <div style={{ fontWeight: 550 }}>{record.user[0].name}</div>;
       },
     },
     {
@@ -88,6 +91,17 @@ const ProfitTable = (props) => {
       // filterSearch: true,
       render: (_value, record) => {
         return <div style={{ fontWeight: 550, color: "blueviolet" }}>{formatCurrency(record.totalPaid)}</div>;
+      },
+    },
+    {
+      title: "Hoa Hồng",
+      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
+      // filters: filtersHost,
+      // onFilter: (value, record) => record.users?.name.startsWith(value),
+      // filterMode: 'tree',
+      // filterSearch: true,
+      render: (_value, record) => {
+        return <div style={{ fontWeight: 550, color: "blueviolet" }}>{formatCurrency(record.totalCommission)}</div>;
       },
     },
     {
@@ -142,15 +156,15 @@ const ProfitTable = (props) => {
         size="small"
         scroll={{ x: true }}
         columns={columns}
-        dataSource={listPayments}
+        dataSource={listSales}
         rowKey={"_id"}
-        loading={loading}
+        loading={loadingSale}
         bordered={true}
         pagination={{
           position: ["bottomCenter"],
-          current: meta.current,
-          pageSize: meta.pageSize,
-          total: meta.total,
+          current: metaSale.current,
+          pageSize: metaSale.pageSize,
+          total: metaSale.total,
           showTotal: (total, range) =>
             `${range[0]} - ${range[1]} of ${total} items`,
           onChange: (page, pageSize) =>
@@ -158,12 +172,12 @@ const ProfitTable = (props) => {
               apartmentOnchangeTable({
                 current: page,
                 pageSize: pageSize,
-                pages: meta.pages,
-                total: meta.total,
+                pages: metaSale.pages,
+                total: metaSale.total,
               })
             ),
           showSizeChanger: true,
-          defaultPageSize: meta.pageSize,
+          defaultPageSize: metaSale.pageSize,
         }}
         summary={() => {
           return (
@@ -182,9 +196,15 @@ const ProfitTable = (props) => {
                 </div>
               </Table.Summary.Cell>
               <Table.Summary.Cell>
+                <div style={{ fontWeight: 550, color: "red" }}>
+                  {formatCurrency(totalCommission)}
+                </div>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell>
 
               </Table.Summary.Cell>
             </Table.Summary.Row>
+
           );
         }}
       />
@@ -199,4 +219,4 @@ const ProfitTable = (props) => {
   );
 };
 
-export default ProfitTable;
+export default SalesTable;

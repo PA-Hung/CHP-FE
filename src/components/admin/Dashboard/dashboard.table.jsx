@@ -13,6 +13,8 @@ const DashboardTable = (props) => {
     total: 0,
   });
 
+  console.log('result', result);
+
   const columns = [
     {
       title: "STT",

@@ -16,6 +16,10 @@ export const getPayment = (query) => {
     return axios.get(`api/v1/payments?${query}`)
 }
 
+export const getSale = (query) => {
+    return axios.get(`api/v1/payments/sales?${query}`)
+}
+
 // booking    ------------------------------------
 export const getBooking = (query) => {
     return axios.get(`api/v1/bookings?${query}`)
