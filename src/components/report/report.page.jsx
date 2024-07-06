@@ -1,38 +1,45 @@
 import { useEffect, useState } from "react";
-import { Button, Row, Col } from "antd";
+import { Button, Row, Col, Tabs, DatePicker } from "antd";
 import queryString from "query-string";
 import {
   PlusOutlined,
 } from "@ant-design/icons";
-import CreateModal from "./create.modal";
+// import CreateModal from "./create.modal";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import { useDispatch, useSelector } from "react-redux";
-import SearchModal from "./search.modal";
-import AccommodationTable from "./apartment.table";
+// import SearchModal from "./search.modal";
+// import AccommodationTable from "./apartment.table";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import { fetchApartment } from "@/redux/slice/apartmentSlice";
+import ProfitTable from "./profit.table";
+import { fetchPayment } from "@/redux/slice/paymentSlice";
+import { ProfitBarChart } from "./profit.BarChart";
+const { RangePicker } = DatePicker;
 
 const ReportPage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
-  const loading = useSelector((state) => state.apartment.isFetching);
-  const meta = useSelector((state) => state.apartment.meta);
-  const listApartment = useSelector((state) => state.apartment.result);
+  const defaultStartDate = dayjs().startOf('month');
+  const defaultEndDate = dayjs().endOf('month');
+
+  const loading = useSelector((state) => state.payment.isFetching);
+  const meta = useSelector((state) => state.payment.meta);
+  const listPayments = useSelector((state) => state.payment.result);
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState(null);
+
 
   useEffect(() => {
     const initData = async () => {
       if (searchValue) {
         const query = buildQuery(searchValue);
-        dispatch(fetchApartment({ query }));
+        dispatch(fetchPayment({ query }));
       } else {
         const query = buildQuery();
-        dispatch(fetchApartment({ query }));
+        dispatch(fetchPayment({ query }));
       }
     };
     initData();
@@ -40,7 +47,7 @@ const ReportPage = () => {
 
   const reloadTable = () => {
     const query = buildQuery();
-    dispatch(fetchApartment({ query }));
+    dispatch(fetchPayment({ query }));
   };
 
   const buildQuery = (
@@ -51,13 +58,18 @@ const ReportPage = () => {
     pageSize = meta.pageSize
   ) => {
     const clone = { ...params };
-    if (clone.code) clone.code = `/${clone.code}/i`;
+    if (clone.start_date) clone.start_date = `/${clone.start_date}/i`;
+    if (clone.end_date) clone.end_date = `/${clone.end_date}/i`;
 
     let temp = queryString.stringify(clone);
 
     let sortBy = "";
-    if (sort && sort.code) {
-      sortBy = sort.code === "ascend" ? "sort=code" : "sort=-code";
+    if (sort && sort.start_date) {
+      sortBy = sort.start_date === "ascend" ? "sort=start_date" : "sort=-start_date";
+    }
+
+    if (sort && sort.end_date) {
+      sortBy = sort.end_date === "ascend" ? "sort=end_date" : "sort=-end_date";
     }
 
     if (sort && sort.createdAt) {
@@ -78,71 +90,90 @@ const ReportPage = () => {
     return temp;
   };
 
-  const onSearch = async (value) => {
-    setSearchValue(value);
-    const query = buildQuery(value);
-    dispatch(fetchApartment({ query }));
-  };
+  const tabsItems = [
+    {
+      key: '1',
+      label: (<div style={{ fontWeight: 600 }}>Doanh Thu</div>),
+      children: (
+        <>
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
+              <Row gutter={[16, 16]} justify={"space-between"}>
+                <Col >
+                  <div style={{ fontSize: 17, fontWeight: 550 }}>
+                    Báo cáo doanh thu theo ngày
+                  </div>
+                </Col>
+                <Col >
+                  <RangePicker
+                    size="large"
+                    status="warning"
+                    onChange={(e) => handleTimeChange(e)}
+                    format={'DD/MM/YYYY'}
+                    defaultValue={[defaultStartDate, defaultEndDate]}
+                  />
+                </Col>
+              </Row>
+            </Col>
+            <Col span={24} >
+              {/* <Row gutter={[16, 16]}>
+                <Col span={24}>
+                  <ProfitBarChart
+                    listPayments={listPayments}
+                    loading={loading}
+                  />
+                </Col>
+              </Row> */}
+              <Row gutter={[16, 16]}>
+                <Col span={24}>
+                  <ProfitTable
+                    listPayments={listPayments}
+                    loading={loading}
+                    reloadTable={reloadTable}
+                    meta={meta}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </>
+      ),
+    },
+    {
+      key: '2',
+      label: (<div>Nhân Viên</div>),
+      children: (
+        <>
+          <ProfitBarChart
+            listPayments={listPayments}
+            loading={loading}
+          />
+        </>
+      ),
+    },
+  ];
+
+  const handleTimeChange = (e) => {
+    const inputQuery = {
+      start_date: e ? e[0] : defaultStartDate,
+      end_date: e ? e[1] : defaultEndDate,
+    }
+    setSearchValue(inputQuery);
+    const query = buildQuery(inputQuery);
+    dispatch(fetchPayment({ query }));
+  }
+
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
-      <CheckAccess
+      {/* <CheckAccess
         FeListPermission={ALL_PERMISSIONS.APARTMENT.GET_PAGINATE}
-      >
-        <div style={{ padding: 20 }}>
-          <Row gutter={[8, 8]} justify="start" wrap={true}>
-            {/* <Col xs={24} sm={24} md={12} lg={8} xl={4}>
-            <Button
-              icon={<SearchOutlined />}
-              onClick={() => setIsSearchModalOpen(true)}
-            >
-              Tìm kiếm
-            </Button>
-          </Col> */}
-            <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.APARTMENT.CREATE}
-              hideChildren
-            >
-              <Col xs={24} sm={24} md={12} lg={8} xl={4}>
-                <Button
-                  icon={<PlusOutlined />}
-                  onClick={() => setIsCreateModalOpen(true)}
-                >
-                  Thêm mới
-                </Button>
-              </Col>
-            </CheckAccess>
-          </Row>
-        </div>
-        <Row>
-          {/* <Col xs={24} sm={24} md={24} lg={0} xl={0}>
-          <AccommodationCard
-            listAccommodation={listAccommodation}
-            loading={loading}
-            reloadTable ={reloadTable}
-            meta={meta}
-          />
-        </Col> */}
-          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-            <AccommodationTable
-              listApartment={listApartment}
-              loading={loading}
-              reloadTable={reloadTable}
-              meta={meta}
-            />
-          </Col>
-        </Row>
-        <CreateModal
-          reloadTable={reloadTable}
-          isCreateModalOpen={isCreateModalOpen}
-          setIsCreateModalOpen={setIsCreateModalOpen}
-        />
-        <SearchModal
-          isSearchModalOpen={isSearchModalOpen}
-          setIsSearchModalOpen={setIsSearchModalOpen}
-          onSearch={onSearch}
-        />
-      </CheckAccess>
+      ></CheckAccess> */}
+      <Row>
+        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+          <Tabs defaultActiveKey="1" items={tabsItems} size="large" />
+        </Col>
+      </Row>
     </div>
   );
 };

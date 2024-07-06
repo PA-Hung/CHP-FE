@@ -1,26 +1,44 @@
-import { useState } from "react";
-import { Table, Button, notification, Popconfirm, message, Tag } from "antd";
+import { useEffect, useState } from "react";
+import { Table, Button, notification, Popconfirm, message, Col, Row, DatePicker } from "antd";
+import { deleteApartment } from "@/utils/api";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
-import UpdateModal from "./update.modal";
+// import UpdateModal from "./update.modal";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
-import { deleteMotor } from "@/utils/api";
-import { motorOnchangeTable } from "@/redux/slice/motorSlice";
+import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
+import { formatCurrency } from "@/utils/api";
+const { RangePicker } = DatePicker;
 
-const MotorsTable = (props) => {
-  const { listMotors, loading, reloadTable, meta } = props;
+const ProfitTable = (props) => {
+  const { listPayments, loading, reloadTable, meta } = props;
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
 
+  const [totalContract, setTotalContract] = useState(0)
+  const [totalPaid, setTotalPaid] = useState(0)
+
+  useEffect(() => {
+    if (listPayments) {
+      const totalCount = listPayments.reduce((accumulator, item) => {
+        return accumulator + item.count;
+      }, 0);
+      const totalPaid = listPayments.reduce((accumulator, item) => {
+        return accumulator + item.totalPaid;
+      }, 0);
+      setTotalContract(totalCount)
+      setTotalPaid(totalPaid)
+    }
+  }, [listPayments]);
+
   const confirmDelete = async (user) => {
-    const res = await deleteMotor(user._id);
+    const res = await deleteApartment(user._id);
     if (res.data) {
       reloadTable();
-      message.success("Xoá xe thành công !");
+      message.success("Xoá căn hộ thành công !");
     } else {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -30,19 +48,15 @@ const MotorsTable = (props) => {
     }
   };
 
-  // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueCodes = [...new Set(listApartment.map(item => item.code))];
+  // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
+  // const uniqueCodes = [...new Set(listPayments.map(item => item.code))];
   // // Tạo các bộ lọc từ các giá trị duy nhất
   // const filtersCode = uniqueCodes.map(code => ({ text: `Căn hộ "${code}"`, value: code }));
 
   // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueHosts = [...new Set(listApartment.map(item => item.users?.name).filter(user => user !== undefined))];
+  // const uniqueHosts = [...new Set(listPayments.map(item => item.users?.name).filter(user => user !== undefined))];
   // // Tạo các bộ lọc từ các giá trị duy nhất
   // const filtersHost = uniqueHosts.map(user => ({ text: `Host "${user}"`, value: user }));
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  };
 
   const columns = [
     {
@@ -56,62 +70,43 @@ const MotorsTable = (props) => {
       hideInSearch: true,
     },
     {
-      title: "Tên xe / biển số",
-      dataIndex: "license",
-      key: "license",
+      title: "Ngày",
+      dataIndex: "payment_date",
+      // key: "code",
+      // sorter: (a, b) => a.code.localeCompare(b.code),
+      // filters: filtersCode,
+      // onFilter: (value, record) => record.code.startsWith(value),
+      // filterMode: 'tree',
+      // filterSearch: true,
       render: (_value, record) => {
-        return <div style={{ display: "flex", gap: 10 }}>
-          <div style={{ fontWeight: 550 }}>{record.brand}</div>
-          <Tag color="blue" style={{ fontWeight: 500 }}>{record.license}</Tag>
-        </div>;
+        return <div style={{ fontWeight: 550 }}>{dayjs(record._id).format("DD/MM/YYYY")}</div>;
       },
     },
     {
-      title: "Giá theo ngày",
+      title: "Hợp đồng",
       // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
       // filters: filtersHost,
       // onFilter: (value, record) => record.users?.name.startsWith(value),
       // filterMode: 'tree',
       // filterSearch: true,
       render: (_value, record) => {
-        return <div>{formatCurrency(record?.priceD)}</div>;
+        return <div style={{ fontWeight: 550, color: "blueviolet" }}>{record?.count}</div>;
       },
     },
     {
-      title: "Giá quá hạn theo giờ",
+      title: "Doanh thu",
       // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
       // filters: filtersHost,
       // onFilter: (value, record) => record.users?.name.startsWith(value),
       // filterMode: 'tree',
       // filterSearch: true,
       render: (_value, record) => {
-        return <div>{formatCurrency(record?.priceH)}</div>;
+        return <div style={{ fontWeight: 550, color: "blueviolet" }}>{formatCurrency(record.totalPaid)}</div>;
       },
     },
     {
-      title: "Tình trạng",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
-      render: (_value, record) => {
-        return <div>{record?.availability_status ? <Tag color="blue-inverse" style={{ fontWeight: 500 }}>Hoạt động</Tag> : <Tag color="red" style={{ fontWeight: 500 }}>Bảo trì</Tag>}</div>;
-      },
-    },
-    {
-      title: "Ghi chú",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
-      render: (_value, record) => {
-        return <div>{record?.note}</div>;
-      },
-    },
-    {
-      title: "Actions",
+      title: "Chức năng",
+      width: 200,
       render: (record) => {
         return (
           <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
@@ -137,7 +132,7 @@ const MotorsTable = (props) => {
             >
               <div>
                 <Popconfirm
-                  title={`Bạn muốn xoá xe ${record.license} không ?`}
+                  title={`Bạn muốn xoá căn hộ ${record.code} không ?`}
                   onConfirm={() => confirmDelete(record)}
                   okText="Yes"
                   cancelText="No"
@@ -154,13 +149,14 @@ const MotorsTable = (props) => {
     },
   ];
 
+
   return (
     <>
       <Table
         size="small"
         scroll={{ x: true }}
         columns={columns}
-        dataSource={listMotors}
+        dataSource={listPayments}
         rowKey={"_id"}
         loading={loading}
         bordered={true}
@@ -173,7 +169,7 @@ const MotorsTable = (props) => {
             `${range[0]} - ${range[1]} of ${total} items`,
           onChange: (page, pageSize) =>
             dispatch(
-              motorOnchangeTable({
+              apartmentOnchangeTable({
                 current: page,
                 pageSize: pageSize,
                 pages: meta.pages,
@@ -183,16 +179,38 @@ const MotorsTable = (props) => {
           showSizeChanger: true,
           defaultPageSize: meta.pageSize,
         }}
+        summary={() => {
+          return (
+            <Table.Summary.Row>
+              <Table.Summary.Cell colSpan={2}>
+                <div style={{ textAlign: "right", fontWeight: 550 }}>Tổng :</div>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell>
+                <div style={{ fontWeight: 550, color: "red" }}>
+                  {totalContract}
+                </div>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell>
+                <div style={{ fontWeight: 550, color: "red" }}>
+                  {formatCurrency(totalPaid)}
+                </div>
+              </Table.Summary.Cell>
+              <Table.Summary.Cell>
+
+              </Table.Summary.Cell>
+            </Table.Summary.Row>
+          );
+        }}
       />
-      <UpdateModal
+      {/* <UpdateModal
         updateData={updateData}
-        setUpdateData={setUpdateData}
         reloadTable={reloadTable}
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
-      />
+        setUpdateData={setUpdateData}
+      /> */}
     </>
   );
 };
 
-export default MotorsTable;
+export default ProfitTable;

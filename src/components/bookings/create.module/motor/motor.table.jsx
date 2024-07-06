@@ -185,7 +185,7 @@ const MotorTable = (props) => {
                                 rowKey={"_id"}
                                 bordered={true}
                                 pagination={false}
-                                summary={pageData => {
+                                summary={() => {
                                     return (
                                         <Table.Summary.Row>
                                             <Table.Summary.Cell colSpan={4}>

@@ -13,6 +13,7 @@ import NotFound from "./not.found";
 import BookingPage from "../components/bookings/booking.page";
 import MotorsPage from "../components/motors/motors.page";
 import CalenderTimeLine from "../components/rental_schedule/calenderTimeline.page";
+import ReportPage from "../components/report/report.page";
 
 export const router = createBrowserRouter([
   {
@@ -99,6 +100,14 @@ export const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <CalenderTimeLine />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "reports",
+        element: (
+          // <ProtectedRoute>
+          <ReportPage />
           // </ProtectedRoute>
         ),
       },

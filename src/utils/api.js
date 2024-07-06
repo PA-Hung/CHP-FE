@@ -1,8 +1,19 @@
 import axios from '@/utils/axiosCustomize'
 
+// funtionc public 
+
+export const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+};
+
+
 // payment    ------------------------------------
 export const postCreatePayment = (data) => {
     return axios.post('api/v1/payments', data)
+}
+
+export const getPayment = (query) => {
+    return axios.get(`api/v1/payments?${query}`)
 }
 
 // booking    ------------------------------------
@@ -42,6 +53,10 @@ export const postCreateMotor = (data) => {
 
 export const deleteMotor = (id) => {
     return axios.delete(`api/v1/motors/${id}`)
+}
+
+export const updateMotor = (data) => {
+    return axios.patch('api/v1/motors', data)
 }
 
 

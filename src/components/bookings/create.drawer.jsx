@@ -20,7 +20,7 @@ const CreateDrawer = (props) => {
   const [deposit, setDeposit] = useState(0)
   const [discount, setDiscount] = useState(0)
   const [total, setTotal] = useState(0)
-  const [method, setMethod] = useState()
+  const [method, setMethod] = useState("tiền mặt")
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
   const [commission, setCommission] = useState(0)
@@ -32,7 +32,7 @@ const CreateDrawer = (props) => {
     setDiscount(0)
     setDeposit(0)
     setTotal(0)
-    setMethod(null)
+    setMethod("tiền mặt")
     setListMotorsSelected([])
     setCheckedBox("nodiscount")
     const query = buildQuery();

@@ -178,7 +178,6 @@ const BookingPage = () => {
         </>
       ),
     },
-
   ];
 
   return (

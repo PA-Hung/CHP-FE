@@ -38,7 +38,7 @@ const HeaderAdmin = (props) => {
     {
       key: "1",
       label: (
-        <Link onClick={() => setIsPassModalOpen(true)}>
+        <Link style={{ textDecoration: "none" }} onClick={() => setIsPassModalOpen(true)}>
           <SettingOutlined /> Đổi mật khẩu
         </Link>
       ),
@@ -46,7 +46,7 @@ const HeaderAdmin = (props) => {
     {
       key: "2",
       label: (
-        <Link onClick={() => handleLogout()}>
+        <Link style={{ textDecoration: "none" }} onClick={() => handleLogout()}>
           <LogoutOutlined /> Đăng xuất
         </Link>
       ),

@@ -1,35 +1,44 @@
+import { Modal, Input, notification, Form, message, Row, Col, InputNumber, Switch } from "antd";
+import { updateMotor } from "@/utils/api";
+import TextArea from "antd/es/input/TextArea";
 import { useEffect } from "react";
-import { Modal, Input, notification, Form, message, Row, Col } from "antd";
-import { updateApartment } from "@/utils/api";
 
 const UpdateModal = (props) => {
-  const {
-    updateData,
-    isUpdateModalOpen,
-    setIsUpdateModalOpen,
-    reloadTable,
-    setUpdateData,
-  } = props;
+  const { reloadTable, isUpdateModalOpen, setIsUpdateModalOpen, updateData, setUpdateData } = props;
   const [form] = Form.useForm();
+
+  const resetModal = () => {
+    setIsUpdateModalOpen(false);
+    form.resetFields();
+  };
 
   useEffect(() => {
     if (updateData) {
       form.setFieldsValue({
-        code: updateData.code,
+        brand: updateData.brand,
+        license: updateData.license,
+        availability_status: updateData.availability_status,
+        priceD: updateData.priceD,
+        priceH: updateData.priceH,
+        note: updateData.note
       });
     }
   }, [updateData]);
 
   const onFinish = async (values) => {
-    const { code } = values;
     const data = {
       _id: updateData?._id,
-      code,
-    };
-    const res = await updateApartment(data);
+      brand: values.brand,
+      license: values.license,
+      availability_status: values.availability_status,
+      priceD: values.priceD,
+      priceH: values.priceH,
+      note: values.note || ""
+    }
+    const res = await updateMotor(data);
     if (res.data) {
       reloadTable();
-      message.success("Cập nhật mã căn hộ thành công !");
+      message.success("Cập nhật thông tin xe thành công !");
       resetModal();
     } else {
       notification.error({
@@ -40,36 +49,96 @@ const UpdateModal = (props) => {
     }
   };
 
-  const resetModal = () => {
-    setIsUpdateModalOpen(false);
-    setUpdateData(null);
-    form.resetFields();
-  };
-
   return (
     <>
       <Modal
-        title="Cập nhật mã căn hộ"
+        title="Cập nhật thông tin xe"
         open={isUpdateModalOpen}
         onOk={() => form.submit()}
         onCancel={resetModal}
         maskClosable={false}
-        width={"250px"}
       >
         <Form
-          name="update-apartment"
+          name="Update-motor"
           onFinish={onFinish}
           layout="vertical"
           form={form}
+          initialValues={{
+            availability_status: true, // Set the default value here
+          }}
         >
           <Row gutter={[8, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item
-                label="Mã căn hộ"
-                name="code"
-                rules={[{ required: true, message: "Nhập mã căn hộ !" }]}
+                label="Thương hiệu"
+                name="brand"
+                rules={[{ required: true, message: "Nhập thương hiệu !" }]}
               >
                 <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={[8, 8]} justify="center" wrap={true}>
+            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+              <Form.Item
+                label="Biển số"
+                name="license"
+                rules={[{ required: true, message: "Nhập biển số xe !" }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Form.Item
+                  label="Tình trạng"
+                  name="availability_status"
+                  valuePropName="checked"
+                >
+                  <Switch checkedChildren="Hoạt đông" unCheckedChildren="Bảo trì" />
+                </Form.Item>
+              </div>
+            </Col>
+          </Row>
+          <Row gutter={[8, 8]} justify="center" wrap={true}>
+            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+              <Form.Item
+                label="Giá thuê theo ngày"
+                name="priceD"
+                rules={[{ required: true, message: "Nhập giá !" }]}
+              >
+                <InputNumber
+                  style={{ width: "100%" }}
+                  addonAfter={<b>đ</b>}
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                  step={1} // Bước nhảy
+                  controls={false}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+              <Form.Item
+                label="Giá quá hạn theo giờ"
+                name="priceH"
+                rules={[{ required: true, message: "Nhập giá !" }]}
+              >
+                <InputNumber
+                  style={{ width: "100%" }}
+                  addonAfter={<b>đ</b>}
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                  step={1} // Bước nhảy
+                  controls={false}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+              <Form.Item
+                label="Ghi chú"
+                name="note"
+              >
+                <TextArea showCount maxLength={100} rows={3} style={{ resize: "none" }} />
               </Form.Item>
             </Col>
           </Row>

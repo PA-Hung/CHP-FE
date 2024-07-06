@@ -155,6 +155,14 @@ const LayoutAdmin = () => {
         })
       );
     }
+    if (e.key === "reports") {
+      dispatch(
+        setActiveKey({
+          activeKey: e.key,
+          title: "Báo cáo",
+        })
+      );
+    }
   };
 
   useEffect(() => {
@@ -259,8 +267,8 @@ const LayoutAdmin = () => {
               icon: <TeamOutlined />
             },
             {
-              key: '12',
-              label: 'Báo cáo',
+              key: 'reports',
+              label: <Link style={{ textDecoration: "none" }} to="/admin/reports">Báo cáo</Link>,
               icon: <BarChartOutlined />
             },
           ],

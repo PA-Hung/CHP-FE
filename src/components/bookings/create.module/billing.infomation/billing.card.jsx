@@ -69,6 +69,7 @@ const BillingCard = (props) => {
                 <div style={{ display: "flex", gap: 20 }}>
                     <div>
                         <Select
+                            style={{ width: 150 }}
                             size="middle"
                             placeholder="Chọn thanh toán"
                             value={method}
@@ -113,7 +114,7 @@ const BillingCard = (props) => {
                     </div>
                 </div>
                 <div style={{ display: "flex", fontSize: 20, fontWeight: 700, marginTop: 20, gap: 6 }}>
-                    <div>Số tiền phải thanh toán = </div>
+                    <div>Số tiền khách phải thanh toán = </div>
                     <div style={{ color: "red" }}>{formatCurrency(pay)}</div>
                 </div>
             </Card>
