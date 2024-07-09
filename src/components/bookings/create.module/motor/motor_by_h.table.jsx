@@ -1,22 +1,22 @@
 import { Button, Card, DatePicker, Popconfirm, Switch, Table, Tag, message } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { SearchOutlined } from "@ant-design/icons";
-import MotorSearchModal from './motor.search.modal';
+import MotorByHSearchModal from './motor_by_h.search.modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMotor } from '@/redux/slice/motorSlice';
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import dayjs from 'dayjs';
 
-const MotorTable = (props) => {
+const MotorByHTable = (props) => {
     const { listMotorsSelected, setListMotorsSelected, total, setTotal, setSearchValue, buildQuery, contractType } = props
-    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+    const [isSearchByH_ModalOpen, setIsSearchByH_ModalOpen] = useState(false);
     const listMotors = useSelector((state) => state.motor.result);
     const dispatch = useDispatch();
 
-    const calculateRentalDays = (startDate, endDate) => {
+    const calculateRentalHours = (startDate, endDate) => {
         const start = startDate ? dayjs(startDate) : dayjs();
-        const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
-        return end.diff(start, 'day');
+        const end = endDate ? dayjs(endDate) : dayjs().add(1, "hour");
+        return end.diff(start, 'hour');
     }
 
     const formatCurrency = (amount) => {
@@ -24,9 +24,9 @@ const MotorTable = (props) => {
     };
 
     useEffect(() => {
-        if (contractType === "Thuê theo ngày") {
+        if (contractType === "Thuê theo giờ") {
             if (listMotorsSelected) {
-                const total = listMotorsSelected.reduce((sum, item) => sum + parseInt(item.priceD * calculateRentalDays(item.start_date, item.end_date), 10), 0)
+                const total = listMotorsSelected.reduce((sum, item) => sum + parseInt(item.priceH * calculateRentalHours(item.start_date, item.end_date), 10), 0)
                 setTotal(total)
             }
         }
@@ -105,6 +105,9 @@ const MotorTable = (props) => {
             render: (record) => {
                 return (
                     <div style={{ display: "flex", flexDirection: "row", gap: 20, justifyContent: "center", paddingRight: 15, paddingLeft: 15 }}>
+
+                        {/* <EditOutlined style={{ fontSize: 20 }} onClick={() => { setIsUpdateModalOpen(true), setUpdateData(record) }} /> */}
+
                         <Popconfirm
                             title={`Bạn muốn xoá xe ${record.license} ra khỏi hợp đồng ?`}
                             onConfirm={() => confirmDelete(record)}
@@ -113,6 +116,7 @@ const MotorTable = (props) => {
                         >
                             <DeleteOutlined style={{ fontSize: 20 }} />
                         </Popconfirm>
+
                     </div>
                 );
             },
@@ -143,7 +147,7 @@ const MotorTable = (props) => {
                         format={"HH giờ DD/MM/YYYY"}
                         defaultValue={dayjs(record?.start_date)}
                         showTime={{ format: 'HH giờ' }} // Chỉ hiển thị giờ
-                        onChange={(value) => handleChangeStartDate(record?._id, value)}
+                        onChange={(value) => handleChangeStartDate(record._id, value)}
                     />
                 </div>;
             },
@@ -159,12 +163,12 @@ const MotorTable = (props) => {
                                 format={"HH giờ DD/MM/YYYY"}
                                 defaultValue={dayjs(record?.end_date)}
                                 showTime={{ format: 'HH giờ' }} // Chỉ hiển thị giờ
-                                onChange={(value) => handleChangeEndDate(record?._id, value)}
+                                onChange={(value) => handleChangeEndDate(record._id, value)}
                             />
                         </div>
                         <div>
                             {<Tag bordered={true} color="volcano">
-                                {calculateRentalDays(record?.start_date, record?.end_date)} ngày
+                                {calculateRentalHours(record?.start_date, record?.end_date)} giờ
                             </Tag>}
                         </div>
                     </div>
@@ -178,7 +182,7 @@ const MotorTable = (props) => {
             render: (_value, record) => {
                 return (
                     <div style={{ fontWeight: 600 }}>
-                        {formatCurrency(record?.priceD * calculateRentalDays(record?.start_date, record?.end_date))}
+                        {formatCurrency(record?.priceH * calculateRentalHours(record?.start_date, record?.end_date))}
                     </div>
                 )
             },
@@ -199,7 +203,7 @@ const MotorTable = (props) => {
                             <Button
                                 type="primary"
                                 icon={<SearchOutlined />}
-                                onClick={() => { setIsSearchModalOpen(true), reloadTable() }}
+                                onClick={() => { setIsSearchByH_ModalOpen(true), reloadTable() }}
                             >Chọn xe</Button>
                         </div>
                     </div>
@@ -233,9 +237,9 @@ const MotorTable = (props) => {
                     </div>
                 </Card>
             </div>
-            <MotorSearchModal
-                isSearchModalOpen={isSearchModalOpen}
-                setIsSearchModalOpen={setIsSearchModalOpen}
+            <MotorByHSearchModal
+                isSearchByH_ModalOpen={isSearchByH_ModalOpen}
+                setIsSearchByH_ModalOpen={setIsSearchByH_ModalOpen}
                 listMotors={listMotors}
                 listMotorsSelected={listMotorsSelected}
                 setListMotorsSelected={setListMotorsSelected}
@@ -246,4 +250,4 @@ const MotorTable = (props) => {
     )
 }
 
-export default MotorTable
+export default MotorByHTable

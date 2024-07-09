@@ -1,4 +1,4 @@
-import { notification, message, Row, Col, Drawer, Space, Button } from "antd";
+import { notification, message, Row, Col, Drawer, Space, Button, Tabs } from "antd";
 import { GuestCard } from "./create.module/guest/guest.card";
 import MotorTable from "./create.module/motor/motor.table";
 import { SalesManCard } from "./create.module/guest/salesman.card";
@@ -8,9 +8,11 @@ import { updateBooking } from "@/utils/api";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMotor } from '@/redux/slice/motorSlice';
 import queryString from "query-string";
+import BillingByHCard from "./create.module/billing.infomation/billing_by_h.card";
+import MotorByHTable from "./create.module/motor/motor_by_h.table";
 
 const UpdateDrawer = (props) => {
-  const { reloadTable, isUpdateDrawerOpen, setIsUpdateDrawerOpen, updateData } = props;
+  const { reloadTable, isUpdateDrawerOpen, setIsUpdateDrawerOpen, updateData, setUpdateData } = props;
   const [salesman, setSalesMan] = useState(null)
   const [guestData, setGuestData] = useState(null);
   const [listMotorsSelected, setListMotorsSelected] = useState([])
@@ -23,8 +25,7 @@ const UpdateDrawer = (props) => {
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
   const [commission, setCommission] = useState(0)
-
-
+  const [contractType, setContractType] = useState("Thuê theo ngày")
 
   useEffect(() => {
     if (isUpdateDrawerOpen && updateData) {
@@ -32,14 +33,15 @@ const UpdateDrawer = (props) => {
       setGuestData(updateData.guest_id || null);
       setDiscount(updateData.discount || 0);
       setDeposit(updateData.deposit || 0);
-      setTotal(updateData.total || 0);
       setMethod(updateData.method || null);
       setListMotorsSelected(updateData.motors || []);
       setCommission(updateData.commission || 0);
+      setContractType(updateData.contract_type)
     }
   }, [isUpdateDrawerOpen, updateData]);
 
   const resetDrawer = () => {
+    setUpdateData(null)
     setSalesMan(null)
     setGuestData(null)
     setDiscount(0)
@@ -50,7 +52,7 @@ const UpdateDrawer = (props) => {
     setCheckedBox("nodiscount")
     const query = buildQuery();
     dispatch(fetchMotor({ query }));
-    setCommission("")
+    setCommission(0)
     setIsUpdateDrawerOpen(false);
   };
 
@@ -166,7 +168,7 @@ const UpdateDrawer = (props) => {
       guest_id: guestData?._id,
       user_id: salesman,
       commission: commission,
-      status: "Hợp đồng mở",
+      contract_status: "Hợp đồng mở",
       method: method,
       discount: discount,
       deposit: deposit,
@@ -187,6 +189,85 @@ const UpdateDrawer = (props) => {
       });
     }
   };
+
+  const tabsItems = [
+    {
+      key: 'Thuê theo ngày',
+      label: (<div style={{ fontWeight: 550 }}>Thuê theo ngày</div>),
+      disabled: contractType !== "Thuê theo ngày" ? true : false,
+      children: (
+        <>
+          <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
+            <div>
+              <MotorTable
+                listMotorsSelected={listMotorsSelected}
+                setListMotorsSelected={setListMotorsSelected}
+                total={total}
+                setTotal={setTotal}
+                setSearchValue={setSearchValue}
+                buildQuery={buildQuery}
+                contractType={contractType}
+              />
+            </div>
+            <div>
+              <BillingCard
+                total={total}
+                deposit={deposit}
+                setDeposit={setDeposit}
+                discount={discount}
+                setDiscount={setDiscount}
+                method={method}
+                setMethod={setMethod}
+                checkedBox={checkedBox}
+                setCheckedBox={setCheckedBox}
+                setSearchValue={setSearchValue}
+              />
+            </div>
+          </div>
+        </>
+      ),
+    },
+    {
+      key: 'Thuê theo giờ',
+      label: (<div style={{ fontWeight: 550 }}>Thuê theo giờ</div>),
+      disabled: contractType !== "Thuê theo giờ" ? true : false,
+      children: (
+        <>
+          <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
+            <div>
+              <MotorByHTable
+                listMotorsSelected={listMotorsSelected}
+                setListMotorsSelected={setListMotorsSelected}
+                total={total}
+                setTotal={setTotal}
+                setSearchValue={setSearchValue}
+                buildQuery={buildQuery}
+                contractType={contractType}
+              />
+            </div>
+            <div>
+              <BillingByHCard
+                total={total}
+                deposit={deposit}
+                setDeposit={setDeposit}
+                discount={discount}
+                setDiscount={setDiscount}
+                method={method}
+                setMethod={setMethod}
+                checkedBox={checkedBox}
+                setCheckedBox={setCheckedBox}
+                setSearchValue={setSearchValue}
+              />
+            </div>
+          </div>
+        </>
+      ),
+    },
+  ];
+
+  const handleTabChange = (e) => {
+    setContractType(e)
+  }
 
   return (
     <>
@@ -222,32 +303,9 @@ const UpdateDrawer = (props) => {
             </div>
           </Col>
           <Col flex="auto" >
-            <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
-              <div>
-                <MotorTable
-                  listMotorsSelected={listMotorsSelected}
-                  setListMotorsSelected={setListMotorsSelected}
-                  total={total}
-                  setTotal={setTotal}
-                  setSearchValue={setSearchValue}
-                  buildQuery={buildQuery}
-                />
-              </div>
-              <div>
-                <BillingCard
-                  total={total}
-                  deposit={deposit}
-                  setDeposit={setDeposit}
-                  discount={discount}
-                  setDiscount={setDiscount}
-                  method={method}
-                  setMethod={setMethod}
-                  checkedBox={checkedBox}
-                  setCheckedBox={setCheckedBox}
-                  setSearchValue={setSearchValue}
-                />
-              </div>
-            </div>
+            <>
+              <Tabs activeKey={contractType} items={tabsItems} size="large" onChange={(e) => handleTabChange(e)} />
+            </>
           </Col>
         </Row>
       </Drawer>

@@ -77,13 +77,13 @@ const BookingPage = () => {
   ) => {
     const clone = { ...params };
 
-    clone.status = "Hợp đồng mở";
+    clone.contract_status = "Hợp đồng mở";
 
     let temp = queryString.stringify(clone);
 
     let sortBy = "";
-    if (sort && sort.status) {
-      sortBy = sort.status === "ascend" ? "sort=status" : "sort=-status";
+    if (sort && sort.contract_status) {
+      sortBy = sort.contract_status === "ascend" ? "sort=contract_status" : "sort=-contract_status";
     }
 
     if (sort && sort.createdAt) {
@@ -113,13 +113,13 @@ const BookingPage = () => {
   ) => {
     const clone = { ...params };
 
-    clone.status = "Hợp đồng đóng";
+    clone.contract_status = "Hợp đồng đóng";
 
     let temp = queryString.stringify(clone);
 
     let sortBy = "";
-    if (sort && sort.status) {
-      sortBy = sort.status === "ascend" ? "sort=status" : "sort=-status";
+    if (sort && sort.contract_status) {
+      sortBy = sort.contract_status === "ascend" ? "sort=contract_status" : "sort=-contract_status";
     }
 
     if (sort && sort.createdAt) {
@@ -193,6 +193,7 @@ const BookingPage = () => {
           > */}
           <Col xs={24} sm={24} md={12} lg={8} xl={4}>
             <Button
+              type="primary"
               icon={<PlusOutlined />}
               onClick={() => setIsCreateDrawerOpen(true)}
             >

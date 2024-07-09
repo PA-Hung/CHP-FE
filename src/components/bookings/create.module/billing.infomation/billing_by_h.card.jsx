@@ -2,7 +2,7 @@ import { Card, Checkbox, Form, InputNumber, Select } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import _ from 'lodash';
 
-const BillingCard = (props) => {
+const BillingByHCard = (props) => {
     const { total, deposit, setDeposit, discount, setDiscount, method, setMethod, checkedBox, setCheckedBox } = props;
     const [pay, setPay] = useState(total); // Khởi tạo pay bằng tổng số tiền ban đầu
 
@@ -122,4 +122,4 @@ const BillingCard = (props) => {
     );
 };
 
-export default BillingCard;
+export default BillingByHCard;

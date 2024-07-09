@@ -1,29 +1,16 @@
 import { useEffect, useState } from "react";
 import { Modal, notification, message, Row, Col, DatePicker, Card, Space, InputNumber, Select, Tag, Button } from "antd";
 import dayjs from "dayjs";
-import { PlusCircleOutlined } from "@ant-design/icons";
 import { postCreatePayment, updateBooking } from "@/utils/api";
 
-const EndBookingModal = (props) => {
-  const { endData, setEndData, isEndModalOpen, setIsEndModalOpen, reloadTable, reloadTableCompleted } = props;
+const EndByH_BookingModal = (props) => {
+  const { endData, setEndData, isEndByH_ModalOpen, setIsEndByH_ModalOpen, reloadTable, reloadTableCompleted } = props;
   const [remainingAmount, setRemainingAmount] = useState(0);
   const [late_fee_amount, setLate_fee_amount] = useState(0); // Thêm trạng thái cho phí quá giờ tổng cộng
   const [endContractDate, setEndContractDate] = useState(dayjs())
 
   const [finalAmount, setFinalAmount] = useState(0);
   const [finalPayment, setFinalPayment] = useState(0);
-
-  const calculateRentalDays = (startDate, endDate) => {
-    const start = startDate ? dayjs(startDate) : dayjs();
-    const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
-    return end.diff(start, 'day');
-  };
-
-  const calculateRentalHours = (startDate, endDate) => {
-    const start = startDate ? dayjs(startDate) : dayjs();
-    const end = dayjs(endDate)
-    return end.diff(start, 'hour'); // Thay đổi đơn vị từ 'day' sang 'hour'
-  };
 
   useEffect(() => {
     if (endData) {
@@ -90,7 +77,7 @@ const EndBookingModal = (props) => {
   };
 
   const resetModal = () => {
-    setIsEndModalOpen(false);
+    setIsEndByH_ModalOpen(false);
     setEndData(null);
     setRemainingAmount(0);
     setLate_fee_amount(0);
@@ -106,18 +93,44 @@ const EndBookingModal = (props) => {
     // Tính tổng phí quá giờ
     let totalLateFee = 0;
     endData?.motors?.forEach((motor) => {
-      const lateFeeForThisMotor = motor.overtime * (calculateRentalHours(motor.end_date, endContractDate) > 0 ? calculateRentalHours(motor.end_date, endContractDate) : 0);
+      const hoursOverdue = calculateRentalHours(motor.end_date, endContractDate);
+      let lateFeeForThisMotor = 0;
+
+      if (hoursOverdue > 0 && hoursOverdue <= 5) {
+        // Nếu thời gian quá hạn nằm trong khoảng 0 đến 5 giờ
+        lateFeeForThisMotor = motor.overtime * hoursOverdue;
+      } else if (hoursOverdue > 5) {
+        // Nếu thời gian quá hạn lớn hơn 5 giờ, làm tròn thành ngày và nhân với priceD
+        const daysOverdue = calculateRentalDays(motor.end_date, endContractDate);
+        lateFeeForThisMotor = daysOverdue * motor.priceD;
+      }
+
       totalLateFee += lateFeeForThisMotor;
     });
     setLate_fee_amount(totalLateFee);
   }, [endContractDate, endData]);
+
+  const calculateRentalHours = (startDate, endDate) => {
+    const start = startDate ? dayjs(startDate) : dayjs();
+    const end = dayjs(endDate);
+    const diffInHours = end.diff(start, 'hour', true); // Sử dụng true để trả về số giờ có phần thập phân
+    return Math.ceil(diffInHours); // Làm tròn lên
+  };
+
+  const calculateRentalDays = (startDate, endDate) => {
+    const start = startDate ? dayjs(startDate) : dayjs();
+    const end = dayjs(endDate);
+    const diffInDays = end.diff(start, 'day', true); // Sử dụng true để trả về số ngày có phần thập phân
+    return Math.ceil(diffInDays); // Làm tròn lên
+  };
+
 
 
   return (
     <>
       <Modal
         title="Hoàn tất hợp đồng thuê xe"
-        open={isEndModalOpen}
+        open={isEndByH_ModalOpen}
         onOk={onFinish}
         onCancel={resetModal}
         maskClosable={false}
@@ -166,11 +179,11 @@ const EndBookingModal = (props) => {
                   {endData?.motors?.map((item) => (
                     <div key={item._id} style={{ fontWeight: 450, display: "flex", gap: 5 }}>
                       <span>{item.brand} {<Tag color="blue">{item.license}</Tag>}</span>
-                      {dayjs.utc(item.start_date).format("DD")} - {dayjs.utc(item.end_date).format("DD/MM/YYYY")}
+                      {dayjs.utc(item.start_date).format("h giờ (DD)")} - {dayjs.utc(item.end_date).format("h giờ (DD/MM/YYYY)")}
                       {<Tag bordered={true} color="volcano">
-                        {calculateRentalDays(item.start_date, item.end_date)} Ngày
+                        {calculateRentalHours(item.start_date, item.end_date)} giờ
                       </Tag>}:
-                      <span style={{ fontWeight: 550 }}>{formatCurrency(item.priceD)}</span>
+                      <span style={{ fontWeight: 550 }}>{formatCurrency(item.priceH)}</span>
                     </div>
                   ))}
                 </Col>
@@ -217,9 +230,9 @@ const EndBookingModal = (props) => {
                     <div key={item._id} style={{ fontWeight: 450, display: "flex", gap: 5 }}>
                       <span>{item.brand} {<Tag color="blue">{item.license}</Tag>}</span>quá hạn
                       {<Tag bordered={true} color="volcano">
-                        {calculateRentalHours(item.end_date, endContractDate) > 0 ? calculateRentalHours(item.end_date, endContractDate) : 0} giờ
-                      </Tag>}:
-                      <span style={{ fontWeight: 550 }}>{formatCurrency(item.priceH * (calculateRentalHours(item.end_date, endContractDate) > 0 ? calculateRentalHours(item.end_date, endContractDate) : 0))}</span>
+                        {calculateRentalHours(item.end_date, endContractDate) > 0 ? calculateRentalHours(item.end_date, endContractDate) : 0} giờ</Tag>}
+                      {calculateRentalHours(item.end_date, endContractDate) > 5 ? <>tính phí <Tag bordered={true} color="volcano">{calculateRentalDays(item.end_date, endContractDate)}ngày</Tag></> : ""} :
+                      <span style={{ fontWeight: 550 }}>{formatCurrency(late_fee_amount)}</span>
                     </div>
                   ))}
                 </Col>
@@ -305,4 +318,4 @@ const EndBookingModal = (props) => {
   );
 };
 
-export default EndBookingModal;
+export default EndByH_BookingModal;

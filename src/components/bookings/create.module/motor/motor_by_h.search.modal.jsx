@@ -6,12 +6,12 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/vi'; // import ngôn ngữ Vietnamese nếu cần
 import { useSelector } from 'react-redux';
 
-const MotorSearchModal = (props) => {
-    const { isSearchModalOpen, setIsSearchModalOpen, listMotors, setListMotorsSelected, listMotorsSelected, onSearch, reloadTable } = props;
+const MotorByHSearchModal = (props) => {
+    const { isSearchByH_ModalOpen, setIsSearchByH_ModalOpen, listMotors, setListMotorsSelected, listMotorsSelected, onSearch, reloadTable } = props;
     const [searchValue, setSearchValue] = useState('');
     const [selectedItemIds, setSelectedItemIds] = useState([]);
     const [dateHire, setDateHire] = useState();
-    const [defaultDate, setDefautDate] = useState([dayjs(), dayjs().add(1, 'day')])
+    const [defaultDate, setDefautDate] = useState([dayjs(), dayjs().add(1, 'hour')])
     const themeMode = useSelector((state) => state.theme.themeMode);
 
     const toggleCheckbox = (itemId) => {
@@ -36,8 +36,8 @@ const MotorSearchModal = (props) => {
 
     const calculateRentalDays = (startDate, endDate) => {
         const start = startDate ? dayjs(startDate) : dayjs();
-        const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
-        return end.diff(start, 'day');
+        const end = endDate ? dayjs(endDate) : dayjs().add(1, "hour");
+        return end.diff(start, 'hour');
     }
 
     // Thêm các thuộc tính cần thiết cho các phần tử trong listMotorsSelected
@@ -45,10 +45,10 @@ const MotorSearchModal = (props) => {
         return motors.map(item => ({
             ...item,
             start_date: dateHire?.start_date ? dateHire.start_date : dayjs(),
-            end_date: dateHire?.end_date ? dateHire.end_date : dayjs().add(1, "day"),
+            end_date: dateHire?.end_date ? dateHire.end_date : dayjs().add(1, "hour"),
             rental_status: true,
             status: "Đã nhận xe",
-            // amount: item.priceD * calculateRentalDays(dateHire?.start_date, dateHire?.end_date)
+            amount: item.priceD * calculateRentalDays(dateHire?.start_date, dateHire?.end_date)
         }));
     };
 
@@ -71,13 +71,13 @@ const MotorSearchModal = (props) => {
             setSearchValue('');
             setSelectedItemIds([]);
         }
-        setDefautDate([dayjs(), dayjs().add(1, 'day')]);
-        setIsSearchModalOpen(false);
+        setDefautDate([dayjs(), dayjs().add(1, 'hour')]);
+        setIsSearchByH_ModalOpen(false);
         reloadTable()
     };
 
     const handleCancel = () => {
-        setIsSearchModalOpen(false)
+        setIsSearchByH_ModalOpen(false)
         reloadTable()
     }
 
@@ -85,7 +85,7 @@ const MotorSearchModal = (props) => {
     const handleTimeChange = (e) => {
         const newDateHire = {
             start_date: e ? e[0] : dayjs(),
-            end_date: e ? e[1] : dayjs().add(1, "day")
+            end_date: e ? e[1] : dayjs().add(1, "hour")
         };
         setDateHire(newDateHire);
     }
@@ -98,7 +98,7 @@ const MotorSearchModal = (props) => {
         <div>
             <Modal
                 title="Chọn xe để đưa vào hợp đồng :"
-                open={isSearchModalOpen}
+                open={isSearchByH_ModalOpen}
                 onOk={handleClickOk}
                 onCancel={() => handleCancel()}
                 maskClosable={false}
@@ -149,7 +149,7 @@ const MotorSearchModal = (props) => {
                                         <div style={{ fontWeight: 500 }}>Biển số : <Tag color="blue">{item.license}</Tag></div>
                                     </div>
                                 </div>
-                                <div style={{ fontWeight: 600 }}>Giá thuê : {formatCurrency(item.priceD)}/ ngày</div>
+                                <div style={{ fontWeight: 600 }}>Giá thuê : {formatCurrency(item.priceH)}/ giờ</div>
                             </div>
                         </Card>
                     ))}
@@ -159,4 +159,4 @@ const MotorSearchModal = (props) => {
     )
 }
 
-export default MotorSearchModal;
+export default MotorByHSearchModal;

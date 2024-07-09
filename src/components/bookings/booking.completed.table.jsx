@@ -45,6 +45,12 @@ const BookingCompletedTable = (props) => {
     return end.diff(start, 'day');
   }
 
+  const calculateRentalHours = (startDate, endDate) => {
+    const start = startDate ? dayjs(startDate) : dayjs();
+    const end = endDate ? dayjs(endDate) : dayjs().add(1, "hour");
+    return end.diff(start, 'hour');
+  }
+
   const handleOkStatusChange = async (value, motors, record) => {
     // Cập nhật trạng thái của motors
     const updatedMotors = record.motors.map(motor => {
@@ -231,19 +237,27 @@ const BookingCompletedTable = (props) => {
       },
     },
     {
-      title: "Ngày thuê",
-      width: 220,
+      title: "Thời gian thuê",
+      width: 330,
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>
             {record.motors.map((item) => (
               <div key={item._id}>
-                {dayjs.utc(item.start_date).format("DD")} - {dayjs.utc(item.end_date).format("DD/MM/YYYY")} {<Tag bordered={true} color="volcano">
-                  {calculateRentalDays(item.start_date, item.end_date)} Ngày
-                </Tag>}
+                {record.contract_type === "Thuê theo ngày" ?
+                  <>
+                    {dayjs(item.start_date).format("HH giờ (DD)")} - {dayjs(item.end_date).format("HH giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="volcano-inverse">
+                      {calculateRentalDays(item.start_date, item.end_date)} ngày
+                    </Tag>}
+                  </> :
+                  <>
+                    {dayjs(item.start_date).format("HH")} - {dayjs(item.end_date).format("HH giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="geekblue-inverse">
+                      {calculateRentalHours(item.start_date, item.end_date)} giờ
+                    </Tag>}
+                  </>
+                }
               </div>
             ))}
-
           </div>
         )
       },

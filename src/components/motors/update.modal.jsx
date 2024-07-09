@@ -20,6 +20,7 @@ const UpdateModal = (props) => {
         availability_status: updateData.availability_status,
         priceD: updateData.priceD,
         priceH: updateData.priceH,
+        overtime: updateData.overtime,
         note: updateData.note
       });
     }
@@ -33,6 +34,7 @@ const UpdateModal = (props) => {
       availability_status: values.availability_status,
       priceD: values.priceD,
       priceH: values.priceH,
+      overtime: values.overtime,
       note: values.note || ""
     }
     const res = await updateMotor(data);
@@ -68,7 +70,7 @@ const UpdateModal = (props) => {
           }}
         >
           <Row gutter={[8, 8]} justify="center" wrap={true}>
-            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
               <Form.Item
                 label="Thương hiệu"
                 name="brand"
@@ -77,8 +79,6 @@ const UpdateModal = (props) => {
                 <Input />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={[8, 8]} justify="center" wrap={true}>
             <Col xs={24} sm={24} md={24} lg={12} xl={12}>
               <Form.Item
                 label="Biển số"
@@ -87,17 +87,6 @@ const UpdateModal = (props) => {
               >
                 <Input />
               </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Form.Item
-                  label="Tình trạng"
-                  name="availability_status"
-                  valuePropName="checked"
-                >
-                  <Switch checkedChildren="Hoạt đông" unCheckedChildren="Bảo trì" />
-                </Form.Item>
-              </div>
             </Col>
           </Row>
           <Row gutter={[8, 8]} justify="center" wrap={true}>
@@ -118,7 +107,7 @@ const UpdateModal = (props) => {
             </Col>
             <Col xs={24} sm={24} md={24} lg={12} xl={12}>
               <Form.Item
-                label="Giá quá hạn theo giờ"
+                label="Giá thuê theo giờ"
                 name="priceH"
                 rules={[{ required: true, message: "Nhập giá !" }]}
               >
@@ -130,6 +119,34 @@ const UpdateModal = (props) => {
                   controls={false}
                 />
               </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={[8, 8]} justify="center" wrap={true}>
+            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+              <Form.Item
+                label="Phí quá giờ"
+                name="overtime"
+                rules={[{ required: true, message: "Nhập phí quá giờ !" }]}
+              >
+                <InputNumber
+                  style={{ width: "100%" }}
+                  addonAfter={<b>đ</b>}
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                  step={1} // Bước nhảy
+                  controls={false}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Form.Item
+                  label="Tình trạng"
+                  name="availability_status"
+                  valuePropName="checked"
+                >
+                  <Switch checkedChildren="Hoạt đông" unCheckedChildren="Bảo trì" />
+                </Form.Item>
+              </div>
             </Col>
           </Row>
           <Row>

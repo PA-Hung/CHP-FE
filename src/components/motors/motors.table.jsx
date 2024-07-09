@@ -67,7 +67,7 @@ const MotorsTable = (props) => {
       },
     },
     {
-      title: "Giá theo ngày",
+      title: "Giá thuê theo ngày",
       // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
       // filters: filtersHost,
       // onFilter: (value, record) => record.users?.name.startsWith(value),
@@ -78,7 +78,7 @@ const MotorsTable = (props) => {
       },
     },
     {
-      title: "Giá quá hạn theo giờ",
+      title: "Giá thuê theo giờ",
       // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
       // filters: filtersHost,
       // onFilter: (value, record) => record.users?.name.startsWith(value),
@@ -86,6 +86,17 @@ const MotorsTable = (props) => {
       // filterSearch: true,
       render: (_value, record) => {
         return <div>{formatCurrency(record?.priceH)}</div>;
+      },
+    },
+    {
+      title: "Phí quá hạn",
+      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
+      // filters: filtersHost,
+      // onFilter: (value, record) => record.users?.name.startsWith(value),
+      // filterMode: 'tree',
+      // filterSearch: true,
+      render: (_value, record) => {
+        return <div>{formatCurrency(record?.overtime)}</div>;
       },
     },
     {

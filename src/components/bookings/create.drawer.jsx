@@ -1,4 +1,4 @@
-import { notification, message, Row, Col, Drawer, Space, Button } from "antd";
+import { notification, message, Row, Col, Drawer, Space, Button, Tabs } from "antd";
 import { GuestCard } from "./create.module/guest/guest.card";
 import MotorTable from "./create.module/motor/motor.table";
 import { SalesManCard } from "./create.module/guest/salesman.card";
@@ -9,6 +9,8 @@ import { postCreateBooking } from "@/utils/api";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMotor } from '@/redux/slice/motorSlice';
 import queryString from "query-string";
+import MotorByHTable from "./create.module/motor/motor_by_h.table";
+import BillingByHCard from "./create.module/billing.infomation/billing_by_h.card";
 
 const CreateDrawer = (props) => {
   const { reloadTable, isCreateDrawerOpen, setIsCreateDrawerOpen } = props;
@@ -24,7 +26,7 @@ const CreateDrawer = (props) => {
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
   const [commission, setCommission] = useState(0)
-  const [late_fee_amount, setLate_fee_amount] = useState(0);
+  const [contractType, setContractType] = useState("Thuê theo ngày")
 
   const resetDrawer = () => {
     setSalesMan(null)
@@ -154,15 +156,15 @@ const CreateDrawer = (props) => {
       guest_id: guestData?._id,
       user_id: salesman,
       commission: commission,
-      status: "Hợp đồng mở",
+      contract_status: "Hợp đồng mở",
+      contract_type: contractType,
       method: method,
       discount: discount,
       deposit: deposit,
-      late_fee_amount: late_fee_amount,
+      late_fee_amount: 0,
       remaining_amount: newPay || 0,
       amount: total
     }
-
 
     const res = await postCreateBooking(data);
     if (res.data) {
@@ -177,6 +179,85 @@ const CreateDrawer = (props) => {
       });
     }
   };
+
+  const tabsItems = [
+    {
+      key: 'Thuê theo ngày',
+      label: (<div style={{ fontWeight: 550 }}>Thuê theo ngày</div>),
+      disabled: listMotorsSelected.length > 0 || contractType === "Thuê theo ngày" ? true : false,
+      children: (
+        <>
+          <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
+            <div>
+              <MotorTable
+                listMotorsSelected={listMotorsSelected}
+                setListMotorsSelected={setListMotorsSelected}
+                total={total}
+                setTotal={setTotal}
+                setSearchValue={setSearchValue}
+                buildQuery={buildQuery}
+                contractType={contractType}
+              />
+            </div>
+            <div>
+              <BillingCard
+                total={total}
+                deposit={deposit}
+                setDeposit={setDeposit}
+                discount={discount}
+                setDiscount={setDiscount}
+                method={method}
+                setMethod={setMethod}
+                checkedBox={checkedBox}
+                setCheckedBox={setCheckedBox}
+                setSearchValue={setSearchValue}
+              />
+            </div>
+          </div>
+        </>
+      ),
+    },
+    {
+      key: 'Thuê theo giờ',
+      label: (<div style={{ fontWeight: 550 }}>Thuê theo giờ</div>),
+      disabled: listMotorsSelected.length > 0 || contractType === "Thuê theo giờ" ? true : false,
+      children: (
+        <>
+          <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
+            <div>
+              <MotorByHTable
+                listMotorsSelected={listMotorsSelected}
+                setListMotorsSelected={setListMotorsSelected}
+                total={total}
+                setTotal={setTotal}
+                setSearchValue={setSearchValue}
+                buildQuery={buildQuery}
+                contractType={contractType}
+              />
+            </div>
+            <div>
+              <BillingByHCard
+                total={total}
+                deposit={deposit}
+                setDeposit={setDeposit}
+                discount={discount}
+                setDiscount={setDiscount}
+                method={method}
+                setMethod={setMethod}
+                checkedBox={checkedBox}
+                setCheckedBox={setCheckedBox}
+                setSearchValue={setSearchValue}
+              />
+            </div>
+          </div>
+        </>
+      ),
+    },
+  ];
+
+  const handleTabChange = (e) => {
+    setContractType(e)
+  }
 
   return (
     <>
@@ -212,32 +293,9 @@ const CreateDrawer = (props) => {
             </div>
           </Col>
           <Col flex="auto" >
-            <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
-              <div>
-                <MotorTable
-                  listMotorsSelected={listMotorsSelected}
-                  setListMotorsSelected={setListMotorsSelected}
-                  total={total}
-                  setTotal={setTotal}
-                  setSearchValue={setSearchValue}
-                  buildQuery={buildQuery}
-                />
-              </div>
-              <div>
-                <BillingCard
-                  total={total}
-                  deposit={deposit}
-                  setDeposit={setDeposit}
-                  discount={discount}
-                  setDiscount={setDiscount}
-                  method={method}
-                  setMethod={setMethod}
-                  checkedBox={checkedBox}
-                  setCheckedBox={setCheckedBox}
-                  setSearchValue={setSearchValue}
-                />
-              </div>
-            </div>
+            <>
+              <Tabs defaultActiveKey="Thuê theo ngày" items={tabsItems} size="large" onChange={(e) => handleTabChange(e)} />
+            </>
           </Col>
         </Row>
       </Drawer>

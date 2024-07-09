@@ -12,12 +12,14 @@ import { deleteBooking } from "@/utils/api";
 import EndBookingModal from "./end.module/end.booking.modal";
 import UpdateDrawer from "./update.drawer";
 import { updateBooking } from "@/utils/api";
+import EndByH_BookingModal from "./end.module/end_by_h.booking.modal";
 
 
 const BookingTable = (props) => {
   const { listBookings, loading, reloadTable, meta, reloadTableCompleted } = props;
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState(false);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
+  const [isEndByH_ModalOpen, setIsEndByH_ModalOpen] = useState(false);
   const [endData, setEndData] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
@@ -42,6 +44,12 @@ const BookingTable = (props) => {
     const start = startDate ? dayjs(startDate) : dayjs();
     const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
     return end.diff(start, 'day');
+  }
+
+  const calculateRentalHours = (startDate, endDate) => {
+    const start = startDate ? dayjs(startDate) : dayjs();
+    const end = endDate ? dayjs(endDate) : dayjs().add(1, "hour");
+    return end.diff(start, 'hour');
   }
 
   const handleOkStatusChange = async (value, motors, record) => {
@@ -126,7 +134,7 @@ const BookingTable = (props) => {
   };
 
   const handleUpdateBooking = (record) => {
-    if (record.status === "Hợp đồng đóng") {
+    if (record.contract_status === "Hợp đồng đóng") {
       notification.warning({
         message: "Thông báo",
         placement: "top",
@@ -192,19 +200,27 @@ const BookingTable = (props) => {
       },
     },
     {
-      title: "Ngày thuê",
-      width: 220,
+      title: "Thời gian thuê",
+      width: 330,
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>
             {record.motors.map((item) => (
               <div key={item._id}>
-                {dayjs.utc(item.start_date).format("DD")} - {dayjs.utc(item.end_date).format("DD/MM/YYYY")} {<Tag bordered={true} color="volcano">
-                  {calculateRentalDays(item.start_date, item.end_date)} Ngày
-                </Tag>}
+                {record.contract_type === "Thuê theo ngày" ?
+                  <>
+                    {dayjs(item.start_date).format("HH giờ (DD)")} - {dayjs(item.end_date).format("HH giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="volcano-inverse">
+                      {calculateRentalDays(item.start_date, item.end_date)} ngày
+                    </Tag>}
+                  </> :
+                  <>
+                    {dayjs(item.start_date).format("HH")} - {dayjs(item.end_date).format("HH giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="geekblue-inverse">
+                      {calculateRentalHours(item.start_date, item.end_date)} giờ
+                    </Tag>}
+                  </>
+                }
               </div>
             ))}
-
           </div>
         )
       },
@@ -254,6 +270,16 @@ const BookingTable = (props) => {
     },
   ];
 
+  const handleEndBooking = (record) => {
+    if (record.contract_type === "Thuê theo ngày") {
+      setIsEndModalOpen(true)
+      setEndData(record)
+    }
+    if (record.contract_type === "Thuê theo giờ") {
+      setIsEndByH_ModalOpen(true)
+      setEndData(record)
+    }
+  }
 
   const items = (record) => [
     {
@@ -270,7 +296,7 @@ const BookingTable = (props) => {
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
           <div><ApiOutlined /></div>
-          <div onClick={() => { setIsEndModalOpen(true), setEndData(record) }}>Đóng hợp đồng</div>
+          <div onClick={() => handleEndBooking(record)}>Đóng hợp đồng</div>
         </div>
       ),
     },
@@ -339,6 +365,14 @@ const BookingTable = (props) => {
       <EndBookingModal
         isEndModalOpen={isEndModalOpen}
         setIsEndModalOpen={setIsEndModalOpen}
+        reloadTableCompleted={reloadTableCompleted}
+        endData={endData}
+        setEndData={setEndData}
+        reloadTable={reloadTable}
+      />
+      <EndByH_BookingModal
+        isEndByH_ModalOpen={isEndByH_ModalOpen}
+        setIsEndByH_ModalOpen={setIsEndByH_ModalOpen}
         reloadTableCompleted={reloadTableCompleted}
         endData={endData}
         setEndData={setEndData}
