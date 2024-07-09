@@ -16,11 +16,6 @@ export const ProfitBarChart = (props) => {
         data: data,
         xField: '_id',
         yField: 'totalPaid',
-        // scrollbar: {
-        //     x: {
-        //         ratio: 20,
-        //     },
-        // },
         label: {
             text: (d) => `${formatCurrency(d.totalPaid)}`,
             position: 'inside',

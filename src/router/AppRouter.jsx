@@ -14,6 +14,7 @@ import BookingPage from "../components/bookings/booking.page";
 import MotorsPage from "../components/motors/motors.page";
 import CalenderTimeLine from "../components/rental_schedule/calenderTimeline.page";
 import ReportPage from "../components/report/report.page";
+import GuestPage from "../components/guest/guest.page";
 
 export const router = createBrowserRouter([
   {
@@ -108,6 +109,14 @@ export const router = createBrowserRouter([
         element: (
           // <ProtectedRoute>
           <ReportPage />
+          // </ProtectedRoute>
+        ),
+      },
+      {
+        path: "guests",
+        element: (
+          // <ProtectedRoute>
+          <GuestPage />
           // </ProtectedRoute>
         ),
       },

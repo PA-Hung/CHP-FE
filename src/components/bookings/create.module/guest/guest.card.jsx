@@ -14,10 +14,8 @@ export const GuestCard = (props) => {
   const { guestData, setGuestData } = props
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
-  //const [guestData, setGuestData] = useState("");
   const [form] = Form.useForm();
 
-  const loading = useSelector((state) => state.guest.isFetching);
   const meta = useSelector((state) => state.guest.meta);
   const listGuests = useSelector((state) => state.guest.result);
   const dispatch = useDispatch();
@@ -91,9 +89,8 @@ export const GuestCard = (props) => {
     const res = await postCreateGuest(data);
     if (res.data) {
       setGuestData(data)
-      setGuest(data)
-      message.success("Tạo mới khách hàng thành công !");
       resetModal();
+      message.success("Tạo mới khách hàng thành công !");
     } else {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -101,6 +98,7 @@ export const GuestCard = (props) => {
         description: res.message,
       });
     }
+
   };
 
   const onSearch = async (value) => {
@@ -166,7 +164,7 @@ export const GuestCard = (props) => {
         maskClosable={false}
       >
         <Form
-          name="create-new-quest"
+          name="create-new-guest"
           onFinish={onFinish}
           layout="vertical"
           form={form}

@@ -108,8 +108,8 @@ const MotorByHSearchModal = (props) => {
                     <div style={{ display: "flex", gap: 5, justifyContent: "center" }}>
                         <div>
                             <RangePicker
-                                showTime={{ format: 'HH giờ' }} // Chỉ hiển thị giờ
-                                format="HH giờ DD-MM-YYYY"      // Định dạng hiển thị ngày tháng năm và giờ
+                                showTime={{ format: 'HH:mm giờ' }} // Chỉ hiển thị giờ
+                                format="HH:mm giờ DD-MM-YYYY"      // Định dạng hiển thị ngày tháng năm và giờ
                                 placeholder={['Ngày bắt đầu', 'Ngày kết thúc']} // Placeholder bằng tiếng Việt 
                                 defaultValue={[dayjs(), dayjs().add(1, 'day')]}
                                 onChange={(e) => handleTimeChange(e)}

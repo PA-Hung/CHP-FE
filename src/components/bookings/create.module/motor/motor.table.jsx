@@ -135,42 +135,48 @@ const MotorTable = (props) => {
             },
         },
         {
-            title: "Từ ngày",
+            title: "Bắt đầu",
             render: (_value, record) => {
                 return <div>
                     <DatePicker
                         size="small"
-                        format={"HH giờ DD/MM/YYYY"}
+                        format={"HH:mm giờ DD/MM/YYYY"}
                         defaultValue={dayjs(record?.start_date)}
-                        showTime={{ format: 'HH giờ' }} // Chỉ hiển thị giờ
+                        showTime={{ format: 'HH:mm giờ' }} // Chỉ hiển thị giờ
                         onChange={(value) => handleChangeStartDate(record?._id, value)}
                     />
                 </div>;
             },
         },
         {
-            title: "Đến ngày",
+            title: "Kết thúc",
             render: (_value, record) => {
                 return (
-                    <div style={{ display: "flex", gap: 10 }}>
-                        <div>
-                            <DatePicker
-                                size="small"
-                                format={"HH giờ DD/MM/YYYY"}
-                                defaultValue={dayjs(record?.end_date)}
-                                showTime={{ format: 'HH giờ' }} // Chỉ hiển thị giờ
-                                onChange={(value) => handleChangeEndDate(record?._id, value)}
-                            />
-                        </div>
-                        <div>
-                            {<Tag bordered={true} color="volcano">
-                                {calculateRentalDays(record?.start_date, record?.end_date)} ngày
-                            </Tag>}
-                        </div>
+                    <div >
+                        <DatePicker
+                            size="small"
+                            format={"HH:mm giờ DD/MM/YYYY"}
+                            defaultValue={dayjs(record?.end_date)}
+                            showTime={{ format: 'HH:mm giờ' }} // Chỉ hiển thị giờ
+                            onChange={(value) => handleChangeEndDate(record?._id, value)}
+                        />
                     </div>
                 )
             },
         },
+        {
+            title: "Thời gian thuê",
+            render: (_value, record) => {
+                return (
+                    <div>
+                        {<Tag bordered={true} color="volcano">
+                            {calculateRentalDays(record?.start_date, record?.end_date)} ngày
+                        </Tag>}
+                    </div>
+                )
+            },
+        },
+
 
         {
             title: "Tiền thuê",

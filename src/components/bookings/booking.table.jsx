@@ -201,7 +201,7 @@ const BookingTable = (props) => {
     },
     {
       title: "Thời gian thuê",
-      width: 330,
+      width: 350,
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>
@@ -209,12 +209,12 @@ const BookingTable = (props) => {
               <div key={item._id}>
                 {record.contract_type === "Thuê theo ngày" ?
                   <>
-                    {dayjs(item.start_date).format("HH giờ (DD)")} - {dayjs(item.end_date).format("HH giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="volcano-inverse">
+                    {dayjs(item.start_date).format("HH:mm giờ (DD)")} - {dayjs(item.end_date).format("HH:mm giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="volcano-inverse">
                       {calculateRentalDays(item.start_date, item.end_date)} ngày
                     </Tag>}
                   </> :
                   <>
-                    {dayjs(item.start_date).format("HH")} - {dayjs(item.end_date).format("HH giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="geekblue-inverse">
+                    {dayjs(item.start_date).format("HH:mm")} - {dayjs(item.end_date).format("HH:mm giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="geekblue-inverse">
                       {calculateRentalHours(item.start_date, item.end_date)} giờ
                     </Tag>}
                   </>

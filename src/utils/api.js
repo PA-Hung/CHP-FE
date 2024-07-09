@@ -46,6 +46,14 @@ export const postCreateGuest = (data) => {
     return axios.post('api/v1/guests', data)
 }
 
+export const deleteGuest = (id) => {
+    return axios.delete(`api/v1/guests/${id}`)
+}
+
+export const updateGuest = (data) => {
+    return axios.patch('api/v1/guests', data)
+}
+
 // motor -------------------------------------
 export const getMotor = (query) => {
     return axios.get(`api/v1/motors?${query}`)

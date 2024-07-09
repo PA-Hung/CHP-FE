@@ -134,7 +134,7 @@ const BookingCompletedTable = (props) => {
   };
 
   const handleUpdateCompletedBooking = (record) => {
-    if (record.status === "Hợp đồng đóng") {
+    if (record.status !== "Hợp đồng đóng") {
       notification.warning({
         message: "Thông báo",
         placement: "top",
@@ -151,7 +151,7 @@ const BookingCompletedTable = (props) => {
       notification.warning({
         message: "Thông báo",
         placement: "top",
-        description: "Hợp đồng này đã hoàn thành !",
+        description: "Hợp đồng này đã hoàn thành, bạn cần liên hệ admin để mở lại hợp đồng !",
       });
     } else {
       const newMotors = record.motors.map((item) => ({ ...item, status: "Đã nhận xe" }));
@@ -238,7 +238,7 @@ const BookingCompletedTable = (props) => {
     },
     {
       title: "Thời gian thuê",
-      width: 330,
+      width: 350,
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>
@@ -246,12 +246,12 @@ const BookingCompletedTable = (props) => {
               <div key={item._id}>
                 {record.contract_type === "Thuê theo ngày" ?
                   <>
-                    {dayjs(item.start_date).format("HH giờ (DD)")} - {dayjs(item.end_date).format("HH giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="volcano-inverse">
+                    {dayjs(item.start_date).format("HH:mm giờ (DD)")} - {dayjs(item.end_date).format("HH:mm giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="volcano-inverse">
                       {calculateRentalDays(item.start_date, item.end_date)} ngày
                     </Tag>}
                   </> :
                   <>
-                    {dayjs(item.start_date).format("HH")} - {dayjs(item.end_date).format("HH giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="geekblue-inverse">
+                    {dayjs(item.start_date).format("HH:mm")} - {dayjs(item.end_date).format("HH:mm giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="geekblue-inverse">
                       {calculateRentalHours(item.start_date, item.end_date)} giờ
                     </Tag>}
                   </>
@@ -367,7 +367,7 @@ const BookingCompletedTable = (props) => {
   const confirmDeleteBooking = async (book) => {
     const res = await deleteBooking(book._id);
     if (res.data) {
-      reloadTable();
+      reloadTableCompleted();
       message.success("Xoá hợp đồng thành công !");
     } else {
       notification.error({

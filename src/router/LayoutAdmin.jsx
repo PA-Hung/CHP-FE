@@ -22,7 +22,8 @@ import {
   RedditOutlined,
   FileTextOutlined,
   TeamOutlined,
-  BarChartOutlined
+  BarChartOutlined,
+  BgColorsOutlined
 } from "@ant-design/icons";
 import Logo from "@/components/admin/logo.jsx";
 import ToggleThemeButton from "@/components/admin/toggleTheme.jsx";
@@ -163,6 +164,14 @@ const LayoutAdmin = () => {
         })
       );
     }
+    if (e.key === "maintenance") {
+      dispatch(
+        setActiveKey({
+          activeKey: e.key,
+          title: "Bảo trì xe",
+        })
+      );
+    }
   };
 
   useEffect(() => {
@@ -202,21 +211,21 @@ const LayoutAdmin = () => {
         {
           label: <Link style={{ textDecoration: "none" }} to={"/admin"}>Trang chủ</Link>,
           key: "home",
-          icon: <HomeOutlined />,
+          icon: <HomeOutlined style={{ fontSize: 18 }} />,
           visible: "true",
         },
 
         ...(viewAccommodation ? [{
           key: 'sub1',
           label: 'Quản lý lưu trú',
-          icon: <CalendarOutlined />,
+          icon: <CalendarOutlined style={{ fontSize: 18 }} />,
           children: [
             ...(viewApartment
               ? [
                 {
                   label: <Link style={{ textDecoration: "none" }} to={"/admin/apartment"}>Quản lý căn hộ</Link>,
                   key: "apartment",
-                  icon: <ApartmentOutlined />,
+                  icon: <ApartmentOutlined style={{ fontSize: 18 }} />,
                 },
               ]
               : []),
@@ -225,7 +234,7 @@ const LayoutAdmin = () => {
                 {
                   label: <Link style={{ textDecoration: "none" }} to={"/admin/accommodation"}>Khách lưu trú</Link>,
                   key: "accommodation",
-                  icon: <ContactsOutlined />,
+                  icon: <ContactsOutlined style={{ fontSize: 18 }} />,
                 },
               ]
               : []),
@@ -234,7 +243,7 @@ const LayoutAdmin = () => {
                 {
                   label: <Link style={{ textDecoration: "none" }} to="/admin/user">Quản lý host</Link>,
                   key: "user",
-                  icon: <UserOutlined />,
+                  icon: <UserOutlined style={{ fontSize: 18 }} />,
                 },
               ]
               : []),
@@ -244,32 +253,38 @@ const LayoutAdmin = () => {
         ...(user.phone === "0963686963" || user.phone === "0933634933" || user.phone === "0933048933" || user.phone === "0862676967" || user.phone === "0377832014" ? [{
           key: 'sub2',
           label: 'Quản lý thuê xe',
-          icon: <CarOutlined />,
+          icon: <CarOutlined style={{ fontSize: 18 }} />,
           children: [
             {
               key: 'bookings',
               label: <Link style={{ textDecoration: "none" }} to="/admin/bookings">Hợp đồng thuê</Link>,
-              icon: <FileTextOutlined />
+              icon: <FileTextOutlined style={{ fontSize: 18 }} />
             },
             {
               key: 'rental_schedule',
               label: <Link style={{ textDecoration: "none" }} to="/admin/rental_schedule">Lịch thuê xe</Link>,
-              icon: <CalendarOutlined />
+              icon: <CalendarOutlined style={{ fontSize: 18 }} />
+            },
+            {
+              key: 'guests',
+              label: <Link style={{ textDecoration: "none" }} to="/admin/guests">Khách hàng</Link>,
+              icon: <TeamOutlined style={{ fontSize: 18 }} />
             },
             {
               key: 'motors',
               label: <Link style={{ textDecoration: "none" }} to="/admin/motors">Danh sách xe</Link>,
-              icon: <CarOutlined />
+              icon: <CarOutlined style={{ fontSize: 18 }} />
             },
             {
-              key: '12',
-              label: 'Khách hàng',
-              icon: <TeamOutlined />
+              key: 'maintenance',
+              //label: <Link style={{ textDecoration: "none" }} to="/admin/maintenance">Bảo trì xe</Link>,
+              label: "Bảo trì xe",
+              icon: <BgColorsOutlined style={{ fontSize: 18 }} />
             },
             {
               key: 'reports',
               label: <Link style={{ textDecoration: "none" }} to="/admin/reports">Báo cáo</Link>,
-              icon: <BarChartOutlined />
+              icon: <BarChartOutlined style={{ fontSize: 18 }} />
             },
           ],
         },
@@ -278,14 +293,14 @@ const LayoutAdmin = () => {
         ...(isAdmin.name === "SUPER_ADMIN" ? [{
           key: 'sub3',
           label: 'Dành cho admin',
-          icon: <RedditOutlined />,
+          icon: <RedditOutlined style={{ fontSize: 18 }} />,
           children: [
             ...(viewRole
               ? [
                 {
                   label: <Link style={{ textDecoration: "none" }} to="/admin/role">Quản lý chức danh</Link>,
                   key: "role",
-                  icon: <ExceptionOutlined />,
+                  icon: <ExceptionOutlined style={{ fontSize: 18 }} />,
                 },
               ]
               : []),
@@ -294,7 +309,7 @@ const LayoutAdmin = () => {
                 {
                   label: <Link style={{ textDecoration: "none" }} to="/admin/permission">Quản lý quyền hạn</Link>,
                   key: "permission",
-                  icon: <ApiOutlined />,
+                  icon: <ApiOutlined style={{ fontSize: 18 }} />,
                 },
               ]
               : []),
@@ -305,7 +320,7 @@ const LayoutAdmin = () => {
         {
           label: <Link style={{ textDecoration: "none" }} onClick={() => handleLogout()}>Đăng xuất</Link>,
           key: "logout",
-          icon: <LogoutOutlined />,
+          icon: <LogoutOutlined style={{ fontSize: 18 }} />,
           visible: "true",
         },
       ];

@@ -1,45 +1,56 @@
 import React from 'react';
 import { Column } from '@ant-design/plots';
-import dayjs from 'dayjs';
 import { formatCurrency } from '@/utils/api';
+import { forEach, groupBy } from 'lodash-es';
 
 export const SaleBarChart = (props) => {
     const { listSales } = props;
 
-
-    const data = listSales.map(item => ({
-        user: item.user[0].name,
-        totalCommission: item.totalCommission,
-    }));
+    const data = listSales.flatMap(item => ([
+        {
+            user: item.user[0].name,
+            value: item.totalPaid,
+            type: 'Doanh thu',
+        },
+        {
+            user: item.user[0].name,
+            value: item.totalCommission,
+            type: 'Hoa Hồng',
+        }
+    ]));
 
     const config = {
         data: data,
+        isGroup: true,
         xField: 'user',
-        yField: 'totalCommission',
-        // scrollbar: {
-        //     x: {
-        //         ratio: 20,
-        //     },
-        // },
+        yField: 'value',
+        colorField: 'type',
+        group: true,
+        seriesField: 'type',
+        color: ['#6ab7ff', '#ffc069'], // Define colors for each series type
         label: {
-            text: (d) => `${formatCurrency(d.totalCommission)}`,
+            text: (d) => `${formatCurrency(d.value)}`,
             position: 'inside',
+            textBaseline: 'bottom',
+            style: {
+                fill: '#fff', // Label text color
+                fontWeight: 'bold', // Make user name bold
+            },
             transform: [
                 {
                     type: 'overflowHide',
                 },
             ],
         },
-        axis: {
-            y: {
-                labelFormatter: (val) => formatCurrency(val),
+        yAxis: {
+            label: {
+                formatter: (val) => formatCurrency(val),
             },
         },
         tooltip: {
-            title: '_id',
+            title: 'user',
             items: [{
                 channel: 'y',
-                name: "Doanh thu :",
                 valueFormatter: (d) => formatCurrency(d),
             }],
         },
@@ -53,5 +64,5 @@ export const SaleBarChart = (props) => {
         <>
             <Column {...config} />
         </>
-    )
+    );
 }
