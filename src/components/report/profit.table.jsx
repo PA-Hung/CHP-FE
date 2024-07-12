@@ -7,17 +7,19 @@ dayjs.locale("vi");
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
-import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
 import { formatCurrency } from "@/utils/api";
+import { FundViewOutlined } from "@ant-design/icons";
+import ProfitDetailDrawer from "./profit.detail.drawer";
+import { paymentOnchangeTable } from "@/redux/slice/paymentSlice";
 
 
 const ProfitTable = (props) => {
-  const { listPayments, loading, reloadTable, meta, totalPaid, setTotalPaid } = props;
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [updateData, setUpdateData] = useState(null);
+  const { listPayments, loading, meta, totalPaid, setTotalPaid } = props;
+  const [isProfitDetailDrawer, setIsProfitDetailDrawer] = useState(false);
   const dispatch = useDispatch();
 
   const [totalContract, setTotalContract] = useState(0)
+  const [dataDetail, setDataDetail] = useState()
 
 
   useEffect(() => {
@@ -95,40 +97,8 @@ const ProfitTable = (props) => {
       width: 200,
       render: (record) => {
         return (
-          <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
-            {/* <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.APARTMENT.UPDATE}
-              hideChildren
-            >
-              <div>
-                <Button
-                  danger
-                  onClick={() => {
-                    setIsUpdateModalOpen(true);
-                    setUpdateData(record);
-                  }}
-                >
-                  Cập nhật
-                </Button>
-              </div>
-            </CheckAccess>
-            <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.APARTMENT.DELETE}
-              hideChildren
-            >
-              <div>
-                <Popconfirm
-                  title={`Bạn muốn xoá căn hộ ${record.code} không ?`}
-                  onConfirm={() => confirmDelete(record)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button type={"primary"} danger>
-                    Xoá
-                  </Button>
-                </Popconfirm>
-              </div>
-            </CheckAccess> */}
+          <div style={{ display: "flex", placeContent: "center" }}>
+            <FundViewOutlined style={{ fontSize: 25 }} onClick={() => { setIsProfitDetailDrawer(true), setDataDetail(record) }} />
           </div>
         );
       },
@@ -155,7 +125,7 @@ const ProfitTable = (props) => {
             `${range[0]} - ${range[1]} of ${total} items`,
           onChange: (page, pageSize) =>
             dispatch(
-              apartmentOnchangeTable({
+              paymentOnchangeTable({
                 current: page,
                 pageSize: pageSize,
                 pages: meta.pages,
@@ -188,13 +158,11 @@ const ProfitTable = (props) => {
           );
         }}
       />
-      {/* <UpdateModal
-        updateData={updateData}
-        reloadTable={reloadTable}
-        isUpdateModalOpen={isUpdateModalOpen}
-        setIsUpdateModalOpen={setIsUpdateModalOpen}
-        setUpdateData={setUpdateData}
-      /> */}
+      <ProfitDetailDrawer
+        dataDetail={dataDetail}
+        isProfitDetailDrawer={isProfitDetailDrawer}
+        setIsProfitDetailDrawer={setIsProfitDetailDrawer}
+      />
     </>
   );
 };

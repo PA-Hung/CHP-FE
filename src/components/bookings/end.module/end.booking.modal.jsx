@@ -12,6 +12,7 @@ const EndBookingModal = (props) => {
 
   const [finalAmount, setFinalAmount] = useState(0);
   const [finalPayment, setFinalPayment] = useState(0);
+  const [totalCommission, setTotalCommission] = useState(0)
 
   const calculateRentalDays = (startDate, endDate) => {
     const start = startDate ? dayjs(startDate) : dayjs();
@@ -25,6 +26,15 @@ const EndBookingModal = (props) => {
     return end.diff(start, 'hour'); // Thay đổi đơn vị từ 'day' sang 'hour'
   };
 
+  const calculateTotalCommissionByDay = () => {
+    const total = endData?.motors?.reduce((acc, motor) => {
+      const rentalTime = calculateRentalDays(motor.start_date, motor.end_date);
+      const motorCommission = (rentalTime * endData.commission);
+      return acc + motorCommission;
+    }, 0);
+    setTotalCommission(total);
+  };
+
   useEffect(() => {
     if (endData) {
       const amount = endData.amount || 0;
@@ -34,6 +44,10 @@ const EndBookingModal = (props) => {
       setFinalAmount((amount - discount - deposit - late_fee_amount - finalPayment))
     }
   }, [endData, late_fee_amount, finalPayment]);
+
+  useEffect(() => {
+    calculateTotalCommissionByDay();
+  }, [endData]);
 
   const onFinish = async () => {
     if (finalAmount > 0) {
@@ -62,12 +76,13 @@ const EndBookingModal = (props) => {
         booking_id: endData._id,
         guest_id: endData.guest_id._id,
         user_id: endData.user_id,
-        commission: endData.commission || 0,
+        commission: totalCommission || 0,
         discount: endData.discount || 0,
         deposit: endData.deposit || 0,
         late_fee_amount: late_fee_amount,
         amount: endData.amount,
         paid: finalPayment,
+        contract_type: endData.contract_type,
         payment_date: endContractDate,
         payment_method: endData.method
       }
@@ -96,6 +111,7 @@ const EndBookingModal = (props) => {
     setLate_fee_amount(0);
     setFinalPayment(0)
     setFinalAmount(0)
+    setTotalCommission(0)
   };
 
   const formatCurrency = (amount) => {
@@ -134,9 +150,9 @@ const EndBookingModal = (props) => {
             <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
               <Col><span style={{ fontWeight: 500 }}>Ngày hoàn tất hợp đồng :</span></Col>
               <Col><DatePicker
-                format={"HH giờ DD/MM/YYYY"}
+                format={"HH:mm giờ DD/MM/YYYY"}
                 defaultValue={dayjs()}
-                showTime={{ format: 'HH' }}
+                showTime={{ format: 'HH:mm' }}
                 onChange={(date) => setEndContractDate(date)}
               /></Col>
             </Row>

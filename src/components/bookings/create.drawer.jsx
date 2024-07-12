@@ -26,6 +26,7 @@ const CreateDrawer = (props) => {
   const [checkedBox, setCheckedBox] = useState("nodiscount");
   const [searchValue, setSearchValue] = useState(null);
   const [commission, setCommission] = useState(0)
+  const [totalCommission, setTotalCommission] = useState(0)
   const [contractType, setContractType] = useState("Thuê theo ngày")
 
   const resetDrawer = () => {
@@ -40,6 +41,7 @@ const CreateDrawer = (props) => {
     const query = buildQuery();
     dispatch(fetchMotor({ query }));
     setCommission(0)
+    setTotalCommission(0)
     setIsCreateDrawerOpen(false);
   };
 
@@ -287,8 +289,12 @@ const CreateDrawer = (props) => {
               <SalesManCard
                 setSalesMan={setSalesMan}
                 salesman={salesman}
-                commission={commission}
                 setCommission={setCommission}
+                commission={commission}
+                totalCommission={totalCommission}
+                setTotalCommission={setTotalCommission}
+                listMotorsSelected={listMotorsSelected}
+                contractType={contractType}
               />
             </div>
           </Col>

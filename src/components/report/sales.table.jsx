@@ -7,17 +7,19 @@ dayjs.locale("vi");
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
-import { apartmentOnchangeTable } from "@/redux/slice/apartmentSlice";
 import { formatCurrency } from "@/utils/api";
+import { FundViewOutlined } from "@ant-design/icons";
+import SaleDetailDrawer from "./sale.detail.drawer";
+import { saleOnchangeTable } from "@/redux/slice/saleSlice";
 
 
 const SalesTable = (props) => {
-  const { listSales, loadingSale, reloadTable, metaSale, totalPaid, setTotalPaid, setTotalCommission, totalCommission } = props;
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [updateData, setUpdateData] = useState(null);
+  const { listSales, loadingSale, metaSale, totalPaid, setTotalPaid, setTotalCommission, totalCommission, searchSaleValue } = props;
+  const [isSaleDetailDrawer, setIsSaleDetailDrawer] = useState(false)
   const dispatch = useDispatch();
 
   const [totalContract, setTotalContract] = useState(0)
+  const [dataDetail, setDataDetail] = useState()
 
   useEffect(() => {
     if (listSales) {
@@ -106,43 +108,18 @@ const SalesTable = (props) => {
     },
     {
       title: "Chức năng",
-      width: 200,
+      width: 100,
       render: (record) => {
         return (
-          <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
+          <div>
             {/* <CheckAccess
-              FeListPermission={ALL_PERMISSIONS.APARTMENT.UPDATE}
-              hideChildren
-            >
-              <div>
-                <Button
-                  danger
-                  onClick={() => {
-                    setIsUpdateModalOpen(true);
-                    setUpdateData(record);
-                  }}
-                >
-                  Cập nhật
-                </Button>
-              </div>
-            </CheckAccess>
-            <CheckAccess
               FeListPermission={ALL_PERMISSIONS.APARTMENT.DELETE}
               hideChildren
-            >
-              <div>
-                <Popconfirm
-                  title={`Bạn muốn xoá căn hộ ${record.code} không ?`}
-                  onConfirm={() => confirmDelete(record)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button type={"primary"} danger>
-                    Xoá
-                  </Button>
-                </Popconfirm>
-              </div>
-            </CheckAccess> */}
+            > */}
+            <div style={{ display: "flex", placeContent: "center" }}>
+              <FundViewOutlined style={{ fontSize: 25 }} onClick={() => { setIsSaleDetailDrawer(true), setDataDetail(record) }} />
+            </div>
+            {/* </CheckAccess> */}
           </div>
         );
       },
@@ -169,7 +146,7 @@ const SalesTable = (props) => {
             `${range[0]} - ${range[1]} of ${total} items`,
           onChange: (page, pageSize) =>
             dispatch(
-              apartmentOnchangeTable({
+              saleOnchangeTable({
                 current: page,
                 pageSize: pageSize,
                 pages: metaSale.pages,
@@ -208,13 +185,12 @@ const SalesTable = (props) => {
           );
         }}
       />
-      {/* <UpdateModal
-        updateData={updateData}
-        reloadTable={reloadTable}
-        isUpdateModalOpen={isUpdateModalOpen}
-        setIsUpdateModalOpen={setIsUpdateModalOpen}
-        setUpdateData={setUpdateData}
-      /> */}
+      <SaleDetailDrawer
+        setIsSaleDetailDrawer={setIsSaleDetailDrawer}
+        isSaleDetailDrawer={isSaleDetailDrawer}
+        dataDetail={dataDetail}
+        searchSaleValue={searchSaleValue}
+      />
     </>
   );
 };

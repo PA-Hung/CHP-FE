@@ -67,26 +67,21 @@ const BookingTable = (props) => {
     // Tạo đối tượng dữ liệu mới với motors đã cập nhật
     const data = {
       _id: record._id,
+      contract_status: record.contract_status,
       motors: updatedMotors,
     };
 
-    try {
-      const res = await updateBooking(data);
-      if (res.data) {
-        reloadTable();
-        message.success("Cập nhật trạng thái hợp đồng thành công !");
-      } else {
-        notification.error({
-          message: "Có lỗi xảy ra",
-          placement: "top",
-          description: res.message,
-        });
-      }
-    } catch (error) {
+    console.log('data', data);
+
+    const res = await updateBooking(data);
+    if (res.data) {
+      reloadTable();
+      message.success("Cập nhật trạng thái hợp đồng thành công !");
+    } else {
       notification.error({
         message: "Có lỗi xảy ra",
         placement: "top",
-        description: error.message,
+        description: res.message,
       });
     }
   }
@@ -117,9 +112,9 @@ const BookingTable = (props) => {
                 <div>Thời gian trả xe : </div>
                 <div>
                   <DatePicker
-                    showTime={{ format: 'HH' }} // Chỉ hiển thị giờ
+                    showTime={{ format: 'HH:mm' }} // Chỉ hiển thị giờ
                     defaultValue={dayjs()}
-                    format="HH giờ DD-MM-YYYY"
+                    format="HH:mm giờ DD-MM-YYYY"
                     onChange={(e) => setEnd_date(e)}
                   /></div>
               </div>
@@ -201,7 +196,7 @@ const BookingTable = (props) => {
     },
     {
       title: "Thời gian thuê",
-      width: 350,
+      width: 330,
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>

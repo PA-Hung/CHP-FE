@@ -117,9 +117,9 @@ const BookingCompletedTable = (props) => {
                 <div>Thời gian trả xe : </div>
                 <div>
                   <DatePicker
-                    showTime={{ format: 'HH' }} // Chỉ hiển thị giờ
+                    showTime={{ format: 'HH:mm' }} // Chỉ hiển thị giờ
                     defaultValue={dayjs()}
-                    format="HH giờ DD-MM-YYYY"
+                    format="HH:mm giờ DD-MM-YYYY"
                     onChange={(e) => setEnd_date(e)}
                   /></div>
               </div>
@@ -238,7 +238,7 @@ const BookingCompletedTable = (props) => {
     },
     {
       title: "Thời gian thuê",
-      width: 350,
+      width: 330,
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>

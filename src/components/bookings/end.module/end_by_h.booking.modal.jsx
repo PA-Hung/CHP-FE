@@ -11,6 +11,7 @@ const EndByH_BookingModal = (props) => {
 
   const [finalAmount, setFinalAmount] = useState(0);
   const [finalPayment, setFinalPayment] = useState(0);
+  const [totalCommission, setTotalCommission] = useState(0)
 
   useEffect(() => {
     if (endData) {
@@ -49,12 +50,13 @@ const EndByH_BookingModal = (props) => {
         booking_id: endData._id,
         guest_id: endData.guest_id._id,
         user_id: endData.user_id,
-        commission: endData.commission || 0,
+        commission: totalCommission || 0,
         discount: endData.discount || 0,
         deposit: endData.deposit || 0,
         late_fee_amount: late_fee_amount,
         amount: endData.amount,
         paid: finalPayment,
+        contract_type: endData.contract_type,
         payment_date: endContractDate,
         payment_method: endData.method
       }
@@ -83,6 +85,7 @@ const EndByH_BookingModal = (props) => {
     setLate_fee_amount(0);
     setFinalPayment(0)
     setFinalAmount(0)
+    setTotalCommission(0)
   };
 
   const formatCurrency = (amount) => {
@@ -124,7 +127,18 @@ const EndByH_BookingModal = (props) => {
     return Math.ceil(diffInDays); // Làm tròn lên
   };
 
+  const calculateTotalCommissionByHours = () => {
+    const total = endData?.motors?.reduce((acc, motor) => {
+      const rentalTime = calculateRentalHours(motor.start_date, motor.end_date);
+      const motorCommission = (rentalTime * endData.commission);
+      return acc + motorCommission;
+    }, 0);
+    setTotalCommission(total);
+  };
 
+  useEffect(() => {
+    calculateTotalCommissionByHours();
+  }, [endData]);
 
   return (
     <>
@@ -147,9 +161,9 @@ const EndByH_BookingModal = (props) => {
             <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
               <Col><span style={{ fontWeight: 500 }}>Ngày hoàn tất hợp đồng :</span></Col>
               <Col><DatePicker
-                format={"HH giờ DD/MM/YYYY"}
+                format={"HH:mm giờ DD/MM/YYYY"}
                 defaultValue={dayjs()}
-                showTime={{ format: 'HH' }}
+                showTime={{ format: 'HH:mm' }}
                 onChange={(date) => setEndContractDate(date)}
               /></Col>
             </Row>

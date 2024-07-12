@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
-import { Button, Row, Col, Tabs, DatePicker } from "antd";
+import { Row, Col, Tabs, DatePicker } from "antd";
 import queryString from "query-string";
-import {
-  PlusOutlined,
-} from "@ant-design/icons";
-// import CreateModal from "./create.modal";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import { useDispatch, useSelector } from "react-redux";
-// import SearchModal from "./search.modal";
-// import AccommodationTable from "./apartment.table";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import ProfitTable from "./profit.table";
@@ -23,9 +17,6 @@ import { fetchSale } from "@/redux/slice/saleSlice";
 import { SaleBarChart } from "./sale.BarChart";
 
 const ReportPage = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-
   const defaultStartDate = dayjs().startOf('month');
   const defaultEndDate = dayjs().endOf('month');
 
@@ -33,18 +24,25 @@ const ReportPage = () => {
   const meta = useSelector((state) => state.payment.meta);
   const listPayments = useSelector((state) => state.payment.result);
   const dispatch = useDispatch();
-  const [searchValue, setSearchValue] = useState(null);
+  const [searchValue, setSearchValue] = useState({
+    start_date: defaultStartDate,
+    end_date: defaultEndDate,
+  });
   const [totalPaid, setTotalPaid] = useState(0)
 
   const loadingSale = useSelector((state) => state.sale.isFetching);
   const metaSale = useSelector((state) => state.sale.meta);
   const listSales = useSelector((state) => state.sale.result);
   const [totalCommission, setTotalCommission] = useState(0)
+  const [searchSaleValue, setSearchSaleValue] = useState({
+    start_date: defaultStartDate,
+    end_date: defaultEndDate,
+  });
 
   useEffect(() => {
     const initData = async () => {
-      if (searchValue) {
-        const query = saleQuery(searchValue);
+      if (searchSaleValue) {
+        const query = saleQuery(searchSaleValue);
         dispatch(fetchSale({ query }));
       } else {
         const query = saleQuery();
@@ -231,7 +229,7 @@ const ReportPage = () => {
                   <RangePicker
                     size="large"
                     status="warning"
-                    onChange={(e) => handleTimeChange(e)}
+                    onChange={(e) => handleSaleTimeChange(e)}
                     format={'DD/MM/YYYY'}
                     defaultValue={[defaultStartDate, defaultEndDate]}
                   />
@@ -278,6 +276,7 @@ const ReportPage = () => {
                     loadingSale={loadingSale}
                     reloadTable={reloadTable}
                     metaSale={metaSale}
+                    searchSaleValue={searchSaleValue}
                   />
                 </Col>
               </Row>
@@ -296,6 +295,16 @@ const ReportPage = () => {
     setSearchValue(inputQuery);
     const query = buildQuery(inputQuery);
     dispatch(fetchPayment({ query }));
+  }
+
+  const handleSaleTimeChange = (e) => {
+    const inputQuery = {
+      start_date: e ? e[0] : defaultStartDate,
+      end_date: e ? e[1] : defaultEndDate,
+    }
+    setSearchSaleValue(inputQuery);
+    const query = buildQuery(inputQuery);
+    dispatch(fetchSale({ query }));
   }
 
 
