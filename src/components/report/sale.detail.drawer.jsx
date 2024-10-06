@@ -67,6 +67,14 @@ const SaleDetailDrawer = (props) => {
                 return <div style={{ fontWeight: 550, color: "blueviolet" }}>{formatCurrency(record?.commission)}</div>;
             },
         },
+        {
+            title: "Thanh toán",
+            render: (_value, record) => {
+                return <div style={{ fontWeight: 550, color: "black" }}>
+                    {record?.payment_method}
+                </div>;
+            },
+        },
     ];
 
     return (

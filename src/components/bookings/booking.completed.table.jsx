@@ -134,7 +134,9 @@ const BookingCompletedTable = (props) => {
   };
 
   const handleUpdateCompletedBooking = (record) => {
-    if (record.status !== "Hợp đồng đóng") {
+    console.log('record.contract_status', record.contract_status);
+
+    if (record.contract_status !== "Hợp đồng đóng") {
       notification.warning({
         message: "Thông báo",
         placement: "top",
@@ -147,7 +149,8 @@ const BookingCompletedTable = (props) => {
   }
 
   const handleOpenCompletedBooking = async (record) => {
-    if (record.status !== "Hợp đồng đóng") {
+    console.log('record', record);
+    if (record.contract_status !== "Hợp đồng đóng") {
       notification.warning({
         message: "Thông báo",
         placement: "top",
@@ -161,7 +164,7 @@ const BookingCompletedTable = (props) => {
         guest_id: record?.guest_id._id,
         user_id: record.user_id,
         commission: record.commission,
-        status: "Hợp đồng mở",
+        contract_status: "Hợp đồng mở",
         method: record.method,
         discount: record.discount,
         deposit: record.deposit,
@@ -218,6 +221,7 @@ const BookingCompletedTable = (props) => {
                 {item.brand}
                 <Tag color="blue">{item.license}</Tag>
                 <Select
+                  disabled
                   status="warning"
                   size="small"
                   style={{ width: 150 }}

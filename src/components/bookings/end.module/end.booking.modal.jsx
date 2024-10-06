@@ -9,6 +9,7 @@ const EndBookingModal = (props) => {
   const [remainingAmount, setRemainingAmount] = useState(0);
   const [late_fee_amount, setLate_fee_amount] = useState(0); // Thêm trạng thái cho phí quá giờ tổng cộng
   const [endContractDate, setEndContractDate] = useState(dayjs())
+  const [methodPayment, setMethodPayment] = useState(null)
 
   const [finalAmount, setFinalAmount] = useState(0);
   const [finalPayment, setFinalPayment] = useState(0);
@@ -42,6 +43,7 @@ const EndBookingModal = (props) => {
       const deposit = endData.deposit || 0;
       setRemainingAmount(amount - discount - deposit + late_fee_amount);
       setFinalAmount((amount - discount - deposit - late_fee_amount - finalPayment))
+      setMethodPayment(endData.method)
     }
   }, [endData, late_fee_amount, finalPayment]);
 
@@ -64,7 +66,7 @@ const EndBookingModal = (props) => {
         user_id: endData.user_id,
         commission: endData.commission || 0,
         contract_status: "Hợp đồng đóng",
-        method: endData.method,
+        method: methodPayment,
         discount: endData.discount || 0,
         deposit: endData.deposit + finalPayment || 0,
         amount: endData.amount || 0,
@@ -84,7 +86,7 @@ const EndBookingModal = (props) => {
         paid: finalPayment,
         contract_type: endData.contract_type,
         payment_date: endContractDate,
-        payment_method: endData.method
+        payment_method: methodPayment
       }
 
       const resPayments = await postCreatePayment(paymentsData);
@@ -303,11 +305,11 @@ const EndBookingModal = (props) => {
                 <Col>
                   <Select
                     placeholder="Chọn thanh toán"
-                    value={endData?.method}
-                    //onSelect={(value) => setMethod(value)}
+                    value={methodPayment}
+                    onSelect={(value) => setMethodPayment(value)}
                     allowClear
                     options={[
-                      { value: "tiền mặt", label: "Tiền mặt" },
+                      { value: "Tiền mặt", label: "Tiền mặt" },
                       { value: "Chuyển khoản", label: "Chuyển khoản" },
                     ]}
                   />

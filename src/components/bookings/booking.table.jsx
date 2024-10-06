@@ -71,8 +71,6 @@ const BookingTable = (props) => {
       motors: updatedMotors,
     };
 
-    console.log('data', data);
-
     const res = await updateBooking(data);
     if (res.data) {
       reloadTable();
@@ -93,7 +91,7 @@ const BookingTable = (props) => {
         okText: 'Xác nhận',
         cancelText: 'Hủy bỏ',
         content: (
-          <div>Bạn có muốn thay đổi trạng thái hợp đồng từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>),
+          <div>Bạn có muốn thay đổi từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>),
         onOk: () => {
           handleOkStatusChange(value, item, record);
         },
@@ -129,16 +127,8 @@ const BookingTable = (props) => {
   };
 
   const handleUpdateBooking = (record) => {
-    if (record.contract_status === "Hợp đồng đóng") {
-      notification.warning({
-        message: "Thông báo",
-        placement: "top",
-        description: "Hợp đồng đã đóng, bạn cần liên hệ admin để cập nhật thông tin hợp đồng !",
-      });
-    } else {
-      setIsUpdateDrawerOpen(true)
-      setUpdateData(record)
-    }
+    setIsUpdateDrawerOpen(true)
+    setUpdateData(record)
   }
 
   const columns = [
