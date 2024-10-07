@@ -12,12 +12,15 @@ import EndBookingModal from "./end.module/end.booking.modal";
 import UpdateDrawer from "./update.drawer";
 import { updateBooking } from "@/utils/api";
 import { bookingCompletedOnchangeTable } from "@/redux/slice/bookingCompletedSlice";
-
+import OvertimeDetailDrawer from "./overtime.detail.drawer";
+import { Link } from "react-router-dom";
 
 const BookingCompletedTable = (props) => {
   const { listBookingsCompleted, loadingCompleted, reloadTableCompleted, metaCompleted, reloadTable } = props;
 
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState(false);
+  const [isOvertimeDetailOpen, setIsOvertimeDetailOpen] = useState(false);
+  const [overtimeDetailData, setOvertimeDetailData] = useState(null);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [endData, setEndData] = useState(null);
   const [updateData, setUpdateData] = useState(null);
@@ -250,12 +253,12 @@ const BookingCompletedTable = (props) => {
               <div key={item._id}>
                 {record.contract_type === "Thuê theo ngày" ?
                   <>
-                    {dayjs(item.start_date).format("HH:mm giờ (DD)")} - {dayjs(item.end_date).format("HH:mm giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="volcano-inverse">
+                    {dayjs(item.start_date).format("DD")} - {dayjs(item.end_date).format("DD/MM/YY")} {<Tag bordered={true} color="volcano-inverse">
                       {calculateRentalDays(item.start_date, item.end_date)} ngày
                     </Tag>}
                   </> :
                   <>
-                    {dayjs(item.start_date).format("HH:mm")} - {dayjs(item.end_date).format("HH:mm giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="geekblue-inverse">
+                    {dayjs(item.start_date).format("HH:mm")} - {dayjs(item.end_date).format("HH:mm")} {<Tag bordered={true} color="geekblue-inverse">
                       {calculateRentalHours(item.start_date, item.end_date)} giờ
                     </Tag>}
                   </>
@@ -281,7 +284,11 @@ const BookingCompletedTable = (props) => {
     {
       title: "Phí quá hạn",
       render: (_value, record) => {
-        return <div>{...(record.late_fee_amount ? formatCurrency(record.late_fee_amount) : "")}</div>;
+        return (
+          <Link style={{ textDecoration: "none" }} onClick={() => { setIsOvertimeDetailOpen(true), setOvertimeDetailData(record) }}>
+            {...(record.late_fee_amount ? formatCurrency(record.late_fee_amount) : "")}
+          </Link>
+        )
       },
     },
     {
@@ -426,6 +433,12 @@ const BookingCompletedTable = (props) => {
         reloadTableCompleted={reloadTableCompleted}
         isUpdateDrawerOpen={isUpdateDrawerOpen}
         setIsUpdateDrawerOpen={setIsUpdateDrawerOpen}
+      />
+      <OvertimeDetailDrawer
+        isOvertimeDetailOpen={isOvertimeDetailOpen}
+        setIsOvertimeDetailOpen={setIsOvertimeDetailOpen}
+        overtimeDetailData={overtimeDetailData}
+        setOvertimeDetailData={setOvertimeDetailData}
       />
     </>
   );

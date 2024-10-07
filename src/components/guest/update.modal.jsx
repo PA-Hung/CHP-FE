@@ -13,7 +13,7 @@ const UpdateModal = (props) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (updateData) {
+    if (isUpdateModalOpen && updateData) {
       form.setFieldsValue({
         name: updateData.name,
         phone: updateData.phone,
@@ -23,7 +23,7 @@ const UpdateModal = (props) => {
         address: updateData?.address,
       });
     }
-  }, [updateData]);
+  }, [updateData, isUpdateModalOpen]);
 
   const onFinish = async (values) => {
     const data = {

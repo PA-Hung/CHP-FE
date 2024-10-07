@@ -194,12 +194,12 @@ const BookingTable = (props) => {
               <div key={item._id}>
                 {record.contract_type === "Thuê theo ngày" ?
                   <>
-                    {dayjs(item.start_date).format("HH:mm giờ (DD)")} - {dayjs(item.end_date).format("HH:mm giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="volcano-inverse">
+                    {dayjs(item.start_date).format("DD")} - {dayjs(item.end_date).format("DD/MM/YY")} {<Tag bordered={true} color="volcano-inverse">
                       {calculateRentalDays(item.start_date, item.end_date)} ngày
                     </Tag>}
                   </> :
                   <>
-                    {dayjs(item.start_date).format("HH:mm")} - {dayjs(item.end_date).format("HH:mm giờ (DD/MM/YYYY)")} {<Tag bordered={true} color="geekblue-inverse">
+                    {dayjs(item.start_date).format("HH:mm")} - {dayjs(item.end_date).format("HH:mm")} {<Tag bordered={true} color="geekblue-inverse">
                       {calculateRentalHours(item.start_date, item.end_date)} giờ
                     </Tag>}
                   </>

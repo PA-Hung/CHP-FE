@@ -219,42 +219,42 @@ const CreateDrawer = (props) => {
         </>
       ),
     },
-    {
-      key: 'Thuê theo giờ',
-      label: (<div style={{ fontWeight: 550 }}>Thuê theo giờ</div>),
-      disabled: listMotorsSelected.length > 0 || contractType === "Thuê theo giờ" ? true : false,
-      children: (
-        <>
-          <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
-            <div>
-              <MotorByHTable
-                listMotorsSelected={listMotorsSelected}
-                setListMotorsSelected={setListMotorsSelected}
-                total={total}
-                setTotal={setTotal}
-                setSearchValue={setSearchValue}
-                buildQuery={buildQuery}
-                contractType={contractType}
-              />
-            </div>
-            <div>
-              <BillingByHCard
-                total={total}
-                deposit={deposit}
-                setDeposit={setDeposit}
-                discount={discount}
-                setDiscount={setDiscount}
-                method={method}
-                setMethod={setMethod}
-                checkedBox={checkedBox}
-                setCheckedBox={setCheckedBox}
-                setSearchValue={setSearchValue}
-              />
-            </div>
-          </div>
-        </>
-      ),
-    },
+    // {
+    //   key: 'Thuê theo giờ',
+    //   label: (<div style={{ fontWeight: 550 }}>Thuê theo giờ</div>),
+    //   disabled: listMotorsSelected.length > 0 || contractType === "Thuê theo giờ" ? true : false,
+    //   children: (
+    //     <>
+    //       <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
+    //         <div>
+    //           <MotorByHTable
+    //             listMotorsSelected={listMotorsSelected}
+    //             setListMotorsSelected={setListMotorsSelected}
+    //             total={total}
+    //             setTotal={setTotal}
+    //             setSearchValue={setSearchValue}
+    //             buildQuery={buildQuery}
+    //             contractType={contractType}
+    //           />
+    //         </div>
+    //         <div>
+    //           <BillingByHCard
+    //             total={total}
+    //             deposit={deposit}
+    //             setDeposit={setDeposit}
+    //             discount={discount}
+    //             setDiscount={setDiscount}
+    //             method={method}
+    //             setMethod={setMethod}
+    //             checkedBox={checkedBox}
+    //             setCheckedBox={setCheckedBox}
+    //             setSearchValue={setSearchValue}
+    //           />
+    //         </div>
+    //       </div>
+    //     </>
+    //   ),
+    // },
   ];
 
   const handleTabChange = (e) => {

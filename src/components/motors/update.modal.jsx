@@ -4,7 +4,7 @@ import TextArea from "antd/es/input/TextArea";
 import { useEffect } from "react";
 
 const UpdateModal = (props) => {
-  const { reloadTable, isUpdateModalOpen, setIsUpdateModalOpen, updateData, setUpdateData } = props;
+  const { reloadTable, isUpdateModalOpen, setIsUpdateModalOpen, updateData } = props;
   const [form] = Form.useForm();
 
   const resetModal = () => {
@@ -13,7 +13,7 @@ const UpdateModal = (props) => {
   };
 
   useEffect(() => {
-    if (updateData) {
+    if (isUpdateModalOpen && updateData) {
       form.setFieldsValue({
         brand: updateData.brand,
         license: updateData.license,
@@ -21,10 +21,10 @@ const UpdateModal = (props) => {
         priceD: updateData.priceD,
         priceH: updateData.priceH,
         overtime: updateData.overtime,
-        note: updateData.note
+        note: updateData.note,
       });
     }
-  }, [updateData]);
+  }, [isUpdateModalOpen, updateData]);
 
   const onFinish = async (values) => {
     const data = {
