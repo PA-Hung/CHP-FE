@@ -21,10 +21,12 @@ import AccommodationCard from "./accommodation.card";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { fetchAccommodation } from "@/redux/slice/accommodationSlice";
+import ExportExcelDrawer from "./export.excel.drawer";
 
 const AccommodationPage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isExportExcelOpen, setIsExportExcelOpen] = useState(false);
 
   const loading = useSelector((state) => state.accommodation.isFetching);
   const meta = useSelector((state) => state.accommodation.meta);
@@ -326,6 +328,14 @@ const AccommodationPage = () => {
                 </Button>
               </Col>
             </CheckAccess>
+            {isAdmin.name === "SUPER_ADMIN" ? <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+              <Button
+                icon={<DownloadOutlined />}
+                onClick={() => setIsExportExcelOpen(true)}
+              >
+                Xuất Báo Cáo
+              </Button>
+            </Col> : ""}
           </Row>
         </div>
         <Row>
@@ -358,6 +368,9 @@ const AccommodationPage = () => {
           setIsSearchModalOpen={setIsSearchModalOpen}
           onSearch={onSearch}
         />
+        <ExportExcelDrawer
+          isExportExcelOpen={isExportExcelOpen}
+          setIsExportExcelOpen={setIsExportExcelOpen} />
       </CheckAccess>
     </div>
   );

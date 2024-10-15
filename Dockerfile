@@ -1,7 +1,7 @@
 # Bước 1: Sử dụng hình ảnh có Node.js để xây dựng ứng dụng React Vite
 FROM node:18-alpine as build
 
-WORKDIR /chp
+WORKDIR /frontend-vite
 
 COPY package*.json ./
 
@@ -15,7 +15,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Sao chép tệp build từ hình ảnh Node.js
-COPY --from=build /chp/dist /usr/share/nginx/html/
+COPY --from=build /frontend-vite/dist /usr/share/nginx/html/
 
 # Mở cổng 80 để Nginx có thể phục vụ ứng dụng
 EXPOSE 80

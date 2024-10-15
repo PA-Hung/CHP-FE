@@ -54,7 +54,7 @@ const UpdateUserModal = (props) => {
   }, [updateData]);
 
   const onFinish = async (values) => {
-    const { name, phone, role, apartments } = values;
+    const { name, phone, password, role, apartments } = values;
 
     const hasObject = (arr) => {
       return arr.some(element => typeof element === 'object' && element !== null && !Array.isArray(element));
@@ -64,6 +64,7 @@ const UpdateUserModal = (props) => {
       _id: updateData?._id,
       name,
       phone,
+      password,
       role,
       apartments: hasObject(apartments) ? apartments.map(element => element.value) : apartments,
     };
@@ -166,7 +167,7 @@ const UpdateUserModal = (props) => {
               name="password"
 
             >
-              <Input.Password disabled={true} />
+              <Input.Password />
             </Form.Item>
 
           </Form.Item>

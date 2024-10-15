@@ -220,21 +220,21 @@ const LayoutAdmin = () => {
           label: 'Quản lý lưu trú',
           icon: <CalendarOutlined style={{ fontSize: 18 }} />,
           children: [
-            ...(viewApartment
-              ? [
-                {
-                  label: <Link style={{ textDecoration: "none" }} to={"/admin/apartment"}>Quản lý căn hộ</Link>,
-                  key: "apartment",
-                  icon: <ApartmentOutlined style={{ fontSize: 18 }} />,
-                },
-              ]
-              : []),
             ...(viewAccommodation
               ? [
                 {
                   label: <Link style={{ textDecoration: "none" }} to={"/admin/accommodation"}>Khách lưu trú</Link>,
                   key: "accommodation",
                   icon: <ContactsOutlined style={{ fontSize: 18 }} />,
+                },
+              ]
+              : []),
+            ...(viewApartment
+              ? [
+                {
+                  label: <Link style={{ textDecoration: "none" }} to={"/admin/apartment"}>Quản lý căn hộ</Link>,
+                  key: "apartment",
+                  icon: <ApartmentOutlined style={{ fontSize: 18 }} />,
                 },
               ]
               : []),
@@ -420,7 +420,7 @@ const LayoutAdmin = () => {
                 color: themeMode === "light" ? "black" : "white",
                 backgroundColor: themeMode === "light" ? "#cfd9f8" : "#141414",
               }}>
-                <span>CHP App ©2023 - Phiên bản 1.2 Created by Phan Anh Hùng</span>
+                <span>ChauHomestay App ©2023</span>
               </div>
             </Col>
           </Row>

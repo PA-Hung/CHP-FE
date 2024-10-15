@@ -2,12 +2,11 @@ import { Button, Drawer, Space, Table, Tag } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { formatCurrency } from "@/utils/api";
 import dayjs from "dayjs";
+import { ArrowRightOutlined } from "@ant-design/icons";
 
 const OvertimeDetailDrawer = (props) => {
     const { isOvertimeDetailOpen, setIsOvertimeDetailOpen, overtimeDetailData } = props;
     const [late_fee_amount, setLate_fee_amount] = useState(0); // Thêm trạng thái cho phí quá giờ tổng cộng
-
-    console.log('overtimeDetailData', overtimeDetailData);
 
     const resetDrawer = () => {
         setIsOvertimeDetailOpen(false);
@@ -65,8 +64,8 @@ const OvertimeDetailDrawer = (props) => {
         {
             title: "Thời gian thuê",
             render: (_value, record) => {
-                return <div style={{ fontWeight: 550, color: "blueviolet" }}>
-                    {dayjs(record.start_date).format("HH:mm giờ DD")} - {dayjs(record.end_date).format("HH:mm giờ DD/MM/YY")} {<Tag bordered={true} color="volcano-inverse">
+                return <div style={{ fontWeight: 550 }}>
+                    {dayjs(record.start_date).format("HH:mm - DD/MM")} <span style={{ fontWeight: 550, color: "blueviolet" }} ><ArrowRightOutlined /></span> {dayjs(record.end_date).format("HH:mm - DD/MM/YY")} {<Tag bordered={true} color="volcano-inverse">
                         {calculateRentalDays(record.start_date, record.end_date)} ngày
                     </Tag>}
                 </div>;
@@ -75,8 +74,8 @@ const OvertimeDetailDrawer = (props) => {
         {
             title: "Thời gian trả xe",
             render: (_value, record) => {
-                return <div style={{ fontWeight: 550, color: "blueviolet" }}>
-                    {dayjs(record.late_time).format("HH:mm giờ DD/MM/YY")}
+                return <div style={{ fontWeight: 550 }}>
+                    {dayjs(record.late_time).format("HH:mm - DD/MM/YY")}
                 </div>;
             },
         },
@@ -133,7 +132,7 @@ const OvertimeDetailDrawer = (props) => {
                         summary={() => {
                             return (
                                 <Table.Summary.Row>
-                                    <Table.Summary.Cell colSpan={3}>
+                                    <Table.Summary.Cell colSpan={5}>
                                         <div style={{ textAlign: "right", fontWeight: 550 }}>Tổng :</div>
                                     </Table.Summary.Cell>
                                     <Table.Summary.Cell>

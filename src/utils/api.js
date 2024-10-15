@@ -130,6 +130,10 @@ export const exportExcel = (apartmentId) => {
     return axios.get(`api/v1/excel/export`, { params: { apartmentId } })
 }
 
+export const exportReportExcel = (query) => {
+    return axios.get(`api/v1/excel/export-report?${query}`)
+}
+
 // User ----------------------------------------------------------------------------------------------------
 
 export const getUsers = (query) => {
