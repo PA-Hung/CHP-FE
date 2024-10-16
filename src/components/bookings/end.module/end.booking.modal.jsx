@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Modal, notification, message, Row, Col, DatePicker, Card, Space, InputNumber, Select, Tag, Button } from "antd";
+import { Modal, notification, message, Row, Col, DatePicker, Card, Space, InputNumber, Select, Tag } from "antd";
 import dayjs from "dayjs";
-import { PlusCircleOutlined } from "@ant-design/icons";
 import { postCreatePayment, updateBooking } from "@/utils/api";
 
 const EndBookingModal = (props) => {
@@ -50,8 +49,9 @@ const EndBookingModal = (props) => {
       const amount = endData.amount || 0;
       const discount = endData.discount || 0;
       const deposit = endData.deposit || 0;
-      setRemainingAmount(amount - discount - deposit + late_fee_amount);
-      setFinalAmount((amount - discount - deposit - late_fee_amount - finalPayment))
+      const surcharge = endData.surcharge || 0;
+      setRemainingAmount(amount - discount - deposit + late_fee_amount + surcharge);
+      setFinalAmount((amount - discount - deposit - late_fee_amount - finalPayment + surcharge))
       setMethodPayment(endData.method)
     }
   }, [endData, late_fee_amount, finalPayment]);
@@ -61,8 +61,9 @@ const EndBookingModal = (props) => {
   }, [endData]);
 
   const onFinish = async () => {
+
     if (finalAmount > 0) {
-      message.error("Bạn phải thanh toán đủ tiền !");
+      message.error("Vui lòng thanh toán đủ tiền !");
     }
     else {
       // Xử lý hoàn tất thanh toán
@@ -80,6 +81,7 @@ const EndBookingModal = (props) => {
         method: methodPayment,
         discount: endData.discount || 0,
         deposit: endData.deposit + finalPayment || 0,
+        surcharge: endData.surcharge || 0,
         amount: endData.amount || 0,
         late_fee_amount: late_fee_amount,
         remaining_amount: (endData.amount + late_fee_amount) - (endData.discount + endData.deposit + finalPayment)
@@ -92,6 +94,7 @@ const EndBookingModal = (props) => {
         commission: totalCommission || 0,
         discount: endData.discount || 0,
         deposit: endData.deposit || 0,
+        surcharge: endData.surcharge || 0,
         late_fee_amount: late_fee_amount,
         amount: endData.amount,
         paid: finalPayment,
@@ -197,12 +200,7 @@ const EndBookingModal = (props) => {
                   <span style={{ fontWeight: 550 }}>{endData?.guest_id?.name}</span>
                 </Col>
               </Row>
-              <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
-                <Col><span style={{ fontWeight: 500 }}>Tổng phí thuê :</span></Col>
-                <Col>
-                  <span style={{ fontWeight: 550 }}>{formatCurrency(endData?.amount)}</span>
-                </Col>
-              </Row>
+
               <Row gutter={[8, 8]} justify="end" wrap={true} align={"middle"}>
                 <Col>
                   {endData?.motors?.map((item) => (
@@ -229,11 +227,28 @@ const EndBookingModal = (props) => {
                 </Row>
               ) : ""}
 
+              {endData?.surcharge ? (
+                <Row gutter={[8, 8]} justify="space-between" wrap={true} align="middle">
+                  <Col>
+                    <span style={{ fontWeight: 500 }}>Phụ thu lễ :</span>
+                  </Col>
+                  <Col>
+                    <span style={{ fontWeight: 550 }}>{formatCurrency(endData?.surcharge)}</span>
+                  </Col>
+                </Row>
+              ) : ""}
 
               <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
                 <Col><span style={{ fontWeight: 500 }}>Khách đã thanh toán :</span></Col>
                 <Col>
                   <span style={{ fontWeight: 550 }}>{formatCurrency(endData?.deposit)}</span>
+                </Col>
+              </Row>
+
+              <Row gutter={[8, 8]} justify="space-between" wrap={true} align={"middle"}>
+                <Col><span style={{ fontWeight: 500 }}>Tổng phí thuê :</span></Col>
+                <Col>
+                  <span style={{ fontWeight: 550 }}>{formatCurrency(endData?.amount)}</span>
                 </Col>
               </Row>
 

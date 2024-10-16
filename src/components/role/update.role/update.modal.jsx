@@ -1,13 +1,4 @@
-import {
-  Modal,
-  Input,
-  notification,
-  Form,
-  message,
-  Row,
-  Col,
-  Switch,
-} from "antd";
+import { Modal, Input, notification, Form, message, Row, Col, Switch } from "antd";
 import { getPermission, updateRole } from "@/utils/api";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";

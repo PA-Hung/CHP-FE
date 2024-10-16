@@ -310,14 +310,15 @@ const ReportPage = () => {
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
-      {/* <CheckAccess
-        FeListPermission={ALL_PERMISSIONS.APARTMENT.GET_PAGINATE}
-      ></CheckAccess> */}
-      <Row>
-        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-          <Tabs defaultActiveKey="1" items={tabsItems} size="large" />
-        </Col>
-      </Row>
+      <CheckAccess
+        FeListPermission={ALL_PERMISSIONS.BOOKINGS.GET_PAYMENT}
+      >
+        <Row>
+          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <Tabs defaultActiveKey="1" items={tabsItems} size="large" />
+          </Col>
+        </Row>
+      </CheckAccess>
     </div>
   );
 };

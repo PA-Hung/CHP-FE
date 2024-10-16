@@ -8,8 +8,8 @@ import {
   Row,
   Col,
 } from "antd";
-import { createPermission } from "../../utils/api";
-import { ALL_MODULES } from "../../utils/permission.module";
+import { createPermission } from "@/utils/api";
+import { ALL_MODULES } from "@/utils/permission.module";
 
 const CreateModal = (props) => {
   const { reloadTable, isCreateModalOpen, setIsCreateModalOpen } = props;

@@ -1,172 +1,126 @@
-import { Row, Col, Switch, Card, Collapse, Tooltip, Form } from "antd";
 import React from "react";
+import { Row, Col, Switch, Card, Collapse, Tooltip, Form } from "antd";
+import { CaretRightOutlined } from "@ant-design/icons";
 import { colorMethod } from "@/utils/uils";
 import { grey } from "@ant-design/colors";
-import { CaretRightOutlined } from "@ant-design/icons";
 
-const { Panel } = Collapse;
+const UpdateRolePermissionApi = ({ form, listPermissions }) => {
+  const handleSingleCheck = (checked, childId, parentModule) => {
+    form.setFieldValue(["permissions", childId], checked);
 
-const UpdateRolePermissionApi = (props) => {
-  const { form, listPermissions } = props;
+    const parent = listPermissions?.find(
+      (item) => item.module === parentModule
+    );
 
-  const handleSingleCheck = (v, child, parent) => {
-    form.setFieldValue(["permissions", child], v);
-
-    //check all
-    const temp = listPermissions?.find((item) => item.module === parent);
-    if (temp) {
-      const restPermission = temp?.permissions?.filter(
-        (item) => item._id !== child
+    if (parent) {
+      const remainingPermissions = parent.permissions.filter(
+        (perm) => perm._id !== childId
       );
-      if (restPermission && restPermission.length) {
-        const allTrue = restPermission.every((item) =>
-          form.getFieldValue(["permissions", item._id])
-        );
-        form.setFieldValue(["permissions", parent], allTrue && value);
-      }
+
+      const allChecked = remainingPermissions.every((perm) =>
+        form.getFieldValue(["permissions", perm._id])
+      );
+
+      form.setFieldValue(["permissions", parentModule], allChecked && checked);
     }
   };
 
-  const handleSwitchAll = (v, name) => {
-    const child = listPermissions?.find((item) => item.module === name);
-    if (child) {
-      child?.permissions?.forEach((item) => {
-        if (item._id) form.setFieldValue(["permissions", item._id], v);
-      });
-    }
+  const handleSwitchAll = (checked, moduleName) => {
+    const module = listPermissions?.find((item) => item.module === moduleName);
+    module?.permissions?.forEach((perm) =>
+      form.setFieldValue(["permissions", perm._id], checked)
+    );
   };
 
   const handleSwitchChange = (checked, event) => {
     event.stopPropagation();
   };
 
-  return (
-    <>
-      <Card
-        size="small"
-        title="Các quyền hạn được cho phép ở nhóm chức danh này :"
+  // Tạo danh sách items cho Collapse
+  const collapseItems = listPermissions?.map((module, index) => ({
+    key: index.toString(),
+    label: <div style={{ paddingTop: 5 }}>{module.module}</div>,
+    forceRender: true,
+    extra: (
+      <Form.Item
+        style={{ margin: 0 }}
+        name={["permissions", module.module]}
+        valuePropName="checked"
       >
-        <div>
-          <Collapse
-            expandIcon={({ isActive }) => (
-              <CaretRightOutlined
-                rotate={isActive ? 90 : 0}
-                style={{ paddingTop: "10px" }}
-              />
-            )}
-          >
-            {listPermissions?.map((item, index) => (
-              <Panel
-                header={<div style={{ paddingTop: "5px" }}>{item.module}</div>}
-                key={index}
-                forceRender //force to render form item (with collapse mode)
-                extra={
-                  <Form.Item
-                    style={{ margin: "0px" }}
-                    name={["permissions", item.module]}
-                    valuePropName="checked"
-                  >
-                    <Switch
-                      checkedChildren="Bật"
-                      unCheckedChildren="Tắt"
-                      defaultChecked={false}
-                      onClick={handleSwitchChange}
-                      onChange={(v) => handleSwitchAll(v, item.module)}
-                    />
-                  </Form.Item>
-                }
-              >
-                <Row gutter={[16, 16]} justify="left" wrap={true}>
-                  {item.permissions?.map((value, i) => (
-                    <Col
-                      xs={24} sm={24} md={24} lg={24} xl={12}
-                      key={i}
-                    >
-                      <Card
-                        size="small"
-                        bodyStyle={{
-                          display: "flex",
-                          flex: 1,
-                          flexDirection: "row",
+        <Switch
+          checkedChildren="Bật"
+          unCheckedChildren="Tắt"
+          onClick={handleSwitchChange}
+          onChange={(checked) => handleSwitchAll(checked, module.module)}
+        />
+      </Form.Item>
+    ),
+    children: (
+      <Row gutter={[16, 16]} justify="start" wrap>
+        {module.permissions?.map((perm, i) => (
+          <Col xs={24} sm={24} md={24} lg={24} xl={12} key={i}>
+            <Card
+              size="small"
+              bodyStyle={{ display: "flex", flexDirection: "row" }}
+            >
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Form.Item
+                  name={["permissions", perm._id]}
+                  valuePropName="checked"
+                >
+                  <Switch
+                    checkedChildren="Bật"
+                    unCheckedChildren="Tắt"
+                    onChange={(checked) =>
+                      handleSingleCheck(checked, perm._id, module.module)
+                    }
+                  />
+                </Form.Item>
+              </div>
+              <div style={{ flex: 1, marginLeft: 20 }}>
+                <Tooltip title={perm.name}>
+                  <p style={{ margin: 0 }}>{perm.name || ""}</p>
+                  <Row gutter={[8, 8]} justify="start" wrap>
+                    <Col xs={24} sm={24} md={24} lg={24} xl={8}>
+                      <p
+                        style={{
+                          fontWeight: "bold",
+                          color: colorMethod(perm.method),
                         }}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Form.Item
-                            name={["permissions", value._id]}
-                            valuePropName="checked"
-                          >
-                            <Switch
-                              checkedChildren="Bật"
-                              unCheckedChildren="Tắt"
-                              defaultChecked={false}
-                              onChange={(value) =>
-                                handleSingleCheck(value, value._id, item.module)
-                              }
-                            />
-                          </Form.Item>
-                        </div>
-                        <div
-                          style={{
-                            flex: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <Tooltip title={value?.name}>
-                            <p
-                              style={{
-                                paddingLeft: 30,
-                                marginBottom: 0,
-                                marginTop: 0,
-                              }}
-                            >
-                              {value?.name || ""}
-                            </p>
-                            <div >
-                              <Row gutter={[8, 8]} justify="left" wrap={true}>
-                                <Col xs={24} sm={24} md={24} lg={24} xl={8}>
-                                  <p
-                                    style={{
-                                      paddingLeft: 30,
-                                      fontWeight: "bold",
-                                      marginBottom: 0,
-                                      color: colorMethod(value?.method),
-                                    }}
-                                  >
-                                    {value?.method || ""}
-                                  </p>
-                                </Col>
-                                <Col xs={24} sm={24} md={24} lg={24} xl={16}>
-                                  <p
-                                    style={{
-                                      paddingLeft: 10,
-                                      marginBottom: 0,
-                                      color: grey[5],
-                                    }}
-                                  >
-                                    {value?.apiPath || ""}
-                                  </p>
-                                </Col>
-                              </Row>
-                            </div>
-                          </Tooltip>
-                        </div>
-                      </Card>
+                        {perm.method || ""}
+                      </p>
                     </Col>
-                  ))}
-                </Row>
-              </Panel>
-            ))}
-          </Collapse>
-        </div>
-      </Card>
-    </>
+                    <Col xs={24} sm={24} md={24} lg={24} xl={16}>
+                      <p style={{ color: grey[5], margin: 0 }}>
+                        {perm.apiPath || ""}
+                      </p>
+                    </Col>
+                  </Row>
+                </Tooltip>
+              </div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    ),
+  }));
+
+  return (
+    <Card
+      size="small"
+      title="Các quyền hạn được cho phép ở nhóm chức danh này:"
+    >
+      <Collapse
+        items={collapseItems} // Sử dụng `items` thay vì children
+        expandIcon={({ isActive }) => (
+          <CaretRightOutlined
+            rotate={isActive ? 90 : 0}
+            style={{ paddingTop: 10 }}
+          />
+        )}
+      />
+    </Card>
   );
 };
 

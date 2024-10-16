@@ -19,7 +19,6 @@ const UpdateModal = (props) => {
         license: updateData.license,
         availability_status: updateData.availability_status,
         priceD: updateData.priceD,
-        priceH: updateData.priceH,
         overtime: updateData.overtime,
         note: updateData.note,
       });
@@ -33,7 +32,6 @@ const UpdateModal = (props) => {
       license: values.license,
       availability_status: values.availability_status,
       priceD: values.priceD,
-      priceH: values.priceH,
       overtime: values.overtime,
       note: values.note || ""
     }
@@ -107,23 +105,6 @@ const UpdateModal = (props) => {
             </Col>
             <Col xs={24} sm={24} md={24} lg={12} xl={12}>
               <Form.Item
-                label="Giá thuê theo giờ"
-                name="priceH"
-                rules={[{ required: true, message: "Nhập giá !" }]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  addonAfter={<b>đ</b>}
-                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
-                  step={1} // Bước nhảy
-                  controls={false}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={[8, 8]} justify="center" wrap={true}>
-            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-              <Form.Item
                 label="Phí quá giờ"
                 name="overtime"
                 rules={[{ required: true, message: "Nhập phí quá giờ !" }]}
@@ -137,7 +118,17 @@ const UpdateModal = (props) => {
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+          </Row>
+          <Row gutter={[8, 8]} justify="center" wrap={true} align="bottom">
+            <Col xs={24} sm={24} md={24} lg={16} xl={16}>
+              <Form.Item
+                label="Ghi chú"
+                name="note"
+              >
+                <TextArea showCount maxLength={100} rows={3} style={{ resize: "none" }} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={24} lg={8} xl={8}>
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <Form.Item
                   label="Tình trạng"
@@ -147,16 +138,6 @@ const UpdateModal = (props) => {
                   <Switch checkedChildren="Hoạt đông" unCheckedChildren="Bảo trì" />
                 </Form.Item>
               </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-              <Form.Item
-                label="Ghi chú"
-                name="note"
-              >
-                <TextArea showCount maxLength={100} rows={3} style={{ resize: "none" }} />
-              </Form.Item>
             </Col>
           </Row>
         </Form>

@@ -9,8 +9,6 @@ import { postCreateBooking } from "@/utils/api";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMotor } from '@/redux/slice/motorSlice';
 import queryString from "query-string";
-import MotorByHTable from "./create.module/motor/motor_by_h.table";
-import BillingByHCard from "./create.module/billing.infomation/billing_by_h.card";
 
 const CreateDrawer = (props) => {
   const { reloadTable, isCreateDrawerOpen, setIsCreateDrawerOpen } = props;
@@ -21,6 +19,7 @@ const CreateDrawer = (props) => {
   const dispatch = useDispatch();
   const [deposit, setDeposit] = useState(0)
   const [discount, setDiscount] = useState(0)
+  const [surcharge, setSurcharge] = useState(0)
   const [total, setTotal] = useState(0)
   const [method, setMethod] = useState("tiền mặt")
   const [checkedBox, setCheckedBox] = useState("nodiscount");
@@ -43,6 +42,7 @@ const CreateDrawer = (props) => {
     setCommission(0)
     setTotalCommission(0)
     setIsCreateDrawerOpen(false);
+    setSurcharge(0)
   };
 
   useEffect(() => {
@@ -141,7 +141,7 @@ const CreateDrawer = (props) => {
       return
     }
 
-    const newPay = total - discount - deposit;
+    const newPay = total - discount - deposit + surcharge;
     if (newPay < 0) {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -155,7 +155,7 @@ const CreateDrawer = (props) => {
       start_date: dayjs(),
       end_date: "",
       motors: listMotorsSelected,
-      guest_id: guestData?._id,
+      guest_id: guestData._id,
       user_id: salesman,
       commission: commission,
       contract_status: "Hợp đồng mở",
@@ -163,6 +163,7 @@ const CreateDrawer = (props) => {
       method: method,
       discount: discount,
       deposit: deposit,
+      surcharge: surcharge,
       late_fee_amount: 0,
       remaining_amount: newPay || 0,
       amount: total
@@ -213,48 +214,14 @@ const CreateDrawer = (props) => {
                 checkedBox={checkedBox}
                 setCheckedBox={setCheckedBox}
                 setSearchValue={setSearchValue}
+                surcharge={surcharge}
+                setSurcharge={setSurcharge}
               />
             </div>
           </div>
         </>
       ),
     },
-    // {
-    //   key: 'Thuê theo giờ',
-    //   label: (<div style={{ fontWeight: 550 }}>Thuê theo giờ</div>),
-    //   disabled: listMotorsSelected.length > 0 || contractType === "Thuê theo giờ" ? true : false,
-    //   children: (
-    //     <>
-    //       <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
-    //         <div>
-    //           <MotorByHTable
-    //             listMotorsSelected={listMotorsSelected}
-    //             setListMotorsSelected={setListMotorsSelected}
-    //             total={total}
-    //             setTotal={setTotal}
-    //             setSearchValue={setSearchValue}
-    //             buildQuery={buildQuery}
-    //             contractType={contractType}
-    //           />
-    //         </div>
-    //         <div>
-    //           <BillingByHCard
-    //             total={total}
-    //             deposit={deposit}
-    //             setDeposit={setDeposit}
-    //             discount={discount}
-    //             setDiscount={setDiscount}
-    //             method={method}
-    //             setMethod={setMethod}
-    //             checkedBox={checkedBox}
-    //             setCheckedBox={setCheckedBox}
-    //             setSearchValue={setSearchValue}
-    //           />
-    //         </div>
-    //       </div>
-    //     </>
-    //   ),
-    // },
   ];
 
   const handleTabChange = (e) => {
@@ -294,7 +261,6 @@ const CreateDrawer = (props) => {
                 totalCommission={totalCommission}
                 setTotalCommission={setTotalCommission}
                 listMotorsSelected={listMotorsSelected}
-                contractType={contractType}
               />
             </div>
           </Col>

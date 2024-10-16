@@ -7,7 +7,7 @@ dayjs.locale("vi");
 import { formatCurrency } from "@/utils/api";
 
 export const SalesManCard = (props) => {
-  const { setSalesMan, salesman, listMotorsSelected, contractType, totalCommission, setTotalCommission, commission, setCommission } = props
+  const { setSalesMan, salesman, listMotorsSelected, totalCommission, setTotalCommission, commission, setCommission } = props
   const [listUser, SetListUser] = useState([]);
 
   const groupBySelect = (data) => {
@@ -20,13 +20,6 @@ export const SalesManCard = (props) => {
     return end.diff(start, 'day');
   };
 
-  const calculateRentalHours = (startDate, endDate) => {
-    const start = startDate ? dayjs(startDate) : dayjs();
-    const end = dayjs(endDate)
-    return end.diff(start, 'hour'); // Thay đổi đơn vị từ 'day' sang 'hour'
-  };
-
-
   useEffect(() => {
     const init = async () => {
       const res = await getUsers(`current=1&pageSize=100`);
@@ -36,15 +29,6 @@ export const SalesManCard = (props) => {
     };
     init();
   }, []);
-
-  const calculateTotalCommissionByHours = () => {
-    const total = listMotorsSelected.reduce((acc, motor) => {
-      const rentalTime = calculateRentalHours(motor.start_date, motor.end_date);
-      const motorCommission = (rentalTime * commission);
-      return acc + motorCommission;
-    }, 0);
-    setTotalCommission(total);
-  };
 
   const calculateTotalCommissionByDay = () => {
     const total = listMotorsSelected.reduce((acc, motor) => {
@@ -56,12 +40,7 @@ export const SalesManCard = (props) => {
   };
 
   useEffect(() => {
-    if (contractType === "Thuê theo ngày") {
-      calculateTotalCommissionByDay();
-    }
-    if (contractType === "Thuê theo giờ") {
-      calculateTotalCommissionByHours()
-    }
+    calculateTotalCommissionByDay();
   }, [listMotorsSelected, commission]);
 
   const { Meta } = Card;

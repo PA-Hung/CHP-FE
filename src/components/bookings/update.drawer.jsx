@@ -8,8 +8,6 @@ import { updateBooking } from "@/utils/api";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMotor } from '@/redux/slice/motorSlice';
 import queryString from "query-string";
-import BillingByHCard from "./create.module/billing.infomation/billing_by_h.card";
-import MotorByHTable from "./create.module/motor/motor_by_h.table";
 
 const UpdateDrawer = (props) => {
   const { reloadTable, isUpdateDrawerOpen, setIsUpdateDrawerOpen, updateData, setUpdateData } = props;
@@ -20,6 +18,7 @@ const UpdateDrawer = (props) => {
   const dispatch = useDispatch();
   const [deposit, setDeposit] = useState(0)
   const [discount, setDiscount] = useState(0)
+  const [surcharge, setSurcharge] = useState(0)
   const [total, setTotal] = useState(0)
   const [method, setMethod] = useState()
   const [checkedBox, setCheckedBox] = useState("nodiscount");
@@ -55,6 +54,7 @@ const UpdateDrawer = (props) => {
     dispatch(fetchMotor({ query }));
     setCommission(0)
     setIsUpdateDrawerOpen(false);
+    setSurcharge(0)
   };
 
   useEffect(() => {
@@ -153,7 +153,7 @@ const UpdateDrawer = (props) => {
       return
     }
 
-    const newPay = total - discount - deposit;
+    const newPay = total - discount - deposit + surcharge;
     if (newPay < 0) {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -173,6 +173,7 @@ const UpdateDrawer = (props) => {
       method: method,
       discount: discount,
       deposit: deposit,
+      surcharge: surcharge,
       amount: total,
       remaining_amount: newPay || 0,
     }
@@ -222,48 +223,14 @@ const UpdateDrawer = (props) => {
                 checkedBox={checkedBox}
                 setCheckedBox={setCheckedBox}
                 setSearchValue={setSearchValue}
+                surcharge={surcharge}
+                setSurcharge={setSurcharge}
               />
             </div>
           </div>
         </>
       ),
-    },
-    {
-      key: 'Thuê theo giờ',
-      label: (<div style={{ fontWeight: 550 }}>Thuê theo giờ</div>),
-      disabled: contractType !== "Thuê theo giờ" ? true : false,
-      children: (
-        <>
-          <div style={{ display: "flex", flexDirection: 'column', gap: 20 }}>
-            <div>
-              <MotorByHTable
-                listMotorsSelected={listMotorsSelected}
-                setListMotorsSelected={setListMotorsSelected}
-                total={total}
-                setTotal={setTotal}
-                setSearchValue={setSearchValue}
-                buildQuery={buildQuery}
-                contractType={contractType}
-              />
-            </div>
-            <div>
-              <BillingByHCard
-                total={total}
-                deposit={deposit}
-                setDeposit={setDeposit}
-                discount={discount}
-                setDiscount={setDiscount}
-                method={method}
-                setMethod={setMethod}
-                checkedBox={checkedBox}
-                setCheckedBox={setCheckedBox}
-                setSearchValue={setSearchValue}
-              />
-            </div>
-          </div>
-        </>
-      ),
-    },
+    }
   ];
 
   const handleTabChange = (e) => {
@@ -303,7 +270,6 @@ const UpdateDrawer = (props) => {
                 totalCommission={totalCommission}
                 setTotalCommission={setTotalCommission}
                 listMotorsSelected={listMotorsSelected}
-                contractType={contractType}
               />
             </div>
           </Col>

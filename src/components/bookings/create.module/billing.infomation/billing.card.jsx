@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import _ from 'lodash';
 
 const BillingCard = (props) => {
-    const { total, deposit, setDeposit, discount, setDiscount, method, setMethod, checkedBox, setCheckedBox } = props;
+    const { total, deposit, setDeposit, discount, setDiscount, method, setMethod, checkedBox, setCheckedBox, surcharge, setSurcharge } = props;
     const [pay, setPay] = useState(total); // Khởi tạo pay bằng tổng số tiền ban đầu
 
     const onChange = (e) => {
@@ -30,14 +30,19 @@ const BillingCard = (props) => {
         updatePay(total, value || 0, deposit);
     }, 300), [total, deposit]);
 
-    const updatePay = useCallback(_.debounce((total, discount, deposit) => {
-        const newPay = total - discount - deposit;
+    const handleChangeSurcharge = useCallback(_.debounce((value) => {
+        setSurcharge(value || 0);
+        updatePay(total, value || 0, deposit);
+    }, 300), [total, deposit]);
+
+    const updatePay = useCallback(_.debounce((total, discount, deposit, surcharge) => {
+        const newPay = total - discount - deposit + surcharge;
         setPay(newPay);
     }, 300), []);
 
     useEffect(() => {
-        updatePay(total, discount, deposit);
-    }, [total, discount, deposit]);
+        updatePay(total, discount, deposit, surcharge);
+    }, [total, discount, deposit, surcharge]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -108,6 +113,20 @@ const BillingCard = (props) => {
                                 controls={false}
                                 onChange={handleChangeDeposit}
                                 value={deposit}
+                                size="middle"
+                            />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <Form.Item label="Phụ thu lễ" style={{ fontWeight: 550 }}>
+                            <InputNumber
+                                addonAfter={<b>đ</b>}
+                                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // Định dạng hiển thị có dấu phẩy
+                                step={1} // Bước nhảy
+                                style={{ width: "100%" }}
+                                controls={false}
+                                onChange={handleChangeSurcharge}
+                                value={surcharge}
                                 size="middle"
                             />
                         </Form.Item>

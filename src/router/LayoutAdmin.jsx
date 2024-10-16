@@ -204,7 +204,19 @@ const LayoutAdmin = () => {
       const viewPermission = userPermissions.find(
         (item) =>
           item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath &&
-          item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
+          item.method === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.method
+      );
+
+      const viewBookings = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.BOOKINGS.GET_PAGINATE.apiPath &&
+          item.method === ALL_PERMISSIONS.BOOKINGS.GET_PAGINATE.method
+      );
+
+      const viewReport = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.BOOKINGS.GET_PAYMENT.apiPath &&
+          item.method === ALL_PERMISSIONS.BOOKINGS.GET_PAYMENT.method
       );
 
       const full = [
@@ -250,12 +262,12 @@ const LayoutAdmin = () => {
           ],
         },] : []),
 
-        ...(user.phone === "0963686963" || user.phone === "0933634933" || user.phone === "0933048933" || user.phone === "0862676967" || user.phone === "0377832014" ? [{
+        ...(viewBookings ? [{
           key: 'sub2',
           label: 'Quản lý thuê xe',
           icon: <CarOutlined style={{ fontSize: 18 }} />,
           children: [
-            {
+            ...(viewBookings ? [{
               key: 'bookings',
               label: <Link style={{ textDecoration: "none" }} to="/admin/bookings">Hợp đồng thuê</Link>,
               icon: <FileTextOutlined style={{ fontSize: 18 }} />
@@ -264,7 +276,8 @@ const LayoutAdmin = () => {
               key: 'rental_schedule',
               label: <Link style={{ textDecoration: "none" }} to="/admin/rental_schedule">Lịch thuê xe</Link>,
               icon: <CalendarOutlined style={{ fontSize: 18 }} />
-            },
+            }] : []),
+
             {
               key: 'guests',
               label: <Link style={{ textDecoration: "none" }} to="/admin/guests">Khách hàng</Link>,
@@ -281,11 +294,12 @@ const LayoutAdmin = () => {
               label: "Bảo trì xe",
               icon: <BgColorsOutlined style={{ fontSize: 18 }} />
             },
-            {
+
+            ...(viewReport ? [{
               key: 'reports',
               label: <Link style={{ textDecoration: "none" }} to="/admin/reports">Báo cáo</Link>,
               icon: <BarChartOutlined style={{ fontSize: 18 }} />
-            },
+            }] : [])
           ],
         },
         ] : []),
@@ -316,7 +330,6 @@ const LayoutAdmin = () => {
 
           ],
         },] : []),
-
         {
           label: <Link style={{ textDecoration: "none" }} onClick={() => handleLogout()}>Đăng xuất</Link>,
           key: "logout",

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, notification, Popconfirm, message, Tag, Select, Dropdown, Modal, DatePicker } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MenuOutlined, DeleteOutlined, ExclamationCircleOutlined, EditOutlined, ApiOutlined, CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { deleteBooking } from "@/utils/api";
 import EndBookingModal from "./end.module/end.booking.modal";
@@ -28,15 +28,35 @@ const BookingCompletedTable = (props) => {
 
   const [end_date, setEnd_date] = useState(dayjs());
 
-  // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueCodes = [...new Set(listBookings.map(item => item.code))];
-  // // Tạo các bộ lọc từ các giá trị duy nhất
-  // const filtersCode = uniqueCodes.map(code => ({ text: `Căn hộ "${code}"`, value: code }));
+  const [checkUpdateContract, setCheckUpdateContract] = useState(Boolean)
+  const [checkOpenContract, setCheckOpenContract] = useState(Boolean)
+  const [checkDeleteContract, setCheckDeleteContract] = useState(Boolean)
+  const userPermissions = useSelector((state) => state.auth.user.permissions);
 
-  // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueHosts = [...new Set(listBookings.map(item => item.users?.name).filter(user => user !== undefined))];
-  // // Tạo các bộ lọc từ các giá trị duy nhất
-  // const filtersHost = uniqueHosts.map(user => ({ text: `Host "${user}"`, value: user }));
+  useEffect(() => {
+    if (userPermissions?.length) {
+      const viewBookings_UpdateContract = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.BOOKINGS.UPDATE_PAYMENT.apiPath &&
+          item.method === ALL_PERMISSIONS.BOOKINGS.UPDATE_PAYMENT.method
+      );
+      setCheckUpdateContract(viewBookings_UpdateContract ? true : false)
+
+      const viewBookings_OpenContract = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.BOOKINGS.OPEN_PAYMENT.apiPath &&
+          item.method === ALL_PERMISSIONS.BOOKINGS.OPEN_PAYMENT.method
+      );
+      setCheckOpenContract(viewBookings_OpenContract ? true : false)
+
+      const viewBookings_DeleteContract = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.BOOKINGS.DELETE_PAYMENT.apiPath &&
+          item.method === ALL_PERMISSIONS.BOOKINGS.DELETE_PAYMENT.method
+      );
+      setCheckDeleteContract(viewBookings_DeleteContract ? true : false)
+    }
+  }, [userPermissions])
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -45,7 +65,9 @@ const BookingCompletedTable = (props) => {
   const calculateRentalDays = (startDate, endDate) => {
     const start = startDate ? dayjs(startDate) : dayjs();
     const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
-    return end.diff(start, 'day');
+    const diffDays = end.diff(start, 'day');
+    // Trả về 1 nếu thời gian cho thuê chưa đủ 1 ngày
+    return diffDays > 0 ? diffDays : 1;
   }
 
   const calculateRentalHours = (startDate, endDate) => {
@@ -137,9 +159,7 @@ const BookingCompletedTable = (props) => {
   };
 
   const handleUpdateCompletedBooking = (record) => {
-    console.log('record.contract_status', record.contract_status);
-
-    if (record.contract_status !== "Hợp đồng đóng") {
+    if (record.contract_status === "Hợp đồng đóng") {
       notification.warning({
         message: "Thông báo",
         placement: "top",
@@ -152,8 +172,7 @@ const BookingCompletedTable = (props) => {
   }
 
   const handleOpenCompletedBooking = async (record) => {
-    console.log('record', record);
-    if (record.contract_status !== "Hợp đồng đóng") {
+    if (record.contract_status === "Hợp đồng đóng") {
       notification.warning({
         message: "Thông báo",
         placement: "top",
@@ -204,11 +223,6 @@ const BookingCompletedTable = (props) => {
       title: "Khách hàng",
       dataIndex: "guest_id",
       key: "guest_id",
-      // sorter: (a, b) => a.guest_id.localeCompare(b.guest_id),
-      // filters: filtersCode,
-      // onFilter: (value, record) => record.guest_id.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
       render: (_value, record) => {
         return <div style={{ fontWeight: 500 }}>{record.guest_id.name}</div>;
       },
@@ -218,9 +232,9 @@ const BookingCompletedTable = (props) => {
       width: 250,
       render: (_value, record) => {
         return (
-          <div style={{ whiteSpace: "pre-wrap", textAlign: 'center', display: "flex", flexDirection: "column", gap: 2 }}>
+          <div style={{ whiteSpace: "pre-wrap", display: "flex", flexDirection: "column", gap: 2 }}>
             {record.motors.map((item) => (
-              <div key={item._id} style={{ display: "flex", gap: 5 }}>
+              <div key={item._id} style={{ display: "flex", gap: 5, flexDirection: "row", justifyContent: "right" }}>
                 {item.brand}
                 <Tag color="blue">{item.license}</Tag>
                 <Select
@@ -245,7 +259,7 @@ const BookingCompletedTable = (props) => {
     },
     {
       title: "Thời gian thuê",
-      width: 330,
+      width: "fit-content",
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>
@@ -282,6 +296,12 @@ const BookingCompletedTable = (props) => {
       },
     },
     {
+      title: "Phụ thu lễ",
+      render: (_value, record) => {
+        return <div>{...(record.surcharge ? formatCurrency(record.surcharge) : "")}</div>;
+      },
+    },
+    {
       title: "Phí quá hạn",
       render: (_value, record) => {
         return (
@@ -298,14 +318,6 @@ const BookingCompletedTable = (props) => {
       },
     },
 
-    {
-      title: "Phải thu",
-      render: (_value, record) => {
-        return (
-          <div>{formatCurrency(record.remaining_amount)}</div>
-        );
-      },
-    },
     {
       title: "Actions",
       width: 40,
@@ -339,7 +351,7 @@ const BookingCompletedTable = (props) => {
 
 
   const items = (record) => [
-    {
+    ...(checkUpdateContract ? [{
       key: '1',
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
@@ -347,8 +359,8 @@ const BookingCompletedTable = (props) => {
           <div onClick={() => handleUpdateCompletedBooking(record)}>Sửa hợp đồng</div>
         </div>
       ),
-    },
-    {
+    }] : []),
+    ...(checkOpenContract ? [{
       key: '2',
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
@@ -356,8 +368,8 @@ const BookingCompletedTable = (props) => {
           <div onClick={() => handleOpenCompletedBooking(record)}>Mở hợp đồng</div>
         </div>
       ),
-    },
-    {
+    }] : []),
+    ...(checkDeleteContract ? [{
       key: '3',
       label: (
         <Popconfirm
@@ -372,7 +384,7 @@ const BookingCompletedTable = (props) => {
           </div>
         </Popconfirm>
       ),
-    },
+    }] : [])
   ];
 
   const confirmDeleteBooking = async (book) => {

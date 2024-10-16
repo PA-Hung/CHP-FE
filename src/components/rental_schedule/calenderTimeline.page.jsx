@@ -11,6 +11,8 @@ import { fetchBooking } from "@/redux/slice/bookingSlice";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Popover } from "bootstrap";
 import '@/styles/fullcalendar.css'
+import { ALL_PERMISSIONS } from "@/utils/permission.module";
+import CheckAccess from "@/router/check.access";
 
 
 const CalenderTimeLine = () => {
@@ -128,39 +130,43 @@ const CalenderTimeLine = () => {
 
   return (
     <div style={{ color: "black", padding: "15px" }}>
-      <FullCalendar
-        ref={calendarRef} // Sử dụng useRef để gắn FullCalendar
-        headerToolbar={{
-          left: 'resourceTimelineWeek,resourceTimelineMonth',
-          center: "title",
-          right: "prev,next",
-        }}
-        locale="vi"
-        height={"77vh"}
-        buttonText={viTranslation}
-        schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
-        plugins={[resourceTimelinePlugin]}
-        initialView="resourceTimelineWeek" // resourceTimelineDay resourceTimelineWeek resourceTimelineMonth resourceTimelineYear
-        resourceAreaWidth={"15%"}
-        displayEventTime={false}
-        duration={7}
-        slotDuration={{ days: 1 }} // Đặt slotDuration thành 1 ngày
-        slotMinTime="00:00:00" // Bắt đầu từ đầu ngày
-        slotMaxTime="24:00:00" // Kết thúc vào cuối ngày
-        resourceAreaColumns={[
-          {
-            field: "title",
-            headerContent: "Xe",
-          },
-          {
-            field: "license",
-            headerContent: "Biển số",
-          },
-        ]}
-        resources={listResources}
-        events={listEvents}
-        eventDidMount={eventDidMount}
-      />
+      <CheckAccess
+        FeListPermission={ALL_PERMISSIONS.BOOKINGS.GET_PAGINATE}
+      >
+        <FullCalendar
+          ref={calendarRef} // Sử dụng useRef để gắn FullCalendar
+          headerToolbar={{
+            left: 'resourceTimelineWeek,resourceTimelineMonth',
+            center: "title",
+            right: "prev,next",
+          }}
+          locale="vi"
+          height={"77vh"}
+          buttonText={viTranslation}
+          schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+          plugins={[resourceTimelinePlugin]}
+          initialView="resourceTimelineWeek" // resourceTimelineDay resourceTimelineWeek resourceTimelineMonth resourceTimelineYear
+          resourceAreaWidth={"15%"}
+          displayEventTime={false}
+          duration={7}
+          slotDuration={{ days: 1 }} // Đặt slotDuration thành 1 ngày
+          slotMinTime="00:00:00" // Bắt đầu từ đầu ngày
+          slotMaxTime="24:00:00" // Kết thúc vào cuối ngày
+          resourceAreaColumns={[
+            {
+              field: "title",
+              headerContent: "Xe",
+            },
+            {
+              field: "license",
+              headerContent: "Biển số",
+            },
+          ]}
+          resources={listResources}
+          events={listEvents}
+          eventDidMount={eventDidMount}
+        />
+      </CheckAccess>
     </div>
   );
 };

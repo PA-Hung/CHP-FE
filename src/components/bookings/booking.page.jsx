@@ -182,51 +182,43 @@ const BookingPage = () => {
 
   return (
     <div style={{ paddingLeft: 30, paddingRight: 30 }}>
-      {/* <CheckAccess
-        FeListPermission={ALL_PERMISSIONS.APARTMENT.GET_PAGINATE}
-      > */}
-      <div style={{ padding: 20 }}>
-        <Row gutter={[8, 8]} justify="start" wrap={true}>
-          {/* <CheckAccess
-            FeListPermission={ALL_PERMISSIONS.APARTMENT.CREATE}
-            hideChildren
-          > */}
-          <Col xs={24} sm={24} md={12} lg={8} xl={4}>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setIsCreateDrawerOpen(true)}
+      <CheckAccess
+        FeListPermission={ALL_PERMISSIONS.BOOKINGS.GET_PAGINATE}
+      >
+        <div style={{ padding: 20 }}>
+          <Row gutter={[8, 8]} justify="start" wrap={true}>
+            <CheckAccess
+              FeListPermission={ALL_PERMISSIONS.BOOKINGS.CREATE}
+              hideChildren
             >
-              Thêm mới
-            </Button>
+              <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => setIsCreateDrawerOpen(true)}
+                >
+                  Thêm mới
+                </Button>
+              </Col>
+            </CheckAccess>
+          </Row>
+        </div>
+        <Row>
+          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <Tabs defaultActiveKey="1" items={tabsItems} size="large" />
           </Col>
-          {/* </CheckAccess> */}
         </Row>
-      </div>
-      <Row>
-        {/* <Col xs={24} sm={24} md={24} lg={0} xl={0}>
-          <AccommodationCard
-            listAccommodation={listAccommodation}
-            loading={loading}
-            reloadTable={reloadTable}
-            meta={meta}
-          />
-        </Col> */}
-        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-          <Tabs defaultActiveKey="1" items={tabsItems} size="large" />
-        </Col>
-      </Row>
-      <CreateDrawer
-        reloadTable={reloadTable}
-        isCreateDrawerOpen={isCreateDrawerOpen}
-        setIsCreateDrawerOpen={setIsCreateDrawerOpen}
-      />
-      <SearchModal
-        isSearchModalOpen={isSearchModalOpen}
-        setIsSearchModalOpen={setIsSearchModalOpen}
-        onSearch={onSearch}
-      />
-      {/* </CheckAccess> */}
+        <CreateDrawer
+          reloadTable={reloadTable}
+          isCreateDrawerOpen={isCreateDrawerOpen}
+          setIsCreateDrawerOpen={setIsCreateDrawerOpen}
+        />
+        <SearchModal
+          isSearchModalOpen={isSearchModalOpen}
+          setIsSearchModalOpen={setIsSearchModalOpen}
+          onSearch={onSearch}
+        />
+      </CheckAccess>
     </div>
   );
 };

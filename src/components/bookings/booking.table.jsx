@@ -1,28 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Button, notification, Popconfirm, message, Tag, Select, Dropdown, Modal, DatePicker, Tabs } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { bookingOnchangeTable } from "@/redux/slice/bookingSlice";
-import { MenuOutlined, DeleteOutlined, ExclamationCircleOutlined, EditOutlined, ApiOutlined, CheckCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { MenuOutlined, DeleteOutlined, EditOutlined, ApiOutlined } from '@ant-design/icons';
 import { deleteBooking } from "@/utils/api";
 import EndBookingModal from "./end.module/end.booking.modal";
 import UpdateDrawer from "./update.drawer";
 import { updateBooking } from "@/utils/api";
-import EndByH_BookingModal from "./end.module/end_by_h.booking.modal";
-
 
 const BookingTable = (props) => {
   const { listBookings, loading, reloadTable, meta, reloadTableCompleted } = props;
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState(false);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
-  const [isEndByH_ModalOpen, setIsEndByH_ModalOpen] = useState(false);
   const [endData, setEndData] = useState(null);
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
+  const userPermissions = useSelector((state) => state.auth.user.permissions);
+  const [checkDetete, setCheckDelete] = useState(Boolean)
+  const [checkUpdate, setCheckUpdate] = useState(Boolean)
+  const [checkEndContract, setCheckEndContract] = useState(Boolean)
 
   const [end_date, setEnd_date] = useState(dayjs());
 
@@ -43,8 +44,11 @@ const BookingTable = (props) => {
   const calculateRentalDays = (startDate, endDate) => {
     const start = startDate ? dayjs(startDate) : dayjs();
     const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
-    return end.diff(start, 'day');
+    const diffDays = end.diff(start, 'day');
+    // Trả về 1 nếu thời gian cho thuê chưa đủ 1 ngày
+    return diffDays > 0 ? diffDays : 1;
   }
+
 
   const calculateRentalHours = (startDate, endDate) => {
     const start = startDate ? dayjs(startDate) : dayjs();
@@ -146,11 +150,6 @@ const BookingTable = (props) => {
       title: "Khách hàng",
       dataIndex: "guest_id",
       key: "guest_id",
-      // sorter: (a, b) => a.guest_id.localeCompare(b.guest_id),
-      // filters: filtersCode,
-      // onFilter: (value, record) => record.guest_id.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
       render: (_value, record) => {
         return <div style={{ fontWeight: 500 }}>{record.guest_id.name}</div>;
       },
@@ -162,7 +161,7 @@ const BookingTable = (props) => {
         return (
           <div style={{ whiteSpace: "pre-wrap", textAlign: 'center', display: "flex", flexDirection: "column", gap: 2 }}>
             {record.motors.map((item) => (
-              <div key={item._id} style={{ display: "flex", gap: 5 }}>
+              <div key={item._id} style={{ display: "flex", gap: 5, flexDirection: "row", justifyContent: "right" }}>
                 {item.brand}
                 <Tag color="blue">{item.license}</Tag>
                 <Select
@@ -186,7 +185,7 @@ const BookingTable = (props) => {
     },
     {
       title: "Thời gian thuê",
-      width: 330,
+      width: "fit-content",
       render: (_value, record) => {
         return (
           <div style={{ display: "flex", gap: 3, flexDirection: "column" }}>
@@ -223,6 +222,12 @@ const BookingTable = (props) => {
       },
     },
     {
+      title: "Phụ thu lễ",
+      render: (_value, record) => {
+        return <div>{...(record.surcharge ? formatCurrency(record.surcharge) : "")}</div>;
+      },
+    },
+    {
       title: "Đã trả",
       render: (_value, record) => {
         return <div>{...(record.deposit ? formatCurrency(record.deposit) : "")}</div>;
@@ -255,19 +260,31 @@ const BookingTable = (props) => {
     },
   ];
 
-  const handleEndBooking = (record) => {
-    if (record.contract_type === "Thuê theo ngày") {
-      setIsEndModalOpen(true)
-      setEndData(record)
+  useEffect(() => {
+    if (userPermissions?.length) {
+      const viewBookings_Delete = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.BOOKINGS.DELETE.apiPath &&
+          item.method === ALL_PERMISSIONS.BOOKINGS.DELETE.method
+      );
+      setCheckDelete(viewBookings_Delete ? true : false)
+      const viewBookings_Update = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.BOOKINGS.UPDATE.apiPath &&
+          item.method === ALL_PERMISSIONS.BOOKINGS.UPDATE.method
+      );
+      setCheckUpdate(viewBookings_Update ? true : false)
+      const viewBookings_EndContract = userPermissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.BOOKINGS.CREATE_PAYMENT.apiPath &&
+          item.method === ALL_PERMISSIONS.BOOKINGS.CREATE_PAYMENT.method
+      );
+      setCheckEndContract(viewBookings_EndContract ? true : false)
     }
-    if (record.contract_type === "Thuê theo giờ") {
-      setIsEndByH_ModalOpen(true)
-      setEndData(record)
-    }
-  }
+  }, [userPermissions])
 
   const items = (record) => [
-    {
+    ...(checkUpdate === true ? [{
       key: '1',
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
@@ -275,17 +292,20 @@ const BookingTable = (props) => {
           <div onClick={() => handleUpdateBooking(record)}>Sửa hợp đồng</div>
         </div>
       ),
-    },
-    {
+    }] : []),
+    ...(checkEndContract === true ? [{
       key: '2',
       label: (
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
           <div><ApiOutlined /></div>
-          <div onClick={() => handleEndBooking(record)}>Đóng hợp đồng</div>
+          <div onClick={() => {
+            setIsEndModalOpen(true),
+              setEndData(record)
+          }}>Đóng hợp đồng</div>
         </div>
       ),
-    },
-    {
+    },] : []),
+    ...(checkDetete === true ? [{
       key: '3',
       label: (
         <Popconfirm
@@ -300,8 +320,13 @@ const BookingTable = (props) => {
           </div>
         </Popconfirm>
       ),
-    },
+    }] : [])
   ];
+
+  const handleEndBooking = (record) => {
+    setIsEndModalOpen(true)
+    setEndData(record)
+  }
 
   const confirmDeleteBooking = async (book) => {
     const res = await deleteBooking(book._id);
@@ -350,14 +375,6 @@ const BookingTable = (props) => {
       <EndBookingModal
         isEndModalOpen={isEndModalOpen}
         setIsEndModalOpen={setIsEndModalOpen}
-        reloadTableCompleted={reloadTableCompleted}
-        endData={endData}
-        setEndData={setEndData}
-        reloadTable={reloadTable}
-      />
-      <EndByH_BookingModal
-        isEndByH_ModalOpen={isEndByH_ModalOpen}
-        setIsEndByH_ModalOpen={setIsEndByH_ModalOpen}
         reloadTableCompleted={reloadTableCompleted}
         endData={endData}
         setEndData={setEndData}

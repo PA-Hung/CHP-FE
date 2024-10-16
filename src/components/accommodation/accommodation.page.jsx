@@ -327,15 +327,15 @@ const AccommodationPage = () => {
                   Xuất Excel
                 </Button>
               </Col>
+              <Col xs={24} sm={24} md={12} lg={8} xl={4}>
+                <Button
+                  icon={<DownloadOutlined />}
+                  onClick={() => setIsExportExcelOpen(true)}
+                >
+                  Xuất Báo Cáo
+                </Button>
+              </Col>
             </CheckAccess>
-            {isAdmin.name === "SUPER_ADMIN" ? <Col xs={24} sm={24} md={12} lg={8} xl={4}>
-              <Button
-                icon={<DownloadOutlined />}
-                onClick={() => setIsExportExcelOpen(true)}
-              >
-                Xuất Báo Cáo
-              </Button>
-            </Col> : ""}
           </Row>
         </div>
         <Row>

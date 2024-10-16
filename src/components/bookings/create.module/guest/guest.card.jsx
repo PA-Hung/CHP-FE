@@ -85,10 +85,17 @@ export const GuestCard = (props) => {
   }, [meta.current, meta.pageSize]);
 
   const onFinish = async (values) => {
-    const data = values; // viết gọn của 2 dòng trên
+    const data = {
+      name: values.name.toUpperCase(),
+      phone: values.phone,
+      birthday: values.birthday,
+      gender: values.gender,
+      address: values.address,
+      cccd: values.cccd
+    };
     const res = await postCreateGuest(data);
     if (res.data) {
-      setGuestData(data)
+      setGuestData(res.data)
       resetModal();
       message.success("Tạo mới khách hàng thành công !");
     } else {

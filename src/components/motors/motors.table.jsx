@@ -30,16 +30,6 @@ const MotorsTable = (props) => {
     }
   };
 
-  // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueCodes = [...new Set(listApartment.map(item => item.code))];
-  // // Tạo các bộ lọc từ các giá trị duy nhất
-  // const filtersCode = uniqueCodes.map(code => ({ text: `Căn hộ "${code}"`, value: code }));
-
-  // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueHosts = [...new Set(listApartment.map(item => item.users?.name).filter(user => user !== undefined))];
-  // // Tạo các bộ lọc từ các giá trị duy nhất
-  // const filtersHost = uniqueHosts.map(user => ({ text: `Host "${user}"`, value: user }));
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
@@ -68,55 +58,24 @@ const MotorsTable = (props) => {
     },
     {
       title: "Giá thuê theo ngày",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
       render: (_value, record) => {
         return <div>{formatCurrency(record?.priceD)}</div>;
       },
     },
     {
-      title: "Giá thuê theo giờ",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
-      render: (_value, record) => {
-        return <div>{formatCurrency(record?.priceH)}</div>;
-      },
-    },
-    {
       title: "Phí quá hạn",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
       render: (_value, record) => {
         return <div>{formatCurrency(record?.overtime)}</div>;
       },
     },
     {
       title: "Tình trạng",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
       render: (_value, record) => {
         return <div>{record?.availability_status ? <Tag color="blue-inverse" style={{ fontWeight: 500 }}>Hoạt động</Tag> : <Tag color="red" style={{ fontWeight: 500 }}>Bảo trì</Tag>}</div>;
       },
     },
     {
       title: "Ghi chú",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
       render: (_value, record) => {
         return <div>{record?.note}</div>;
       },
