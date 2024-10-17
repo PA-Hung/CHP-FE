@@ -33,6 +33,7 @@ const UpdateDrawer = (props) => {
       setGuestData(updateData.guest_id || null);
       setDiscount(updateData.discount || 0);
       setDeposit(updateData.deposit || 0);
+      setSurcharge(updateData.surcharge || 0);
       setMethod(updateData.method || null);
       setListMotorsSelected(updateData.motors || []);
       setCommission(updateData.commission || 0);
