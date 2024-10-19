@@ -122,7 +122,7 @@ const UpdateUserModal = (props) => {
               }}
               label="Phone"
               name="phone"
-              rules={[{ required: true, message: "Please input your phone!" }]}
+              rules={[{ required: true, message: "Nhập số điện thoại !" }]}
             >
               <Input />
             </Form.Item>
@@ -135,7 +135,7 @@ const UpdateUserModal = (props) => {
               }}
               label="Name"
               name="name"
-              rules={[{ required: true, message: "Please input your name!" }]}
+              rules={[{ required: true, message: "Nhập địa chỉ email !" }]}
             >
               <Input />
             </Form.Item>

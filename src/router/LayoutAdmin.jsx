@@ -164,11 +164,19 @@ const LayoutAdmin = () => {
         })
       );
     }
-    if (e.key === "maintenance") {
+    if (e.key === "maintenances") {
       dispatch(
         setActiveKey({
           activeKey: e.key,
           title: "Bảo trì xe",
+        })
+      );
+    }
+    if (e.key === "guests") {
+      dispatch(
+        setActiveKey({
+          activeKey: e.key,
+          title: "Khách hàng",
         })
       );
     }
@@ -269,12 +277,12 @@ const LayoutAdmin = () => {
           children: [
             ...(viewBookings ? [{
               key: 'bookings',
-              label: <Link style={{ textDecoration: "none" }} to="/admin/bookings">Hợp đồng thuê</Link>,
+              label: <Link style={{ textDecoration: "none" }} to={"/admin/bookings"}>Hợp đồng thuê</Link>,
               icon: <FileTextOutlined style={{ fontSize: 18 }} />
             },
             {
               key: 'rental_schedule',
-              label: <Link style={{ textDecoration: "none" }} to="/admin/rental_schedule">Lịch thuê xe</Link>,
+              label: <Link style={{ textDecoration: "none" }} to={"/admin/rental_schedule"}>Lịch thuê xe</Link>,
               icon: <CalendarOutlined style={{ fontSize: 18 }} />
             }] : []),
 
@@ -289,12 +297,10 @@ const LayoutAdmin = () => {
               icon: <CarOutlined style={{ fontSize: 18 }} />
             },
             {
-              key: 'maintenance',
-              //label: <Link style={{ textDecoration: "none" }} to="/admin/maintenance">Bảo trì xe</Link>,
-              label: "Bảo trì xe",
+              key: 'maintenances',
+              label: <Link style={{ textDecoration: "none" }} to="/admin/maintenances">Bảo trì xe</Link>,
               icon: <BgColorsOutlined style={{ fontSize: 18 }} />
             },
-
             ...(viewReport ? [{
               key: 'reports',
               label: <Link style={{ textDecoration: "none" }} to="/admin/reports">Báo cáo</Link>,

@@ -34,12 +34,6 @@ const MotorSearchModal = (props) => {
         );
     };
 
-    const calculateRentalDays = (startDate, endDate) => {
-        const start = startDate ? dayjs(startDate) : dayjs();
-        const end = endDate ? dayjs(endDate) : dayjs().add(1, "day");
-        return end.diff(start, 'day');
-    }
-
     // Thêm các thuộc tính cần thiết cho các phần tử trong listMotorsSelected
     const addDatesToMotors = (motors, dateHire) => {
         return motors.map(item => ({

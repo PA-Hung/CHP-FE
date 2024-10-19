@@ -4,17 +4,18 @@ import LayoutAdmin from "./LayoutAdmin";
 import UserPage from "@/components/user/user.page";
 import ProtectedRoute from "@/router/protectedRoute";
 import Login from "@/components/auth/login.page";
-import AccommodationPage from "../components/accommodation/accommodation.page";
-import AdminPage from "../components/admin/admin.page";
-import RolePage from "../components/role/role.page";
-import PermissionPage from "../components/permission/permission.page";
-import ApartmentPage from "../components/apartment/apartment.page";
+import AccommodationPage from "@/components/accommodation/accommodation.page";
+import AdminPage from "@/components/admin/admin.page";
+import RolePage from "@/components/role/role.page";
+import PermissionPage from "@/components/permission/permission.page";
+import ApartmentPage from "@/components/apartment/apartment.page";
 import NotFound from "./not.found";
-import BookingPage from "../components/bookings/booking.page";
-import MotorsPage from "../components/motors/motors.page";
-import CalenderTimeLine from "../components/rental_schedule/calenderTimeline.page";
-import ReportPage from "../components/report/report.page";
-import GuestPage from "../components/guest/guest.page";
+import BookingPage from "@/components/bookings/booking.page";
+import MotorsPage from "@/components/motors/motors.page";
+import CalenderTimeLine from "@/components/rental_schedule/calenderTimeline.page";
+import ReportPage from "@/components/report/report.page";
+import GuestPage from "@/components/guest/guest.page";
+import MaintenancesPage from "@/components/maintenances/maintenances.page";
 
 export const router = createBrowserRouter([
   {
@@ -83,8 +84,24 @@ export const router = createBrowserRouter([
       {
         path: "bookings",
         element: (
+          <ProtectedRoute>
+            <BookingPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "rental_schedule",
+        element: (
+          <ProtectedRoute>
+            <CalenderTimeLine />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "guests",
+        element: (
           // <ProtectedRoute>
-          <BookingPage />
+          <GuestPage />
           // </ProtectedRoute>
         ),
       },
@@ -97,27 +114,19 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "rental_schedule",
+        path: "maintenances",
         element: (
           // <ProtectedRoute>
-          <CalenderTimeLine />
+          <MaintenancesPage />
           // </ProtectedRoute>
         ),
       },
       {
         path: "reports",
         element: (
-          // <ProtectedRoute>
-          <ReportPage />
-          // </ProtectedRoute>
-        ),
-      },
-      {
-        path: "guests",
-        element: (
-          // <ProtectedRoute>
-          <GuestPage />
-          // </ProtectedRoute>
+          <ProtectedRoute>
+            <ReportPage />
+          </ProtectedRoute>
         ),
       },
     ],

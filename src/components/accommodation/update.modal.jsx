@@ -25,6 +25,7 @@ const UpdateModal = (props) => {
   const [IdentificationNumber, setIdentificationNumber] = useState(false);
   const [Passport, setPassport] = useState(false);
   const [Documents, setDocuments] = useState(false);
+
   const [apartment_code, SetApartment_code] = useState([]);
 
   useEffect(() => {

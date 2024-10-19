@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Table, Button, notification, Popconfirm, message, Tag, Select, Dropdown, Modal, DatePicker, Tabs } from "antd";
+import { Table, notification, Popconfirm, message, Tag, Select, Dropdown, Modal, DatePicker, Tabs } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 dayjs.locale("vi");
-import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch, useSelector } from "react-redux";
 import { bookingOnchangeTable } from "@/redux/slice/bookingSlice";
@@ -27,16 +26,6 @@ const BookingTable = (props) => {
 
   const [end_date, setEnd_date] = useState(dayjs());
 
-  // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueCodes = [...new Set(listBookings.map(item => item.code))];
-  // // Tạo các bộ lọc từ các giá trị duy nhất
-  // const filtersCode = uniqueCodes.map(code => ({ text: `Căn hộ "${code}"`, value: code }));
-
-  // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueHosts = [...new Set(listBookings.map(item => item.users?.name).filter(user => user !== undefined))];
-  // // Tạo các bộ lọc từ các giá trị duy nhất
-  // const filtersHost = uniqueHosts.map(user => ({ text: `Host "${user}"`, value: user }));
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
@@ -56,79 +45,79 @@ const BookingTable = (props) => {
     return end.diff(start, 'hour');
   }
 
-  const handleOkStatusChange = async (value, motors, record) => {
-    // Cập nhật trạng thái của motors
-    const updatedMotors = record.motors.map(motor => {
-      if (value !== "Đã trả xe" && motor._id === motors._id) {
-        return { ...motor, status: value };
-      }
-      if (value === "Đã trả xe" && motor._id === motors._id) {
-        return { ...motor, status: value, end_date: end_date };
-      }
-      return motor;
-    });
+  // const handleOkStatusChange = async (value, motors, record) => {
+  //   // Cập nhật trạng thái của motors
+  //   const updatedMotors = record.motors.map(motor => {
+  //     if (value !== "Đã trả xe" && motor._id === motors._id) {
+  //       return { ...motor, status: value };
+  //     }
+  //     if (value === "Đã trả xe" && motor._id === motors._id) {
+  //       return { ...motor, status: value, end_date: end_date };
+  //     }
+  //     return motor;
+  //   });
 
-    // Tạo đối tượng dữ liệu mới với motors đã cập nhật
-    const data = {
-      _id: record._id,
-      contract_status: record.contract_status,
-      motors: updatedMotors,
-    };
+  //   // Tạo đối tượng dữ liệu mới với motors đã cập nhật
+  //   const data = {
+  //     _id: record._id,
+  //     contract_status: record.contract_status,
+  //     motors: updatedMotors,
+  //   };
 
-    const res = await updateBooking(data);
-    if (res.data) {
-      reloadTable();
-      message.success("Cập nhật trạng thái hợp đồng thành công !");
-    } else {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        placement: "top",
-        description: res.message,
-      });
-    }
-  }
+  //   const res = await updateBooking(data);
+  //   if (res.data) {
+  //     reloadTable();
+  //     message.success("Cập nhật trạng thái hợp đồng thành công !");
+  //   } else {
+  //     notification.error({
+  //       message: "Có lỗi xảy ra",
+  //       placement: "top",
+  //       description: res.message,
+  //     });
+  //   }
+  // }
 
-  const handleStatusChange = (value, item, record) => {
-    if (value !== "Đã trả xe") {
-      Modal.confirm({
-        title: 'Xác nhận thay đổi',
-        okText: 'Xác nhận',
-        cancelText: 'Hủy bỏ',
-        content: (
-          <div>Bạn có muốn thay đổi từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>),
-        onOk: () => {
-          handleOkStatusChange(value, item, record);
-        },
-      });
-    }
-    if (value === "Đã trả xe") {
-      Modal.confirm({
-        title: 'Xác nhận thay đổi',
-        okText: 'Xác nhận',
-        cancelText: 'Hủy bỏ',
-        content: (
-          <>
-            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-              <div>Bạn có muốn thay đổi trạng thái hợp đồng từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 5 }}>
-                <div>Thời gian trả xe : </div>
-                <div>
-                  <DatePicker
-                    showTime={{ format: 'HH:mm' }} // Chỉ hiển thị giờ
-                    defaultValue={dayjs()}
-                    format="HH:mm giờ DD-MM-YYYY"
-                    onChange={(e) => setEnd_date(e)}
-                  /></div>
-              </div>
-            </div>
-          </>
-        ),
-        onOk: () => {
-          handleOkStatusChange(value, item, record);
-        },
-      });
-    }
-  };
+  // const handleStatusChange = (value, item, record) => {
+  //   if (value !== "Đã trả xe") {
+  //     Modal.confirm({
+  //       title: 'Xác nhận thay đổi',
+  //       okText: 'Xác nhận',
+  //       cancelText: 'Hủy bỏ',
+  //       content: (
+  //         <div>Bạn có muốn thay đổi từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>),
+  //       onOk: () => {
+  //         handleOkStatusChange(value, item, record);
+  //       },
+  //     });
+  //   }
+  //   if (value === "Đã trả xe") {
+  //     Modal.confirm({
+  //       title: 'Xác nhận thay đổi',
+  //       okText: 'Xác nhận',
+  //       cancelText: 'Hủy bỏ',
+  //       content: (
+  //         <>
+  //           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+  //             <div>Bạn có muốn thay đổi trạng thái hợp đồng từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>
+  //             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 5 }}>
+  //               <div>Thời gian trả xe : </div>
+  //               <div>
+  //                 <DatePicker
+  //                   showTime={{ format: 'HH:mm' }} // Chỉ hiển thị giờ
+  //                   defaultValue={dayjs()}
+  //                   format="HH:mm giờ DD-MM-YYYY"
+  //                   onChange={(e) => setEnd_date(e)}
+  //                 /></div>
+  //             </div>
+  //           </div>
+  //         </>
+  //       ),
+  //       onOk: () => {
+  //         handleOkStatusChange(value, item, record);
+  //       },
+  //     });
+  //   }
+  // };
 
   const handleUpdateBooking = (record) => {
     setIsUpdateDrawerOpen(true)
@@ -164,19 +153,19 @@ const BookingTable = (props) => {
               <div key={item._id} style={{ display: "flex", gap: 5, flexDirection: "row", justifyContent: "right" }}>
                 {item.brand}
                 <Tag color="blue">{item.license}</Tag>
-                <Select
+                <Tag color="green">{item.status}</Tag>
+                {/* <Select
                   status="warning"
                   size="small"
                   style={{ width: 150 }}
                   onChange={(value) => handleStatusChange(value, item, record)}
-                  placeholder="Select an option"
                   options={[
                     { value: "Chưa nhận xe", label: "Chưa nhận xe" },
                     { value: "Đã nhận xe", label: "Đã nhận xe" },
                     { value: "Đã trả xe", label: "Đã trả xe" },
                   ]}
                   value={item.status}
-                />
+                /> */}
               </div>
             ))}
           </div>
@@ -322,11 +311,6 @@ const BookingTable = (props) => {
       ),
     }] : [])
   ];
-
-  const handleEndBooking = (record) => {
-    setIsEndModalOpen(true)
-    setEndData(record)
-  }
 
   const confirmDeleteBooking = async (book) => {
     const res = await deleteBooking(book._id);

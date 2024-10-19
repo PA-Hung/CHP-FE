@@ -85,39 +85,39 @@ const MotorsTable = (props) => {
       render: (record) => {
         return (
           <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
-            <CheckAccess
+            {/* <CheckAccess
               FeListPermission={ALL_PERMISSIONS.APARTMENT.UPDATE}
               hideChildren
-            >
-              <div>
-                <Button
-                  danger
-                  onClick={() => {
-                    setIsUpdateModalOpen(true);
-                    setUpdateData(record);
-                  }}
-                >
-                  Cập nhật
-                </Button>
-              </div>
-            </CheckAccess>
+            > */}
+            <div>
+              <Button
+                danger
+                onClick={() => {
+                  setIsUpdateModalOpen(true);
+                  setUpdateData(record);
+                }}
+              >
+                Cập nhật
+              </Button>
+            </div>
+            {/* </CheckAccess>
             <CheckAccess
               FeListPermission={ALL_PERMISSIONS.APARTMENT.DELETE}
               hideChildren
-            >
-              <div>
-                <Popconfirm
-                  title={`Bạn muốn xoá xe ${record.license} không ?`}
-                  onConfirm={() => confirmDelete(record)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button type={"primary"} danger>
-                    Xoá
-                  </Button>
-                </Popconfirm>
-              </div>
-            </CheckAccess>
+            > */}
+            <div>
+              <Popconfirm
+                title={`Bạn muốn xoá xe ${record.license} không ?`}
+                onConfirm={() => confirmDelete(record)}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button type={"primary"} danger>
+                  Xoá
+                </Button>
+              </Popconfirm>
+            </div>
+            {/* </CheckAccess> */}
           </div>
         );
       },

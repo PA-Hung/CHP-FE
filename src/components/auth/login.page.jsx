@@ -1,229 +1,155 @@
+import "@/styles/login.page.css"
+import image1 from "@/assets/image1.jpg";
+import image2 from "@/assets/image2.jpg";
+import image3 from "@/assets/image3.jpg";
+import Logo from "@/assets/chpLogo.png";
 import { useEffect, useState } from "react";
-import { Button, Form, Input, notification } from "antd";
-import "@/styles/login.css";
+import { Button, Form, Input, notification, Carousel } from "antd";
 import { postLogin } from "@/utils/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserLoginInfo } from "@/redux/slice/authSlice";
 import { useLocation } from "react-router-dom";
 import { setActiveKey } from "@/redux/slice/menuSlice";
-import Logo from "@/assets/chpLogo.png";
 
 const Login = () => {
-  const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const isAdmin = useSelector((state) => state.auth.user.role);
-  let location = useLocation();
-  let params = new URLSearchParams(location.search);
-  const callback = params?.get("callback");
-  const activeKey = useSelector((state) => state.menu.activeKey);
 
-  const [isSignUpActive, setIsSignUpActive] = useState(false);
-  const toggleSignUp = () => {
-    setIsSignUpActive(!isSignUpActive);
-  };
+    const dispatch = useDispatch();
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const isAdmin = useSelector((state) => state.auth.user.role);
+    let location = useLocation();
+    let params = new URLSearchParams(location.search);
+    const callback = params?.get("callback");
+    const activeKey = useSelector((state) => state.menu.activeKey);
 
-  useEffect(() => {
-    if (isAuthenticated === true) {
-      window.location.href = "/admin";
-      if (activeKey !== "home") {
-        dispatch(
-          setActiveKey({
-            activeKey: "home",
-            title: "Home Admin",
-          })
-        );
-      }
+    const [isSignUpActive, setIsSignUpActive] = useState(false);
+    const toggleSignUp = () => {
+        setIsSignUpActive(!isSignUpActive);
+    };
+
+    useEffect(() => {
+        if (isAuthenticated === true) {
+            window.location.href = "/admin";
+            if (activeKey !== "home") {
+                dispatch(
+                    setActiveKey({
+                        activeKey: "home",
+                        title: "Home Admin",
+                    })
+                );
+            }
+        }
+    }, [activeKey, dispatch, isAuthenticated]);
+
+    const onFinish = async (values) => {
+        const res = await postLogin(values.username, values.password);
+        if (res?.data) {
+            notification.success({ message: "Đăng nhập tài khoản thành công!" });
+            dispatch(setUserLoginInfo(res.data.user));
+            localStorage.setItem("access_token", res.data.access_token);
+            window.location.href = callback ? callback : `/admin`;
+        } else {
+            notification.error({
+                message: "Đăng nhập thất bại !",
+                placement: "top",
+                description: res.message,
+            });
+        }
+    };
+
+    const handleSigup = (e) => {
+        notification.success({
+            message: "Chức năng đang được xây dựng !",
+            placement: "top",
+        });
+        e.preventDefault()
     }
-  }, [activeKey, dispatch, isAuthenticated]);
 
-  const onFinish = async (values) => {
-    const res = await postLogin(values.username, values.password);
-    if (res?.data) {
-      notification.success({ message: "Đăng nhập tài khoản thành công!" });
-      dispatch(setUserLoginInfo(res.data.user));
-      localStorage.setItem("access_token", res.data.access_token);
-      window.location.href = callback ? callback : `/admin`;
-    } else {
-      notification.error({
-        message: "Đăng nhập thất bại !",
-        placement: "top",
-        description: res.message,
-      });
+    const forgetPass = () => {
+        notification.success({
+            message: "Hãy liên hệ admin để cấp lại mật khẩu : 0963686963",
+            placement: "top",
+        });
     }
-  };
 
-  const handleSigup = (e) => {
-    notification.success({
-      message: "Chức năng đang được xây dựng !",
-      placement: "top",
-    });
-    e.preventDefault()
-  }
+    return (
+        <div id="loginPage">
+            <div className="mainLogin">
+                <div className="box">
+                    <div className="inner-box">
+                        <div className="forms-wrap">
+                            <Form className="form" onFinish={onFinish}>
+                                <div className="logo">
+                                    <img src={Logo} alt="Logo" />
+                                </div>
 
-  const forgetPass = () => {
-    notification.success({
-      message: "Hãy liên hệ admin để cấp lại mật khẩu : 0963686963",
-      placement: "top",
-    });
-  }
+                                <div className="heading">
+                                    <h2>ĐĂNG NHẬP</h2>
+                                    {/* <h6>Bạn chưa có tài khoản ? Liên hệ admin 0963686963 để được chỗ trợ</h6> */}
+                                </div>
 
-  return (
-    <div className="bodyLogin">
+                                <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
+                                        <Form.Item
+                                            style={{ width: '100%', padding: 0, margin: 0 }}
+                                            name="username"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "Nhập số điện thoại !",
+                                                },
+                                            ]}
+                                        >
+                                            <Input
+                                                className="input-field"
+                                                type="text"
+                                                placeholder="Số điện thoại"
+                                            />
+                                        </Form.Item>
+                                        <Form.Item
+                                            style={{ width: '100%', padding: 0, margin: 0 }}
+                                            name="password"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "Nhập mật khẩu !",
+                                                },
+                                            ]}
+                                        >
+                                            <Input.Password type="password"
+                                                placeholder="Mật khẩu"
+                                                className="input-field"
+                                            />
+                                        </Form.Item>
+                                    </div>
+                                    <Button type="primary" htmlType="submit" className="sign-btn">
+                                        Đăng nhập
+                                    </Button>
 
-      <div className={`container ${isSignUpActive ? 'active' : ''}`}>
-        <div className="form-container sign-up">
-          <Form onFinish={handleSigup}>
-            <div className="logo">
-              <img src={Logo} alt="logo" style={{ width: 230, height: 83 }} />
-            </div>
-            <h1>Đăng ký</h1>
-            <span style={{ paddingTop: "10px", paddingBottom: "10px" }}>sử dụng số điện thoại để đăng ký</span>
-            <Form.Item
-              style={{ width: '100%', padding: 0, margin: 0 }}
-              name="usernameReg"
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "Nhập số điện thoại !",
-            //   },
-            // ]}
-            >
-              <Input style={{
-                backgroundColor: '#eee',
-                border: "none",
-                fontSize: "13px",
-                borderRadius: "8px",
-                width: '100%',
-                outline: "none",
-                height: '45px'
-              }} type="text" placeholder="Số điện thoại" />
-            </Form.Item>
-            <Form.Item
-              style={{ width: '100%', padding: 0, margin: 0 }}
-              name="password1"
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "Nhập mật khẩu !",
-            //   },
-            // ]}
-            >
-              <Input.Password style={{
-                backgroundColor: '#eee',
-                border: "none",
-                fontSize: "13px",
-                borderRadius: "8px",
-                width: '100%',
-                outline: "none",
-                height: '45px'
-              }} type="password1" placeholder="Mật khẩu" />
-            </Form.Item>
-            <Form.Item
-              style={{ width: '100%', paddingTop: "8px", margin: 0 }}
-              name="password2"
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "Nhập mật khẩu !",
-            //   },
-            // ]}
-            >
-              <Input.Password style={{
-                backgroundColor: '#eee',
-                border: "none",
-                fontSize: "13px",
-                borderRadius: "8px",
-                width: '100%',
-                outline: "none",
-                height: '45px'
-              }} type="password2" placeholder="Nhập lại mật khẩu" />
-            </Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large">Đăng ký</Button>
-          </Form>
+                                    <p className="text">
+                                        Bạn quên mật khẩu ? Liên hệ admin 0963686963 để được hỗ trợ
+                                    </p>
+                                </div>
+                            </Form>
+                        </div>
+
+                        <div className="carousel">
+                            <Carousel infinite={true} autoplay dots={false}>
+                                <div>
+                                    <img src={image1} style={{ width: '100%', height: '575px', objectFit: 'cover' }} alt="image1" />
+                                </div>
+                                <div>
+                                    <img src={image2} style={{ width: '100%', height: '575px', objectFit: 'cover' }} alt="image2" />
+                                </div>
+                                <div>
+                                    <img src={image3} style={{ width: '100%', height: '575px', objectFit: 'cover' }} alt="image3" />
+                                </div>
+                            </Carousel>
+                        </div>
+                    </div>
+                </div >
+            </div >
         </div>
-        <div className="form-container sign-in">
-          <Form onFinish={onFinish}>
-            <div className="logo">
-              <img src={Logo} alt="logo" style={{ width: 230, height: 83 }} />
-            </div>
-            <h1>Đăng nhập</h1>
-            <span style={{ paddingTop: "10px", paddingBottom: "10px" }}>sử dụng số điện thoại và mật khẩu</span>
-            <Form.Item
-              style={{ width: '100%', padding: 0, margin: 0 }}
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: "Nhập số điện thoại !",
-                },
-              ]}
-            >
-              <Input
-                type="text"
-                placeholder="Số điện thoại"
-                style={{
-                  backgroundColor: '#eee',
-                  border: "none",
-                  fontSize: "13px",
-                  borderRadius: "8px",
-                  width: '100%',
-                  outline: "none",
-                  height: '45px'
-                }} />
-            </Form.Item>
-            <Form.Item
-              style={{ width: '100%', padding: 0, margin: 0 }}
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Nhập mật khẩu !",
-                },
-              ]}
-            >
-              <Input.Password
-                type="password"
-                placeholder="Mật khẩu"
-                style={{
-                  backgroundColor: '#eee',
-                  border: "none",
-                  fontSize: "13px",
-                  borderRadius: "8px",
-                  width: '100%',
-                  outline: "none",
-                  height: '45px'
-                }} />
-            </Form.Item>
-            <a onClick={() => forgetPass()}>Bạn quên mật khẩu?</a>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-            >Đăng nhập</Button>
-          </Form>
-        </div>
-        <div className="toggle-container">
-          <div className="toggle">
-            <div className={`toggle-panel toggle-left ${isSignUpActive ? '' : 'hidden'}`}>
-              <h1>Chào mừng bạn trở lại!</h1>
-              <p>Đăng nhập thông tin của bạn để sử dụng tất cả các tính năng của app CHP</p>
-              <button className="hidden" onClick={toggleSignUp}>Đăng nhập</button>
-            </div>
-            <div className={`toggle-panel toggle-right ${isSignUpActive ? 'hidden' : ''}`}>
-              <h1>Chào bạn !</h1>
-              <p>Đăng ký với thông tin cá nhân của bạn để sử dụng tất cả các tính năng của app CHP</p>
-              <Button type="primary"
-                htmlType="submit"
-                size="large" className="hidden" onClick={toggleSignUp}>Đăng ký</Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+    )
+}
 
-export default Login;
+export default Login

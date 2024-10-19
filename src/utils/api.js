@@ -6,6 +6,22 @@ export const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 };
 
+// Maintenances    ------------------------------------
+export const getMaintenances = (query) => {
+    return axios.get(`api/v1/maintenances?${query}`)
+}
+
+export const postMaintenance = (data) => {
+    return axios.post('api/v1/maintenances', data)
+}
+
+export const deleteMaintenance = (id) => {
+    return axios.delete(`api/v1/maintenances/${id}`)
+}
+
+export const updateMaintenance = (data) => {
+    return axios.patch('api/v1/maintenances', data)
+}
 
 // payment    ------------------------------------
 export const postCreatePayment = (data) => {

@@ -26,6 +26,7 @@ import motorReducer from './slice/motorSlice'
 import bookingCompletedReducer from './slice/bookingCompletedSlice'
 import paymentReducer from './slice/paymentSlice'
 import saleReducer from './slice/saleSlice'
+import maintenanceReducer from './slice/maintenanceSlice';
 
 
 const rootReducer = combineReducers({
@@ -43,7 +44,8 @@ const rootReducer = combineReducers({
     motor: motorReducer,
     bookingCompleted: bookingCompletedReducer,
     payment: paymentReducer,
-    sale: saleReducer
+    sale: saleReducer,
+    maintenance: maintenanceReducer
 });
 
 const persistConfig = {

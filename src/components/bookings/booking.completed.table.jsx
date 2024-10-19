@@ -76,88 +76,6 @@ const BookingCompletedTable = (props) => {
     return end.diff(start, 'hour');
   }
 
-  const handleOkStatusChange = async (value, motors, record) => {
-    // Cập nhật trạng thái của motors
-    const updatedMotors = record.motors.map(motor => {
-      if (value !== "Đã trả xe" && motor._id === motors._id) {
-        return { ...motor, status: value };
-      }
-      if (value === "Đã trả xe" && motor._id === motors._id) {
-        return { ...motor, status: value, end_date: end_date };
-      }
-      return motor;
-    });
-
-    // Tạo đối tượng dữ liệu mới với motors đã cập nhật
-    const data = {
-      _id: record._id,
-      motors: updatedMotors,
-    };
-
-    try {
-      const res = await updateBooking(data);
-      if (res.data) {
-        reloadTableCompleted();
-        reloadTable();
-        message.success("Cập nhật trạng thái hợp đồng thành công !");
-      } else {
-        notification.error({
-          message: "Có lỗi xảy ra",
-          placement: "top",
-          description: res.message,
-        });
-      }
-    } catch (error) {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        placement: "top",
-        description: error.message,
-      });
-    }
-  }
-
-  const handleStatusChange = (value, item, record) => {
-    if (value !== "Đã trả xe") {
-      Modal.confirm({
-        title: 'Xác nhận thay đổi',
-        okText: 'Xác nhận',
-        cancelText: 'Hủy bỏ',
-        content: (
-          <div>Bạn có muốn thay đổi trạng thái hợp đồng từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>),
-        onOk: () => {
-          handleOkStatusChange(value, item, record);
-        },
-      });
-    }
-    if (value === "Đã trả xe") {
-      Modal.confirm({
-        title: 'Xác nhận thay đổi',
-        okText: 'Xác nhận',
-        cancelText: 'Hủy bỏ',
-        content: (
-          <>
-            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-              <div>Bạn có muốn thay đổi trạng thái hợp đồng từ <span style={{ fontWeight: 550 }}>{item.status}</span> sang <span style={{ fontWeight: 550 }}>{value}</span> ?</div>
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 5 }}>
-                <div>Thời gian trả xe : </div>
-                <div>
-                  <DatePicker
-                    showTime={{ format: 'HH:mm' }} // Chỉ hiển thị giờ
-                    defaultValue={dayjs()}
-                    format="HH:mm giờ DD-MM-YYYY"
-                    onChange={(e) => setEnd_date(e)}
-                  /></div>
-              </div>
-            </div>
-          </>
-        ),
-        onOk: () => {
-          handleOkStatusChange(value, item, record);
-        },
-      });
-    }
-  };
-
   const handleUpdateCompletedBooking = (record) => {
     if (record.contract_status === "Hợp đồng đóng") {
       notification.warning({
@@ -237,20 +155,7 @@ const BookingCompletedTable = (props) => {
               <div key={item._id} style={{ display: "flex", gap: 5, flexDirection: "row", justifyContent: "right" }}>
                 {item.brand}
                 <Tag color="blue">{item.license}</Tag>
-                <Select
-                  disabled
-                  status="warning"
-                  size="small"
-                  style={{ width: 150 }}
-                  onChange={(value) => handleStatusChange(value, item, record)}
-                  placeholder="Select an option"
-                  options={[
-                    { value: "Chưa nhận xe", label: "Chưa nhận xe" },
-                    { value: "Đã nhận xe", label: "Đã nhận xe" },
-                    { value: "Đã trả xe", label: "Đã trả xe" },
-                  ]}
-                  value={item.status}
-                />
+                <Tag color="red">{item.status}</Tag>
               </div>
             ))}
           </div>
