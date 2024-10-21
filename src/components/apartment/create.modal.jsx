@@ -11,7 +11,6 @@ const CreateModal = (props) => {
   };
 
   const onFinish = async (values) => {
-    //console.log("values", values);
     const data = values; // viết gọn của 2 dòng trên
     const res = await postApartment(data);
     if (res.data) {

@@ -81,7 +81,7 @@ const BillingCard = (props) => {
                             onSelect={(value) => setMethod(value)}
                             allowClear
                             options={[
-                                { value: "tiền mặt", label: "Tiền mặt" },
+                                { value: "Tiền mặt", label: "Tiền mặt" },
                                 { value: "Chuyển khoản", label: "Chuyển khoản" },
                             ]}
                         />

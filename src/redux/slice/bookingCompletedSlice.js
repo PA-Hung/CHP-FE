@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getBooking } from '@/utils/api';
 
 export const fetchCompletedBooking = createAsyncThunk(
-    'booking/fetchCompletedBooking',
+    'bookingCompleted/fetchCompletedBooking',
     async ({ query }) => {
         const response = await getBooking(query);
         return response;
@@ -15,7 +15,8 @@ const initialState = {
         current: 1,
         pageSize: 10,
         pages: 0,
-        total: 0
+        total: 0,
+        allItem: 0
     },
     result: []
 }

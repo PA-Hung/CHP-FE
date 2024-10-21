@@ -50,20 +50,31 @@ const EndBookingModal = (props) => {
       const discount = endData.discount || 0;
       const deposit = endData.deposit || 0;
       const surcharge = endData.surcharge || 0;
-      setRemainingAmount(amount - discount - deposit + late_fee_amount + surcharge);
-      setFinalAmount((amount - discount - deposit - late_fee_amount - finalPayment + surcharge))
-      setMethodPayment(endData.method)
+
+      const calculatedRemainingAmount =
+        amount - (discount + deposit + late_fee_amount + surcharge);
+
+      setRemainingAmount(calculatedRemainingAmount);
+
+      setFinalAmount(finalPayment - calculatedRemainingAmount); // Đảm bảo tính đúng
+      setMethodPayment(endData.method);
     }
-  }, [endData, late_fee_amount, finalPayment]);
+  }, [endData, late_fee_amount, finalPayment, isEndModalOpen]);
+
 
   useEffect(() => {
     calculateTotalCommissionByDay();
   }, [endData]);
 
   const onFinish = async () => {
-
-    if (finalAmount > 0) {
-      message.error("Vui lòng thanh toán đủ tiền !");
+    // console.log('số tiền ở ô hiển thị còn phải thu', remainingAmount);
+    // console.log('số tiền khách nhập vào input thanh toán cuối cùng', finalPayment);
+    // console.log('số tiền còn lại sau thanh toán, nếu là số dương thì thanh toán dư, nếu số âm thì thanh toán thiếu, dùng để kiểm tra thanh toán đủ hay chưa', finalAmount);
+    if (finalAmount !== 0) {
+      notification.error({
+        message: "Bạn phải thu đúng số tiền còn phải thu !",
+        placement: "top",
+      });
     }
     else {
       // Xử lý hoàn tất thanh toán

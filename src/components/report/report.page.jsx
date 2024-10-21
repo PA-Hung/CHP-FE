@@ -7,14 +7,15 @@ dayjs.locale("vi");
 import { useDispatch, useSelector } from "react-redux";
 import CheckAccess from "@/router/check.access";
 import { ALL_PERMISSIONS } from "@/utils/permission.module";
-import ProfitTable from "./profit.table";
+import RevenueTable from "./revenues/Revenue.table";
 import { fetchPayment } from "@/redux/slice/paymentSlice";
-import { ProfitBarChart } from "./profit.BarChart";
+import { RevenueBarChart } from "./revenues/revenue.BarChart";
 const { RangePicker } = DatePicker;
 import { formatCurrency } from "@/utils/api";
-import SalesTable from "./sales.table";
+// sale ----------------
+import SalesTable from "./sales/sales.table";
 import { fetchSale } from "@/redux/slice/saleSlice";
-import { SaleBarChart } from "./sale.BarChart";
+import { SaleBarChart } from "./sales/sale.BarChart";
 
 const ReportPage = () => {
   const defaultStartDate = dayjs().startOf('month');
@@ -187,7 +188,7 @@ const ReportPage = () => {
             <Col span={24} >
               <Row gutter={[16, 16]}>
                 <Col span={24}>
-                  <ProfitBarChart
+                  <RevenueBarChart
                     listPayments={listPayments}
                   />
                 </Col>
@@ -197,7 +198,7 @@ const ReportPage = () => {
                   <div style={{ fontSize: 17, fontWeight: 550 }}>Chi tiết theo ngày</div>
                 </Col>
                 <Col span={24}>
-                  <ProfitTable
+                  <RevenueTable
                     totalPaid={totalPaid}
                     setTotalPaid={setTotalPaid}
                     listPayments={listPayments}

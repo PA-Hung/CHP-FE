@@ -3,12 +3,15 @@ import React, { useEffect, useState } from 'react'
 import { formatCurrency } from "@/utils/api";
 import dayjs from "dayjs";
 
-const ProfitDetailDrawer = (props) => {
-    const { isProfitDetailDrawer, setIsProfitDetailDrawer, dataDetail } = props;
+const RevenueDetailDrawer = (props) => {
+    const { isRevenueDetailDrawer, setIsRevenueDetailDrawer, dataDetail } = props;
+
+    console.log('dataDetail', dataDetail);
+
     const [totalCommission, setTotalCommission] = useState(0)
 
     const resetDrawer = () => {
-        setIsProfitDetailDrawer(false);
+        setIsRevenueDetailDrawer(false);
     };
 
     const calculateTotalCommission = () => {
@@ -58,7 +61,7 @@ const ProfitDetailDrawer = (props) => {
             title: "Doanh thu",
             render: (_value, record) => {
                 return <div style={{ fontWeight: 550, color: "blueviolet" }}>
-                    {formatCurrency(record?.paid)}
+                    {formatCurrency(record?.deposit + record.paid)}
                 </div>;
             },
         },
@@ -85,7 +88,7 @@ const ProfitDetailDrawer = (props) => {
                 placement="right"
                 width="70%"
                 onClose={resetDrawer}
-                open={isProfitDetailDrawer}
+                open={isRevenueDetailDrawer}
                 style={{ color: "black" }}
                 footer={
                     <Space style={{ float: 'right' }}>
@@ -132,4 +135,4 @@ const ProfitDetailDrawer = (props) => {
     )
 }
 
-export default ProfitDetailDrawer
+export default RevenueDetailDrawer

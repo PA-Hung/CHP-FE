@@ -26,8 +26,6 @@ const BookingCompletedTable = (props) => {
   const [updateData, setUpdateData] = useState(null);
   const dispatch = useDispatch();
 
-  const [end_date, setEnd_date] = useState(dayjs());
-
   const [checkUpdateContract, setCheckUpdateContract] = useState(Boolean)
   const [checkOpenContract, setCheckOpenContract] = useState(Boolean)
   const [checkDeleteContract, setCheckDeleteContract] = useState(Boolean)
@@ -220,6 +218,15 @@ const BookingCompletedTable = (props) => {
       title: "Đã trả",
       render: (_value, record) => {
         return <div>{...(record.deposit ? formatCurrency(record.deposit) : "")}</div>;
+      },
+    },
+    {
+      title: "Thanh toán",
+      render: (_value, record) => {
+        return <div style={{ display: "flex", justifyContent: "center" }}>
+          {record.method === "Tiền mặt" ? <Tag color="cyan">{"CASH"}</Tag> : <Tag color="cyan-inverse">{"BANK"}</Tag>}
+
+        </div>;
       },
     },
 

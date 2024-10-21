@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getMaintenances } from '@/utils/api';
 
 export const fetchMaintenances = createAsyncThunk(
-    'motor/fetchMaintenances',
+    'maintenance/fetchMaintenances',
     async ({ query }) => {
         const response = await getMaintenances(query);
         return response;
@@ -13,7 +13,7 @@ const initialState = {
     isFetching: true,
     meta: {
         current: 1,
-        pageSize: 5,
+        pageSize: 10,
         pages: 0,
         total: 0
     },

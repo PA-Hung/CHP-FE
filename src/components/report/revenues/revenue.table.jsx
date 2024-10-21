@@ -9,13 +9,13 @@ import { ALL_PERMISSIONS } from "@/utils/permission.module";
 import { useDispatch } from "react-redux";
 import { formatCurrency } from "@/utils/api";
 import { FundViewOutlined } from "@ant-design/icons";
-import ProfitDetailDrawer from "./profit.detail.drawer";
+import RevenueDetailDrawer from "./revenue.detail.drawer";
 import { paymentOnchangeTable } from "@/redux/slice/paymentSlice";
 
 
-const ProfitTable = (props) => {
+const RevenueTable = (props) => {
   const { listPayments, loading, meta, totalPaid, setTotalPaid } = props;
-  const [isProfitDetailDrawer, setIsProfitDetailDrawer] = useState(false);
+  const [isRevenueDetailDrawer, setIsRevenueDetailDrawer] = useState(false);
   const dispatch = useDispatch();
 
   const [totalContract, setTotalContract] = useState(0)
@@ -35,17 +35,6 @@ const ProfitTable = (props) => {
     }
   }, [listPayments]);
 
-
-  // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueCodes = [...new Set(listPayments.map(item => item.code))];
-  // // Tạo các bộ lọc từ các giá trị duy nhất
-  // const filtersCode = uniqueCodes.map(code => ({ text: `Căn hộ "${code}"`, value: code }));
-
-  // // Tính toán các giá trị duy nhất từ cột "Mã căn hộ"
-  // const uniqueHosts = [...new Set(listPayments.map(item => item.users?.name).filter(user => user !== undefined))];
-  // // Tạo các bộ lọc từ các giá trị duy nhất
-  // const filtersHost = uniqueHosts.map(user => ({ text: `Host "${user}"`, value: user }));
-
   const columns = [
     {
       title: "STT",
@@ -59,35 +48,22 @@ const ProfitTable = (props) => {
     },
     {
       title: "Ngày",
-      dataIndex: "payment_date",
-      // key: "code",
-      // sorter: (a, b) => a.code.localeCompare(b.code),
-      // filters: filtersCode,
-      // onFilter: (value, record) => record.code.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
-      render: (_value, record) => {
-        return <div style={{ fontWeight: 550 }}>{dayjs(record._id).format("DD/MM/YYYY")}</div>;
-      },
+      render: (_value, record) => (
+        <div style={{ fontWeight: 550 }}>
+          {dayjs(record._id).format("DD/MM/YYYY")}
+        </div>
+      ),
+      sorter: (a, b) => dayjs(a._id).unix() - dayjs(b._id).unix(), // So sánh bằng timestamp
+      defaultSortOrder: "descend", // Sắp xếp giảm dần mặc định (nếu cần)
     },
     {
       title: "Hợp đồng",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
       render: (_value, record) => {
         return <div style={{ fontWeight: 550, color: "blueviolet" }}>{record?.count}</div>;
       },
     },
     {
       title: "Doanh thu",
-      // sorter: (a, b) => a.users?.name.localeCompare(b.users?.name),
-      // filters: filtersHost,
-      // onFilter: (value, record) => record.users?.name.startsWith(value),
-      // filterMode: 'tree',
-      // filterSearch: true,
       render: (_value, record) => {
         return <div style={{ fontWeight: 550, color: "blueviolet" }}>{formatCurrency(record.totalPaid)}</div>;
       },
@@ -98,7 +74,7 @@ const ProfitTable = (props) => {
       render: (record) => {
         return (
           <div style={{ display: "flex", placeContent: "center" }}>
-            <FundViewOutlined style={{ fontSize: 25 }} onClick={() => { setIsProfitDetailDrawer(true), setDataDetail(record) }} />
+            <FundViewOutlined style={{ fontSize: 25 }} onClick={() => { setIsRevenueDetailDrawer(true), setDataDetail(record) }} />
           </div>
         );
       },
@@ -158,13 +134,13 @@ const ProfitTable = (props) => {
           );
         }}
       />
-      <ProfitDetailDrawer
+      <RevenueDetailDrawer
         dataDetail={dataDetail}
-        isProfitDetailDrawer={isProfitDetailDrawer}
-        setIsProfitDetailDrawer={setIsProfitDetailDrawer}
+        isRevenueDetailDrawer={isRevenueDetailDrawer}
+        setIsRevenueDetailDrawer={setIsRevenueDetailDrawer}
       />
     </>
   );
 };
 
-export default ProfitTable;
+export default RevenueTable;

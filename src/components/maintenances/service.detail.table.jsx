@@ -92,9 +92,10 @@ const ServiceDetailTable = (props) => {
         {
             title: 'SL',
             dataIndex: 'quantity',
+            width: 100,
             render: (_value, record) => (
                 <InputNumber
-                    style={{ width: 80, borderRadius: 8, fontWeight: "bold" }}
+                    style={{ width: 100, borderRadius: 8, fontWeight: "bold" }}
                     value={record.quantity}
                     onChange={(value) => handleFieldChange(value, record.key, 'quantity')}
                 />
@@ -103,7 +104,7 @@ const ServiceDetailTable = (props) => {
         {
             title: 'Đơn giá',
             dataIndex: 'price',
-            width: 200,
+            width: 220,
             render: (_value, record) => (
                 <InputNumber
                     addonAfter={<b>đ</b>}
@@ -119,7 +120,7 @@ const ServiceDetailTable = (props) => {
         {
             title: 'Thành tiền',
             dataIndex: 'total',
-            width: 200,
+            width: 220,
             render: (_value, record) => (
                 <div>{formatCurrency(record.total)}</div>
             ),
@@ -138,13 +139,16 @@ const ServiceDetailTable = (props) => {
         {
             title: 'Hành động',
             dataIndex: 'action',
+            width: 50,
             render: (_, record) =>
                 dataSource.length >= 1 ? (
                     <Popconfirm
                         title="Bạn muốn xoá dịch vụ này?"
                         onConfirm={() => handleDelete(record.key)}
                     >
-                        <DeleteOutlined style={{ fontSize: 24 }} />
+                        <div style={{ display: "flex", justifyContent: "center" }}>
+                            <DeleteOutlined style={{ fontSize: 24 }} />
+                        </div>
                     </Popconfirm>
                 ) : null,
         },

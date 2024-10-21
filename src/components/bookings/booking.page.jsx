@@ -20,16 +20,20 @@ import { fetchCompletedBooking } from "@/redux/slice/bookingCompletedSlice";
 const BookingPage = () => {
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const dispatch = useDispatch();
+  const [searchValue, setSearchValue] = useState(null);
 
   const loading = useSelector((state) => state.booking.isFetching);
   const meta = useSelector((state) => state.booking.meta);
   const listBookings = useSelector((state) => state.booking.result);
-  const dispatch = useDispatch();
-  const [searchValue, setSearchValue] = useState(null);
 
   const loadingCompleted = useSelector((state) => state.bookingCompleted.isFetching);
   const metaCompleted = useSelector((state) => state.bookingCompleted.meta);
   const listBookingsCompleted = useSelector((state) => state.bookingCompleted.result);
+
+  console.log('metaCompleted', JSON.stringify(metaCompleted));
+  console.log('loadingCompleted', loadingCompleted);
+
 
   useEffect(() => {
     const initData = async () => {
@@ -42,7 +46,7 @@ const BookingPage = () => {
       }
     };
     initData();
-  }, [meta.current, meta.pageSize]);
+  }, [metaCompleted.current, metaCompleted.pageSize]);
 
   useEffect(() => {
     const initData = async () => {
@@ -108,8 +112,8 @@ const BookingPage = () => {
     params,
     sort,
     filter,
-    page = meta.current,
-    pageSize = meta.pageSize
+    page = metaCompleted.current,
+    pageSize = metaCompleted.pageSize
   ) => {
     const clone = { ...params };
 
@@ -150,7 +154,7 @@ const BookingPage = () => {
   const tabsItems = [
     {
       key: '1',
-      label: (<div style={{ fontWeight: 550 }}>Đang Thuê ({listBookings.length})</div>),
+      label: (<div style={{ fontWeight: 550 }}>Đang Thuê ({meta.allItem})</div>),
       children: (
         <>
           <BookingTable
@@ -165,7 +169,7 @@ const BookingPage = () => {
     },
     {
       key: '2',
-      label: (<div style={{ fontWeight: 550 }}>Hoàn Thành ({listBookingsCompleted.length})</div>),
+      label: (<div style={{ fontWeight: 550 }}>Hoàn Thành ({metaCompleted.allItem})</div>),
       children: (
         <>
           <BookingCompletedTable
